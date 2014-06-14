@@ -3,6 +3,7 @@
 *.lo
 *.o
 *.obj
+*.gch
 
 # Compiled Dynamic libraries
 *.so
@@ -19,3 +20,5 @@
 *.exe
 *.out
 *.app
+
+.DS_Store
