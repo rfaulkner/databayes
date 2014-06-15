@@ -4,6 +4,7 @@
 *.o
 *.obj
 *.gch
+*.bin
 
 # Compiled Dynamic libraries
 *.so
