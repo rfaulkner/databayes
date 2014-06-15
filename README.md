@@ -16,3 +16,15 @@ Installation
 	cmake .
 	make
 	sudo make install
+
+
+Setup
+-----
+
+Ensure that you LD_LIBRARY_PATH is set:
+
+    export LD_LIBRARY_PATH=/usr/local/lib
+
+Use the following compiler flags:
+
+    $(pkg-config --cflags --libs redis3m)
