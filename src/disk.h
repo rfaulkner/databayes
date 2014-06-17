@@ -1,4 +1,3 @@
-
 /*
  *  disk.cpp
  *
@@ -7,6 +6,9 @@
  *  Created by Ryan Faulkner on 2014-06-12
  *  Copyright (c) 2014. All rights reserved.
  */
+
+#ifndef _disk_h
+#define _disk_h
 
 #include <iostream>
 #include <string>
@@ -23,3 +25,9 @@ public:
 
 DiskHandler::DiskHandler() {}
 
+
+DiskHandler::writeRecord() {
+    
+}
+
+#endif

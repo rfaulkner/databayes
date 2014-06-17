@@ -1,12 +1,14 @@
-
 /*
- *  redis.cpp
+ *  redis.h
  *
  *  Handles the interface to redis
  *
  *  Created by Ryan Faulkner on 2014-06-12
  *  Copyright (c) 2014. All rights reserved.
  */
+
+#ifndef _redis_h
+#define _redis_h
 
 #include <iostream>
 #include <string>
@@ -67,3 +69,5 @@ string RedisHandler::read(string key) {
     redis3m::reply r = conn->run(command("GET") << key );
     return reply;
 }
+
+#endif
