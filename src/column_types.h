@@ -11,6 +11,11 @@
 
 #include <string>
 
+#define COLTYPE_NAME_BASE "base"
+#define COLTYPE_NAME_INT "integer"
+#define COLTYPE_NAME_FLOAT "float"
+#define COLTYPE_NAME_STR "string"
+
 using namespace std;
 
 /**
@@ -28,6 +33,9 @@ public:
     void setValue(void* value) {
         this->value = value;
     }
+    string getType() {
+        return COLTYPE_NAME_BASE;
+    }
 };
 
 
@@ -39,6 +47,9 @@ class IntegerColumn : public ColumnBase {
 public:
     IntegerColumn(int value) {
         this->value = value;
+    }
+    string getType() {
+        return COLTYPE_NAME_INT;
     }
 
 };
@@ -53,6 +64,9 @@ public:
     FloatColumn(float value) {
         this->value = value;
     }
+    string getType() {
+        return COLTYPE_NAME_FLOAT;
+    }
 };
 
 
@@ -64,6 +78,9 @@ class StringColumn : public ColumnBase {
 public:
     StringColumn(float value) {
         this->value = value;
+    }
+    string getType() {
+        return COLTYPE_NAME_STR;
     }
 
 };
