@@ -1,10 +1,11 @@
-//
-//  column_types.h
-//  
-//
-//  Created by Ryan Faulkner on 6/16/14.
-//
-//
+/*
+ *  column_types.h
+ *
+ *  Defines the column UDT.  In memory model for value types.
+ *
+ *  Created by Ryan Faulkner on 2014-06-16
+ *  Copyright (c) 2014. All rights reserved.
+ */
 
 #ifndef _column_types_h
 #define _column_types_h
