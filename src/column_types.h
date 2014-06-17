@@ -17,14 +17,16 @@ using namespace std;
  *  Base class for column types
  */
 class ColumnBase {
-    void* value = null;
+    void* value;
 public:
-    ColumnBase::ColumnBase() {}
+    ColumnBase() {
+        this->value = NULL;
+    }
     void* getValue() {
         return &(this->value);
     }
     void setValue(void* value) {
-        this->value = value*;
+        this->value = value;
     }
 };
 
