@@ -11,33 +11,33 @@
 #ifndef _record_h
 #define _record_h
 
-#include <iostream>
 #include <string>
-#inclde "column_types.h"
+#include <vector>
+#include "column_types.h"
 
 
 using namespace std;
 
 class Record {
-    ColumnBase* columns;
+    vector<ColumnBase> columns;
     int num_cols;
 public:
     Record(int);
-    Record(ColumnBase*);
-    bool setRecord(ColumnBase*);
-    ColumnBase* getRecord();
+    Record(vector<ColumnBase>);
+    bool setRecord(vector<ColumnBase>);
+    vector<ColumnBase> getRecord();
 };
 
 Record::Record(int num_cols) {
     this->num_cols = num_cols;
 }
 
-Record::Record(ColumnBase* columns) {
+Record::Record(vector<ColumnBase> columns) {
     this->columns = columns;
-    this->num_cols = sizeof(columns) / sizeof(ColumnBase);
+    this->num_cols = columns.size();
 }
 
-bool Record::setRecord(ColumnBase* columns) {
+bool Record::setRecord(vector<ColumnBase> columns) {
     // TODO - exception handling on case columns isn't an array
     if (columns.size() == this->num_cols) {
         this->columns = columns;
@@ -47,8 +47,8 @@ bool Record::setRecord(ColumnBase* columns) {
     }
 }
 
-ColumnBase* Record::getRecord() {
-    return->columns;
+vector<ColumnBase> Record::getRecord() {
+    return this>columns;
 }
 
 #endif
