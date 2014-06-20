@@ -14,6 +14,12 @@
 #include <string>
 #include <vector>
 
+
+#define STR_CMD_ADD "ADD"
+#define STR_CMD_GET "GET"
+#define STR_CMD_GEN "GEN"
+#define STR_CMD_REL "REL"
+
 using namespace std;
 
 /**
@@ -42,7 +48,7 @@ Parser::Parser() {}
  */
 Parser::bool parse(const string& s) {
     
-    this->tokenize(s);
+    vector<string> tokens = this->tokenize(s);
     
     // TODO - proceed with SLR parsing
 }
