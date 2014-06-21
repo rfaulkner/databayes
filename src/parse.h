@@ -49,8 +49,27 @@ Parser::Parser() {}
 Parser::bool parse(const string& s) {
     
     vector<string> tokens = this->tokenize(s);
+    std::reverse(tokens.begin(), tokens.end());  // reverse tokens
     
-    // TODO - proceed with SLR parsing
+    // Parse
+    for (std::vector<int>::iterator it = tokens.begin() ; it != myvector.end(); ++it) {
+        
+        switch (*it) {
+            case STR_CMD_ADD:
+                break;
+            case STR_CMD_GET:
+                break;
+            case STR_CMD_GEN:
+                break;
+            case STR_CMD_REL:
+                break;
+            case ',':
+                break;
+            default:
+                // handle symbol interpretation
+                break;
+        }
+    }
 }
 
 
