@@ -19,6 +19,7 @@
 #define STR_CMD_ADD "ADD"
 #define STR_CMD_GET "GET"
 #define STR_CMD_GEN "GEN"
+#define STR_CMD_CON "CONTSTRAIN"
 #define STR_CMD_REL "REL"
 
 #define BAD_INPUT -1
@@ -102,6 +103,8 @@ bool Parser::analyze(const string& s) {
                 return BAD_INPUT;
             }
             break;
+        case STR_CMD_CON:
+            // handles inputs of the type -> "GEN REL E1[(x_1=v_1, x_2=v_2, ...)] CONSTRAIN E2[, E3, ...]"
         case ',':
             break;
         case '(':
