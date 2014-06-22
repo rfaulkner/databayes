@@ -26,6 +26,29 @@
 
 using namespace std;
 
+
+/**
+ *  Write a function to handle splitting strings on a delimeter
+ */
+std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) {
+    std::stringstream ss(s);
+    std::string item;
+    while (std::getline(ss, item, delim)) {
+        elems.push_back(item);
+    }
+    return elems;
+}
+
+/**
+ *  Split + factory method for string splitting
+ */
+std::vector<std::string> split(const std::string &s, char delim) {
+    std::vector<std::string> elems;
+    split(s, delim, elems);
+    return elems;
+}
+
+
 /**
  *  Implements an SLR parser. Valid Statements:
  *
@@ -112,10 +135,10 @@ bool Parser::analyze(const string& s) {
         case ')':
             break;
         default:
-            // handle symbol interpretation
+            
             if (this->state != 1 || this->state == 2 || this->state == 3) {
                 //  1. Check if s contains a left bracket .. split off the pre-string
-                //  2.Check symbol table
+                //  2. Check symbol table
                 //  3. iterate through params
                 //  4. Validate syntax
             }
