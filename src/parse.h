@@ -102,7 +102,7 @@ bool Parser::parse(const string& s) {
  * Lexical analyzer and state interpreter (FSM mealy model)
  */
 bool Parser::analyze(const string& s) {
-    switch (*it) {
+    switch (s) {
         case STR_CMD_ADD:
             if (this->state == 0) {
                 this->state == 1;   // Transition state
@@ -136,7 +136,18 @@ bool Parser::analyze(const string& s) {
             break;
         default:
             
+            // Keep checking for whitespace, once encountered move on to the next symbol and set the state
+            // Otherwise keep splitting the string and process the remainder with the state model 
             if (this->state != 1 || this->state == 2 || this->state == 3) {
+                
+                std::vector elems = split(s, '(');
+                std::string symbol = elems.begin();
+                std::string params = split(elems.end(), ')').begin();
+
+                // Ensure the entity exists
+                if (!this->checkSymbol(elems.begin()))
+                    return BAD_INPUT;
+                
                 //  1. Check if s contains a left bracket .. split off the pre-string
                 //  2. Check symbol table
                 //  3. iterate through params
