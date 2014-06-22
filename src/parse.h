@@ -20,6 +20,8 @@
 #define STR_CMD_GEN "GEN"
 #define STR_CMD_REL "REL"
 
+#define BAD_INPUT -1
+
 using namespace std;
 
 /**
@@ -34,9 +36,11 @@ using namespace std;
  *
  */
 class Parser {
+    int state = 0;
 public:
     Parser();
     bool parse(const string&);
+    bool analyze(const string&);
     bool tokenize(const string&, const char*, bool);
 };
 
@@ -44,32 +48,66 @@ Parser::Parser() {}
 
 
 /**
- *  Handles top level
+ *  Parse loop, calls analyzer
  */
 Parser::bool parse(const string& s) {
     
     vector<string> tokens = this->tokenize(s);
     std::reverse(tokens.begin(), tokens.end());  // reverse tokens
     
-    // Parse
-    for (std::vector<int>::iterator it = tokens.begin() ; it != myvector.end(); ++it) {
-        
-        switch (*it) {
-            case STR_CMD_ADD:
-                break;
-            case STR_CMD_GET:
-                break;
-            case STR_CMD_GEN:
-                break;
-            case STR_CMD_REL:
-                break;
-            case ',':
-                break;
-            default:
-                // handle symbol interpretation
-                break;
-        }
+    // Iterate through the input symbols
+    for (std::vector<string>::iterator it = tokens.begin() ; it != tokens.end(); ++it) {
+        if (!this->analyze(it))
+            return false;
     }
+}
+
+
+/**
+ * Lexical analyzer and state interpreter (FSM mealy model)
+ */
+Parser::bool analyze(const string& s) {
+    switch (*it) {
+        case STR_CMD_ADD:
+            if (this->state == 0) {
+                this->state == 1;   // Transition state
+            } else
+                return BAD_INPUT;
+            break;
+        case STR_CMD_GET:
+            if (this->state == 0) {
+                this->state == 2;   // Transition state
+            } else
+                return BAD_INPUT;
+            break;
+        case STR_CMD_GEN:
+            if (this->state == 0) {
+                this->state == 3;   // Transition state
+            } else
+                return BAD_INPUT;
+            break;
+        case STR_CMD_REL:
+            if (this->state != 1 || this->state == 2 || this->state == 3) {
+                return BAD_INPUT;
+            }
+            break;
+        case ',':
+            break;
+        case '(':
+            break;
+        case ')':
+            break;
+        default:
+            // handle symbol interpretation
+            if (this->state != 1 || this->state == 2 || this->state == 3) {
+                //  1. Check if s contains a left bracket .. split off the pre-string
+                //  2.Check symbol table
+                //  3. iterate through params
+                //  4. Validate syntax
+            }
+            break;
+    }
+    return true;
 }
 
 
