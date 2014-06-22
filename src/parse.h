@@ -13,7 +13,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
-
+#include <unordered_map>
+#include "column_types.h"
 
 #define STR_CMD_ADD "ADD"
 #define STR_CMD_GET "GET"
@@ -36,21 +37,31 @@ using namespace std;
  *
  */
 class Parser {
-    int state = 0;
+    int state;
+    unordered_map<std::string, ColumnBase> symbol_table;
 public:
     Parser();
     bool parse(const string&);
     bool analyze(const string&);
+    bool checkSymbolTable(const string&);
+    bool addSymbolTable(const std::pair<std::string, ColumnBase> elem);
     bool tokenize(const string&, const char*, bool);
 };
 
-Parser::Parser() {}
+
+/**
+ *  Constructor - initialize state and empty symbol table
+ */
+Parser::Parser() {
+    this->state = 0;
+    this->symbol_table = new vector<string,ColumnBase>();
+}
 
 
 /**
  *  Parse loop, calls analyzer
  */
-Parser::bool parse(const string& s) {
+bool Parser::parse(const string& s) {
     
     vector<string> tokens = this->tokenize(s);
     std::reverse(tokens.begin(), tokens.end());  // reverse tokens
@@ -66,7 +77,7 @@ Parser::bool parse(const string& s) {
 /**
  * Lexical analyzer and state interpreter (FSM mealy model)
  */
-Parser::bool analyze(const string& s) {
+bool Parser::analyze(const string& s) {
     switch (*it) {
         case STR_CMD_ADD:
             if (this->state == 0) {
@@ -108,6 +119,22 @@ Parser::bool analyze(const string& s) {
             break;
     }
     return true;
+}
+
+
+/**
+ *  Check for the existence of non-terminal symbols
+ */
+bool Parser::checkSymbol(const string& s) {
+    std::unordered_map<const_iterator>::const_iterator = this->symbol_table.find(s);
+}
+
+
+/**
+ *  Add a new non-terminal symbol
+ */
+bool Parser::addSymbol(const std::pair<std::string, ColumnBase> elem) {
+    this->symbol_table.insert(elem);
 }
 
 
