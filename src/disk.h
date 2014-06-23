@@ -11,7 +11,9 @@
 #define _disk_h
 
 #include <iostream>
+#include <fstream>
 #include <string>
+#include "record.h"
 
 using namespace std;
 
@@ -19,14 +21,14 @@ class DiskHandler {
     
 public:
     DiskHandler();
-    bool writeRecord();
+    bool writeRecord(Record);
     string getRecord();
 };
 
 DiskHandler::DiskHandler() {}
 
 
-DiskHandler::writeRecord() {
+DiskHandler::writeRecord(Record rec) {
     
 }
 

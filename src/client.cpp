@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <string>
+#include <redis3m/connection.h>
 
 using namespace std;
 
@@ -19,6 +20,7 @@ bool handleUserInput(string input) {
 
 int main() {
     string line;
+    // RedisHandler rh;
     
     // Read the input
     while (1) {
