@@ -13,7 +13,9 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <sstream>
 #include <unordered_map>
+
 #include "column_types.h"
 
 #define STR_CMD_ADD "ADD"
@@ -62,14 +64,14 @@ std::vector<std::string> split(const std::string &s, char delim) {
  */
 class Parser {
     int state;
-    unordered_map<std::string, ColumnBase> symbol_table;
+    unordered_map<std::string, ColumnBase>* symbol_table;
 public:
     Parser();
     bool parse(const string&);
     bool analyze(const string&);
     bool checkSymbolTable(const string&);
-    bool addSymbolTable(const std::pair<std::string, ColumnBase> elem);
-    bool tokenize(const string&, const char*, bool);
+    // void addSymbolTable(const std::pair<std::string, ColumnBase> elem);
+    vector<string> tokenize(const string &source, const char *delimiter = " ", bool keepEmpty = false);
 };
 
 
@@ -78,7 +80,7 @@ public:
  */
 Parser::Parser() {
     this->state = 0;
-    this->symbol_table = new vector<string,ColumnBase>();
+    this->symbol_table = new unordered_map<string, ColumnBase>();
 }
 
 
@@ -88,13 +90,14 @@ Parser::Parser() {
 bool Parser::parse(const string& s) {
     
     vector<string> tokens = this->tokenize(s);
-    std::reverse(tokens.begin(), tokens.end());  // reverse tokens
+    // std::reverse(tokens.begin(), tokens.end());  // not needed also reverse is not a member of std
     
     // Iterate through the input symbols
     for (std::vector<string>::iterator it = tokens.begin() ; it != tokens.end(); ++it) {
-        if (!this->analyze(it))
+        if (!this->analyze(*it))
             return false;
     }
+    return true;
 }
 
 
@@ -102,58 +105,49 @@ bool Parser::parse(const string& s) {
  * Lexical analyzer and state interpreter (FSM mealy model)
  */
 bool Parser::analyze(const string& s) {
-    switch (s) {
-        case STR_CMD_ADD:
-            if (this->state == 0) {
-                this->state == 1;   // Transition state
-            } else
-                return BAD_INPUT;
-            break;
-        case STR_CMD_GET:
-            if (this->state == 0) {
-                this->state == 2;   // Transition state
-            } else
-                return BAD_INPUT;
-            break;
-        case STR_CMD_GEN:
-            if (this->state == 0) {
-                this->state == 3;   // Transition state
-            } else
-                return BAD_INPUT;
-            break;
-        case STR_CMD_REL:
-            if (this->state != 1 || this->state == 2 || this->state == 3) {
-                return BAD_INPUT;
-            }
-            break;
-        case STR_CMD_CON:
-            // handles inputs of the type -> "GEN REL E1[(x_1=v_1, x_2=v_2, ...)] CONSTRAIN E2[, E3, ...]"
-        case ',':
-            break;
-        case '(':
-            break;
-        case ')':
-            break;
-        default:
-            
-            // Keep checking for whitespace, once encountered move on to the next symbol and set the state
-            // Otherwise keep splitting the string and process the remainder with the state model 
-            if (this->state != 1 || this->state == 2 || this->state == 3) {
-                
-                std::vector elems = split(s, '(');
-                std::string symbol = elems.begin();
-                std::string params = split(elems.end(), ')').begin();
 
-                // Ensure the entity exists
-                if (!this->checkSymbol(elems.begin()))
-                    return BAD_INPUT;
-                
-                //  1. Check if s contains a left bracket .. split off the pre-string
-                //  2. Check symbol table
-                //  3. iterate through params
-                //  4. Validate syntax
-            }
-            break;
+    if (s.compare(STR_CMD_ADD) == 0) {
+        if (this->state == 0) {
+            this->state == 1;   // Transition state
+        } else
+            return BAD_INPUT;
+    } else if (s.compare(STR_CMD_GET) == 0) {
+        if (this->state == 0) {
+            this->state == 2;   // Transition state
+        } else
+            return BAD_INPUT;
+    } else if (s.compare(STR_CMD_GEN) == 0) {
+        if (this->state == 0) {
+            this->state == 3;   // Transition state
+        } else
+            return BAD_INPUT;
+    } else if (s.compare(STR_CMD_REL) == 0) {
+        if (this->state != 1 || this->state == 2 || this->state == 3) {
+            return BAD_INPUT;
+        }
+    } else if (s.compare(STR_CMD_CON) == 0) {
+            // handles inputs of the type -> "GEN REL E1[(x_1=v_1, x_2=v_2, ...)] CONSTRAIN E2[, E3, ...]"
+    } else if (s.compare(",") == 0) {
+    } else if (s.compare("(") == 0) {
+    } else if (s.compare(")") == 0) {
+    } else {
+        // Keep checking for whitespace, once encountered move on to the next symbol and set the state
+        // Otherwise keep splitting the string and process the remainder with the state model
+        if (this->state != 1 || this->state == 2 || this->state == 3) {
+
+            std::vector<string> elems = split(s, '(');
+            std::string symbol = *elems.begin();
+            std::string params = *split(*elems.end(), ')').begin();
+
+            // Ensure the entity exists
+            if (!this->checkSymbolTable(*elems.begin()))
+                return BAD_INPUT;
+
+            //  1. Check if s contains a left bracket .. split off the pre-string
+            //  2. Check symbol table
+            //  3. iterate through params
+            //  4. Validate syntax
+        }
     }
     return true;
 }
@@ -162,23 +156,27 @@ bool Parser::analyze(const string& s) {
 /**
  *  Check for the existence of non-terminal symbols
  */
-bool Parser::checkSymbol(const string& s) {
-    std::unordered_map<const_iterator>::const_iterator = this->symbol_table.find(s);
+bool Parser::checkSymbolTable(const string& s) {
+    // dummy method
+    return true;
 }
+// bool Parser::checkSymbolTable(const string& s) {
+//    return this->symbol_table.end == this->symbol_table.find(s);
+// }
 
 
 /**
  *  Add a new non-terminal symbol
  */
-bool Parser::addSymbol(const std::pair<std::string, ColumnBase> elem) {
-    this->symbol_table.insert(elem);
-}
+// void Parser::addSymbolTable(const std::pair<std::string, ColumnBase> elem) {
+//    this->symbol_table.insert(elem);
+// }
 
 
 /**
  *  Tokenizes a string for parsing
  */
-vector<string> Parser::tokenize(const string &source, const char *delimiter = " ", bool keepEmpty = false)
+vector<string> Parser::tokenize(const string &source, const char *delimiter, bool keepEmpty)
 {
     vector<string> results;
     
