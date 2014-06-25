@@ -27,4 +27,4 @@ Ensure that you LD_LIBRARY_PATH is set:
 
 Use the following compiler flags:
 
-    $(pkg-config --cflags --libs redis3m)
+    -std=c++0x $(pkg-config --cflags --libs redis3m)
