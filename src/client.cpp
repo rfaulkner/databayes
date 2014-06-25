@@ -11,6 +11,7 @@
 #include <iostream>
 #include <string>
 #include <redis3m/connection.h>
+#include "parse.h"
 
 using namespace std;
 
@@ -20,13 +21,14 @@ bool handleUserInput(string input) {
 
 int main() {
     string line;
+    Parser parser = new Parser();
     // RedisHandler rh;
     
     // Read the input
     while (1) {
         cout << "databayes> ";
         getline (cin, line);
-        handleUserInput(line);
+        parser.parse(line);
     }
     return 0;
 }
