@@ -70,7 +70,7 @@ public:
     bool parse(const string&);
     bool analyze(const string&);
     bool checkSymbolTable(const string&);
-    // void addSymbolTable(const std::pair<std::string, ColumnBase> elem);
+    void addSymbolTable(const std::pair<std::string, ColumnBase> elem);
     vector<string> tokenize(const string &source, const char *delimiter = " ", bool keepEmpty = false);
 };
 
@@ -157,16 +157,16 @@ bool Parser::analyze(const string& s) {
  *  Check for the existence of non-terminal symbols
  */
 bool Parser::checkSymbolTable(const string& s) {
-    return this->symbol_table.end() == this->symbol_table.find(s);
+    return this->symbol_table->end() == this->symbol_table->find(s);
 }
 
 
 /**
  *  Add a new non-terminal symbol
  */
-// void Parser::addSymbolTable(const std::pair<std::string, ColumnBase> elem) {
-//    this->symbol_table.insert(elem);
-// }
+void Parser::addSymbolTable(const std::pair<std::string, ColumnBase> elem) {
+    this->symbol_table->insert(elem);
+}
 
 
 /**
