@@ -157,12 +157,8 @@ bool Parser::analyze(const string& s) {
  *  Check for the existence of non-terminal symbols
  */
 bool Parser::checkSymbolTable(const string& s) {
-    // dummy method
-    return true;
+    return this->symbol_table.end() == this->symbol_table.find(s);
 }
-// bool Parser::checkSymbolTable(const string& s) {
-//    return this->symbol_table.end == this->symbol_table.find(s);
-// }
 
 
 /**
