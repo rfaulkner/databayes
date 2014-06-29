@@ -94,6 +94,7 @@ bool Parser::parse(const string& s) {
     
     // Iterate through the input symbols
     for (std::vector<string>::iterator it = tokens.begin() ; it != tokens.end(); ++it) {
+        cout << *it << endl;
         if (!this->analyze(*it))
             return false;
     }
@@ -183,7 +184,12 @@ vector<string> Parser::tokenize(const string &source, const char *delimiter, boo
         if (keepEmpty || (next - prev != 0)) {
             results.push_back(source.substr(prev, next - prev));
         }
-        prev = next++;
+
+        // Detect last chunk
+        if (prev == next++)
+            break;
+        else
+            prev = next++;
     }
     
     if (prev < source.size()) {
