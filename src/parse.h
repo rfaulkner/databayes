@@ -94,7 +94,6 @@ bool Parser::parse(const string& s) {
     
     // Iterate through the input symbols
     for (std::vector<string>::iterator it = tokens.begin() ; it != tokens.end(); ++it) {
-        cout << *it << endl;
         if (!this->analyze(*it))
             return false;
     }
@@ -112,20 +111,25 @@ bool Parser::analyze(const string& s) {
             this->state == 1;   // Transition state
         } else
             return BAD_INPUT;
+
     } else if (s.compare(STR_CMD_GET) == 0) {
         if (this->state == 0) {
             this->state == 2;   // Transition state
         } else
             return BAD_INPUT;
+
     } else if (s.compare(STR_CMD_GEN) == 0) {
         if (this->state == 0) {
             this->state == 3;   // Transition state
         } else
             return BAD_INPUT;
+
     } else if (s.compare(STR_CMD_REL) == 0) {
-        if (this->state != 1 || this->state == 2 || this->state == 3) {
+        if (this->state != 1 && this->state != 2 && this->state != 3) {
             return BAD_INPUT;
         }
+        this->state == 4;
+
     } else if (s.compare(STR_CMD_CON) == 0) {
             // handles inputs of the type -> "GEN REL E1[(x_1=v_1, x_2=v_2, ...)] CONSTRAIN E2[, E3, ...]"
     } else if (s.compare(",") == 0) {
@@ -134,7 +138,7 @@ bool Parser::analyze(const string& s) {
     } else {
         // Keep checking for whitespace, once encountered move on to the next symbol and set the state
         // Otherwise keep splitting the string and process the remainder with the state model
-        if (this->state != 1 || this->state == 2 || this->state == 3) {
+        if (this->state == 4) {
 
             std::vector<string> elems = split(s, '(');
             std::string symbol = *elems.begin();
