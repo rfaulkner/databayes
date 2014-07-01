@@ -23,6 +23,7 @@
 #define STR_CMD_GEN "GEN"
 #define STR_CMD_CON "CONTSTRAIN"
 #define STR_CMD_REL "REL"
+#define STR_CMD_DEF "DEF"
 
 #define BAD_INPUT -1
 
@@ -130,6 +131,9 @@ bool Parser::analyze(const string& s) {
         }
         this->state = 4;
 
+    } else if (s.compare(STR_CMD_DEF) == 0) {
+        this->state = 5;
+
     } else if (s.compare(STR_CMD_CON) == 0) {
         // handles inputs of the type -> "GEN REL E1[(x_1=v_1, x_2=v_2, ...)] CONSTRAIN E2[, E3, ...]"
     } else if (s.compare(",") == 0) {
@@ -140,18 +144,17 @@ bool Parser::analyze(const string& s) {
         // Otherwise keep splitting the string and process the remainder with the state model
         if (this->state == 4) {
 
+            //  1. Check if s contains a left bracket .. split off the pre-string
             std::vector<string> elems = split(s, '(');
             std::string symbol = *elems.begin();
-            std::string params = *split(*elems.end(), ')').begin();
 
-            // Ensure the entity exists
+            //  2. Check symbol table, Ensure the entity exists
             if (!this->checkSymbolTable(*elems.begin()))
                 return BAD_INPUT;
 
-            //  1. Check if s contains a left bracket .. split off the pre-string
-            //  2. Check symbol table
-            //  3. iterate through params
-            //  4. Validate syntax
+        } else if (this->state == 5) {
+            // defining new entities
+
         }
     }
     return true;
