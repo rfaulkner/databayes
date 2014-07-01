@@ -108,19 +108,19 @@ bool Parser::analyze(const string& s) {
 
     if (s.compare(STR_CMD_ADD) == 0) {
         if (this->state == 0) {
-            this->state == 1;   // Transition state
+            this->state = 1;   // Transition state
         } else
             return BAD_INPUT;
 
     } else if (s.compare(STR_CMD_GET) == 0) {
         if (this->state == 0) {
-            this->state == 2;   // Transition state
+            this->state = 2;   // Transition state
         } else
             return BAD_INPUT;
 
     } else if (s.compare(STR_CMD_GEN) == 0) {
         if (this->state == 0) {
-            this->state == 3;   // Transition state
+            this->state = 3;   // Transition state
         } else
             return BAD_INPUT;
 
@@ -128,10 +128,10 @@ bool Parser::analyze(const string& s) {
         if (this->state != 1 && this->state != 2 && this->state != 3) {
             return BAD_INPUT;
         }
-        this->state == 4;
+        this->state = 4;
 
     } else if (s.compare(STR_CMD_CON) == 0) {
-            // handles inputs of the type -> "GEN REL E1[(x_1=v_1, x_2=v_2, ...)] CONSTRAIN E2[, E3, ...]"
+        // handles inputs of the type -> "GEN REL E1[(x_1=v_1, x_2=v_2, ...)] CONSTRAIN E2[, E3, ...]"
     } else if (s.compare(",") == 0) {
     } else if (s.compare("(") == 0) {
     } else if (s.compare(")") == 0) {
