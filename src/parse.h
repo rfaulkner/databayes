@@ -65,6 +65,7 @@ std::vector<std::string> split(const std::string &s, char delim) {
  */
 class Parser {
     int state;
+    std::string currEntity;
     unordered_map<std::string, ColumnBase>* symbol_table;
 public:
     Parser();
@@ -153,8 +154,12 @@ bool Parser::analyze(const string& s) {
                 return BAD_INPUT;
 
         } else if (this->state == 5) {
-            // defining new entities
+            // DEFINING new entities
 
+            //  1. Check if s contains a left bracket .. split off the pre-string
+            std::vector<string> elems = split(s, '(');
+            this->currEntity = *elems.begin();
+            // this->addSymbolTable(std::pair<std::string, ColumnBase>());
         }
     }
     return true;
