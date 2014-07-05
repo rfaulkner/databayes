@@ -82,7 +82,7 @@ public:
  */
 Parser::Parser() {
     this->state = 0;
-    this->symbol_table = new unordered_map<string, ColumnBase>();
+    this->symbol_table = new unordered_map<string, string>();
 }
 
 
@@ -159,7 +159,8 @@ bool Parser::analyze(const string& s) {
             //  1. Check if s contains a left bracket .. split off the pre-string
             std::vector<string> elems = split(s, '(');
             this->currEntity = *elems.begin();
-            // this->addSymbolTable(std::pair<std::string, ColumnBase>());
+
+            this->addSymbolTable(std::pair<std::string, string>());
         }
     }
     return true;
@@ -177,7 +178,7 @@ bool Parser::checkSymbolTable(const string& s) {
 /**
  *  Add a new non-terminal symbol
  */
-void Parser::addSymbolTable(const std::pair<std::string, ColumnBase> elem) {
+void Parser::addSymbolTable(const std::pair<std::string, string> elem) {
     this->symbol_table->insert(elem);
 }
 
