@@ -92,9 +92,6 @@ Parser::Parser() {
 bool Parser::parse(const string& s) {
     
     vector<string> tokens = this->tokenize(s);
-    // std::reverse(tokens.begin(), tokens.end());  // not needed also reverse is not a member of std
-    
-    // Iterate through the input symbols
     for (std::vector<string>::iterator it = tokens.begin() ; it != tokens.end(); ++it) {
         if (!this->analyze(*it))
             return false;
@@ -137,31 +134,43 @@ bool Parser::analyze(const string& s) {
 
     } else if (s.compare(STR_CMD_CON) == 0) {
         // handles inputs of the type -> "GEN REL E1[(x_1=v_1, x_2=v_2, ...)] CONSTRAIN E2[, E3, ...]"
-    } else if (s.compare(",") == 0) {
-    } else if (s.compare("(") == 0) {
-    } else if (s.compare(")") == 0) {
     } else {
-        // Keep checking for whitespace, once encountered move on to the next symbol and set the state
-        // Otherwise keep splitting the string and process the remainder with the state model
-        if (this->state == 4) {
 
-            //  1. Check if s contains a left bracket .. split off the pre-string
-            std::vector<string> elems = split(s, '(');
-            std::string symbol = *elems.begin();
+        vector<string> symbolTokens = this->tokenize(s, '(');
+        for (std::vector<string>::iterator it = symbolTokens.begin() ; it != symbolTokens.end(); ++it) {
 
-            //  2. Check symbol table, Ensure the entity exists
-            if (!this->checkSymbolTable(*elems.begin()))
-                return BAD_INPUT;
+            // Keep checking for whitespace, once encountered move on to the next symbol and set the state
+            // Otherwise keep splitting the string and process the remainder with the state model
+            if (this->state == 4) {
 
-        } else if (this->state == 5) {
-            // DEFINING new entities
+                //  1. Check if s contains a left bracket .. split off the pre-string
+                std::vector<string> elems = split(s, '(');
+                std::string symbol = *elems.begin();
 
-            //  1. Check if s contains a left bracket .. split off the pre-string
-            std::vector<string> elems = split(s, '(');
-            this->currEntity = *elems.begin();
+                //  2. Check symbol table, Ensure the entity exists
+                if (!this->checkSymbolTable(*elems.begin()))
+                    return BAD_INPUT;
 
-            this->addSymbolTable(std::pair<std::string, string>());
+                this->state == 6;
+
+            } else if (this->state == 5) {
+                // DEFINING new entities
+
+                //  1. Check if s contains a left bracket .. split off the pre-string
+                std::vector<string> elems = split(s, '(');
+                this->currEntity = *elems.begin();
+
+                this->state == 7
+                // this->addSymbolTable(std::pair<std::string, string>());
+            }
+
+        // Tokenize on ',' & '(' & ')'
+        // Check for '('
+        // Check for ','
+        // look for ')'
+
         }
+
     }
     return true;
 }
