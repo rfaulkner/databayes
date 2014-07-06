@@ -69,16 +69,18 @@ std::vector<std::string> split(const std::string &s, char delim) {
 class Parser {
     int state;
     std::string currEntity;
-    unordered_map<std::string, ColumnBase>* entityTable;
+    unordered_map<std::string, string>* entityTable;
     unordered_map<std::string, ColumnBase>* fieldTable;
 
 public:
     Parser();
     bool parse(const string&);
     bool analyze(const string&);
-    bool checkSymbolTable(const string&);
-    void addSymbolTable(const std::pair<std::string, ColumnBase> elem);
+    bool checkSymbolTable(const string&, const std::string&);
+    void addSymbolTable(const std::pair<std::string, string> elem, const std::string&);
     vector<string> tokenize(const string &source, const char *delimiter = " ", bool keepEmpty = false);
+
+    bool processElem(const string &source);
 };
 
 
@@ -146,19 +148,39 @@ bool Parser::analyze(const std::string& s) {
         if (this->state == 4) {
 
             //  1. Check if s contains a left bracket .. split off the pre-string
-            std::string symbol;
+            std::string entity;
+            std::string field;
+
             if (s.find("(")) {
+
+                this->state == 8; // '(' found ready to begin reading fields
                 std::vector<string> elems = split(s, '(');
-                symbol = *elems.begin();
+                entity = *elems.begin();
 
-            } else
-                symbol = s;
+                // TODO - move this logic into `processElem`
+                if (elems[1].find(",")) {
+                    std::vector<string> fields = split(s, ',');
+                    for (std::vector<string>::iterator it = fields.begin() ; it != fields.end(); ++it) {
+                        if (*it.find(")")) {
+                            if (this->processElem(*it.substr(0, *it.length() - 1)))
+                                this->state = 10;   // End of field list found
+                        } else {
+                            this->state = 9;    // Processing symbols
+                            this->processElem(*it)
+                        }
+                    }
+                } else
+                    this->processElem(elems[1])
 
-            //  2. Check symbol table, Ensure the entity exists
+            } else {
+                entity = s;
+                this->state == 6;   // Entity has been read
+            }
+
+            //  2. Check entity symbol table, Ensure the entity exists
             if (!this->checkSymbolTable(*elems.begin(), SYM_TABLE_ENTITY))
                 return BAD_INPUT;
 
-            this->state == 6;
 
         } else if (this->state == 5) {
             // DEFINING new entities
@@ -170,14 +192,6 @@ bool Parser::analyze(const std::string& s) {
             this->state == 7
             // this->addSymbolTable(std::pair<std::string, string>());
         }
-
-        // Tokenize on ',' & '(' & ')'
-        // Check for '('
-        // Check for ','
-        // look for ')'
-
-
-
     }
     return true;
 }
@@ -234,6 +248,14 @@ vector<string> Parser::tokenize(const string &source, const char *delimiter, boo
     }
     
     return results;
+}
+
+
+/**
+ *
+ */
+bool Parser::processElem(const string &source) {
+    return true;
 }
 
 #endif
