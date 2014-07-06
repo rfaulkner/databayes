@@ -161,13 +161,7 @@ bool Parser::analyze(const std::string& s) {
                 if (elems[1].find(",")) {
                     std::vector<string> fields = split(s, ',');
                     for (std::vector<string>::iterator it = fields.begin() ; it != fields.end(); ++it) {
-                        if (*it.find(")")) {
-                            if (this->processElem(*it.substr(0, *it.length() - 1)))
-                                this->state = 10;   // End of field list found
-                        } else {
-                            this->state = 9;    // Processing symbols
-                            this->processElem(*it)
-                        }
+                        this->processField(*it);
                     }
                 } else
                     this->processElem(elems[1])
@@ -252,9 +246,18 @@ vector<string> Parser::tokenize(const string &source, const char *delimiter, boo
 
 
 /**
- *
+ *  Handle entity fields
  */
-bool Parser::processElem(const string &source) {
+bool Parser::processField(const string &field) {
+    if (field.find(")")) {
+        this->state = 10;   // Done processing
+        if (field.length() == 1)
+            return true;
+        return this->checkSymbolTable(*elems.begin(), SYM_TABLE_ENTITY)
+    } else {
+        this->state = 9;    // Processing symbols
+        return this->checkSymbolTable(*elems.begin(), SYM_TABLE_ENTITY)
+    }
     return true;
 }
 
