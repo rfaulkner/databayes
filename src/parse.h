@@ -27,6 +27,9 @@
 
 #define BAD_INPUT -1
 
+#define SYM_TABLE_ENTITY "ENTITY"
+#define SYM_TABLE_FIRLD "FIELD"
+
 using namespace std;
 
 
@@ -66,7 +69,9 @@ std::vector<std::string> split(const std::string &s, char delim) {
 class Parser {
     int state;
     std::string currEntity;
-    unordered_map<std::string, ColumnBase>* symbol_table;
+    unordered_map<std::string, ColumnBase>* entityTable;
+    unordered_map<std::string, ColumnBase>* fieldTable;
+
 public:
     Parser();
     bool parse(const string&);
@@ -103,7 +108,7 @@ bool Parser::parse(const string& s) {
 /**
  * Lexical analyzer and state interpreter (FSM mealy model)
  */
-bool Parser::analyze(const string& s) {
+bool Parser::analyze(const std::string& s) {
 
     if (s.compare(STR_CMD_ADD) == 0) {
         if (this->state == 0) {
@@ -150,7 +155,7 @@ bool Parser::analyze(const string& s) {
                 symbol = s;
 
             //  2. Check symbol table, Ensure the entity exists
-            if (!this->checkSymbolTable(*elems.begin()))
+            if (!this->checkSymbolTable(*elems.begin(), SYM_TABLE_ENTITY))
                 return BAD_INPUT;
 
             this->state == 6;
@@ -181,16 +186,24 @@ bool Parser::analyze(const string& s) {
 /**
  *  Check for the existence of non-terminal symbols
  */
-bool Parser::checkSymbolTable(const string& s) {
-    return this->symbol_table->end() == this->symbol_table->find(s);
+bool Parser::checkSymbolTable(const string& s, const std::string& tableName) {
+    if (tableName.compare(SYM_TABLE_ENTITY) == 0) {
+        return this->entityTable->end() == this->symbol_table->find(s);
+    } else if (tableName.compare(SYM_TABLE_ENTITY) == 0) {
+        return this->fieldTable->end() == this->symbol_table->find(s);
+    }
 }
 
 
 /**
  *  Add a new non-terminal symbol
  */
-void Parser::addSymbolTable(const std::pair<std::string, string> elem) {
-    this->symbol_table->insert(elem);
+void Parser::addSymbolTable(const std::pair<std::string, string> elem, const std::string& tableName) {
+    if (tableName.compare(SYM_TABLE_ENTITY) == 0) {
+        this->entityTable->insert(elem);
+    } else if (tableName.compare(SYM_TABLE_ENTITY) == 0) {
+        this->fieldTable->insert(elem);
+    }
 }
 
 
