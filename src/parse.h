@@ -25,10 +25,11 @@
 #define STR_CMD_REL "REL"
 #define STR_CMD_DEF "DEF"
 
-#define BAD_INPUT -1
+#define BAD_INPUT "Bad input symbol"
+#define BAD_EOL "Bad end of line"
 
 #define SYM_TABLE_ENTITY "ENTITY"
-#define SYM_TABLE_FIRLD "FIELD"
+#define SYM_TABLE_FIELD "FIELD"
 
 using namespace std;
 
@@ -71,7 +72,7 @@ class Parser {
     int state;
     std::string currEntity;
     unordered_map<std::string, string>* entityTable;
-    unordered_map<std::string, ColumnBase>* fieldTable;
+    unordered_map<std::string, /*ColumnBase*/ string>* fieldTable;
 
 public:
     Parser();
@@ -81,7 +82,7 @@ public:
     void addSymbolTable(const std::pair<std::string, string> elem, const std::string&);
     vector<string> tokenize(const string &source, const char *delimiter = " ", bool keepEmpty = false);
 
-    bool processElem(const string &source);
+    bool processField(const string &source);
 };
 
 
@@ -90,7 +91,8 @@ public:
  */
 Parser::Parser() {
     this->state = 0;
-    this->symbol_table = new unordered_map<string, string>();
+    this->entityTable = new unordered_map<string, string>();
+    this->fieldTable = new unordered_map<string, /* ColumnBase*/ string>();
 }
 
 
@@ -134,10 +136,11 @@ bool Parser::analyze(const std::string& s) {
         //  1. Check if s contains a left bracket .. split off the pre-string
         std::string entity;
         std::string field;
+        std::vector<string> elems;
 
         if (s.find("(")) {  // '(' found ready to begin reading fields
             this->state == 6;
-            std::vector<string> elems = split(s, '(');
+            elems = split(s, '(');
             entity = *elems.begin();
 
         } else {
@@ -157,11 +160,16 @@ bool Parser::analyze(const std::string& s) {
         std::vector<string> elems = split(s, '(');
         this->currEntity = *elems.begin();
 
-        this->state == 7
-        // this->addSymbolTable(std::pair<std::string, string>());
+        this->state == 7;
+        this->addSymbolTable(std::pair<std::string, string>(), SYM_TABLE_ENTITY);
+
+        // TODO - process fields
 
     } else if (this->state == 6) {  // Continue processing fields
         this->processField(s);
+
+    } else if (this->state == 10) {  // Ensure processing is complete
+        return BAD_EOL;
     }
 
     return true;
@@ -173,9 +181,9 @@ bool Parser::analyze(const std::string& s) {
  */
 bool Parser::checkSymbolTable(const string& s, const std::string& tableName) {
     if (tableName.compare(SYM_TABLE_ENTITY) == 0) {
-        return this->entityTable->end() == this->symbol_table->find(s);
+        return this->entityTable->end() == this->entityTable->find(s);
     } else if (tableName.compare(SYM_TABLE_ENTITY) == 0) {
-        return this->fieldTable->end() == this->symbol_table->find(s);
+        return this->fieldTable->end() == this->fieldTable->find(s);
     }
 }
 
@@ -225,9 +233,8 @@ vector<string> Parser::tokenize(const string &source, const char *delimiter, boo
 /**
  *  Handle entity fields
  */
-bool Parser::processField(const string &field) {
-
-    std::vector<string> fields = split(s, ',');
+bool Parser::processField(const string &fieldStr) {
+    std::vector<string> fields = split(fieldStr, ',');
     std::string field;
     for (std::vector<string>::iterator it = fields.begin() ; it != fields.end(); ++it) {
         field = *it;
@@ -235,9 +242,9 @@ bool Parser::processField(const string &field) {
             this->state = 10;   // Done processing
             if (field.length() == 1)
                 return true;
-            return this->checkSymbolTable(*elems.begin(), SYM_TABLE_ENTITY)
+            return this->checkSymbolTable(field.substr(0, field.length() - 1), SYM_TABLE_FIELD);
         } else {
-            return this->checkSymbolTable(*elems.begin(), SYM_TABLE_ENTITY)
+            return this->checkSymbolTable(field, SYM_TABLE_FIELD);
         }
     }
     return true;
