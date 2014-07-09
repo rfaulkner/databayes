@@ -61,6 +61,7 @@ std::vector<std::string> split(const std::string &s, char delim) {
  *      (1) ADD REL E1(x_1 [, x_2, ..]) E2(y_1 [, y_2, ..])
  *      (2) GET REL E1[(x_1=v_1, x_2=v_2, ...)] [E2(y_1=u_1, y_2=u_2, ...)]
  *      (3) GEN REL E1[(x_1=v_1, x_2=v_2, ...)] CONSTRAIN E2[, E3, ...]
+ *      (3) DEF E1[(x_1=v_1, x_2=v_2, ...)]
  *
  *  (1) provides a facility for insertion into the system, (2) for fetching existing relations, and (3) yields
  *  a generative function given an entity.
@@ -112,74 +113,57 @@ bool Parser::parse(const string& s) {
  */
 bool Parser::analyze(const std::string& s) {
 
-    if (s.compare(STR_CMD_ADD) == 0) {
-        if (this->state == 0) {
-            this->state = 1;   // Transition state
-        } else
+    if (this->state == 0) {
+        if (s.compare(STR_CMD_ADD) == 0)
+            this->state = 1;
+        else if (s.compare(STR_CMD_GET) == 0)
+            this->state = 2;
+        else if (s.compare(STR_CMD_GEN) == 0)
+            this->state = 3;
+        else if (s.compare(STR_CMD_DEF) == 0)
+            this->state = 5;
+
+    } else if (this->state == 1 || this->state == 2 || this->state == 3) {
+        if (s.compare(STR_CMD_REL) == 0)
+            this->state = 4;
+        else
             return BAD_INPUT;
 
-    } else if (s.compare(STR_CMD_GET) == 0) {
-        if (this->state == 0) {
-            this->state = 2;   // Transition state
-        } else
-            return BAD_INPUT;
+    } else if (this->state == 4) {
 
-    } else if (s.compare(STR_CMD_GEN) == 0) {
-        if (this->state == 0) {
-            this->state = 3;   // Transition state
-        } else
-            return BAD_INPUT;
+        //  1. Check if s contains a left bracket .. split off the pre-string
+        std::string entity;
+        std::string field;
 
-    } else if (s.compare(STR_CMD_REL) == 0) {
-        if (this->state != 1 && this->state != 2 && this->state != 3) {
-            return BAD_INPUT;
-        }
-        this->state = 4;
-
-    } else if (s.compare(STR_CMD_DEF) == 0) {
-        this->state = 5;
-
-    } else if (s.compare(STR_CMD_CON) == 0) {
-        // handles inputs of the type -> "GEN REL E1[(x_1=v_1, x_2=v_2, ...)] CONSTRAIN E2[, E3, ...]"
-    } else {
-
-        // Keep checking for whitespace, once encountered move on to the next symbol and set the state
-        // Otherwise keep splitting the string and process the remainder with the state model
-        if (this->state == 4) {
-
-            //  1. Check if s contains a left bracket .. split off the pre-string
-            std::string entity;
-            std::string field;
-
-            if (s.find("(")) {  // '(' found ready to begin reading fields
-                this->state == 6;
-                std::vector<string> elems = split(s, '(');
-                entity = *elems.begin();
-
-            } else {
-                return BAD_INPUT;
-            }
-
-            //  2. Check entity symbol table, Ensure the entity exists
-            if (!this->checkSymbolTable(*elems.begin(), SYM_TABLE_ENTITY))
-                return BAD_INPUT;
-
-            // Process any fields
-            this->processField(elems[1]);
-
-        } else if (this->state == 5) {  // DEFINING new entities
-
-            //  1. Check if s contains a left bracket .. split off the pre-string
+        if (s.find("(")) {  // '(' found ready to begin reading fields
+            this->state == 6;
             std::vector<string> elems = split(s, '(');
-            this->currEntity = *elems.begin();
+            entity = *elems.begin();
 
-            this->state == 7
-            // this->addSymbolTable(std::pair<std::string, string>());
-
-        } else if (this->state == 6) {  // Continue processing fields
-            this->processField(s);
+        } else {
+            return BAD_INPUT;
         }
+
+        //  2. Check entity symbol table, Ensure the entity exists
+        if (!this->checkSymbolTable(*elems.begin(), SYM_TABLE_ENTITY))
+            return BAD_INPUT;
+
+        // Process any fields
+        this->processField(elems[1]);
+
+    } else if (this->state == 5) {  // DEFINING new entities
+
+        //  1. Check if s contains a left bracket .. split off the pre-string
+        std::vector<string> elems = split(s, '(');
+        this->currEntity = *elems.begin();
+
+        this->state == 7
+        // this->addSymbolTable(std::pair<std::string, string>());
+
+    } else if (this->state == 6) {  // Continue processing fields
+        this->processField(s);
     }
+
     return true;
 }
 
@@ -253,7 +237,6 @@ bool Parser::processField(const string &field) {
                 return true;
             return this->checkSymbolTable(*elems.begin(), SYM_TABLE_ENTITY)
         } else {
-            this->state = 9;    // Processing symbols
             return this->checkSymbolTable(*elems.begin(), SYM_TABLE_ENTITY)
         }
     }
