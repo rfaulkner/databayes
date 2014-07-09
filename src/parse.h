@@ -151,33 +151,23 @@ bool Parser::analyze(const std::string& s) {
             std::string entity;
             std::string field;
 
-            if (s.find("(")) {
-
-                this->state == 8; // '(' found ready to begin reading fields
+            if (s.find("(")) {  // '(' found ready to begin reading fields
+                this->state == 6;
                 std::vector<string> elems = split(s, '(');
                 entity = *elems.begin();
 
-                // TODO - move this logic into `processElem`
-                if (elems[1].find(",")) {
-                    std::vector<string> fields = split(s, ',');
-                    for (std::vector<string>::iterator it = fields.begin() ; it != fields.end(); ++it) {
-                        this->processField(*it);
-                    }
-                } else
-                    this->processElem(elems[1])
-
             } else {
-                entity = s;
-                this->state == 6;   // Entity has been read
+                return BAD_INPUT;
             }
 
             //  2. Check entity symbol table, Ensure the entity exists
             if (!this->checkSymbolTable(*elems.begin(), SYM_TABLE_ENTITY))
                 return BAD_INPUT;
 
+            // Process any fields
+            this->processField(elems[1]);
 
-        } else if (this->state == 5) {
-            // DEFINING new entities
+        } else if (this->state == 5) {  // DEFINING new entities
 
             //  1. Check if s contains a left bracket .. split off the pre-string
             std::vector<string> elems = split(s, '(');
@@ -185,6 +175,9 @@ bool Parser::analyze(const std::string& s) {
 
             this->state == 7
             // this->addSymbolTable(std::pair<std::string, string>());
+
+        } else if (this->state == 6) {  // Continue processing fields
+            this->processField(s);
         }
     }
     return true;
@@ -249,14 +242,20 @@ vector<string> Parser::tokenize(const string &source, const char *delimiter, boo
  *  Handle entity fields
  */
 bool Parser::processField(const string &field) {
-    if (field.find(")")) {
-        this->state = 10;   // Done processing
-        if (field.length() == 1)
-            return true;
-        return this->checkSymbolTable(*elems.begin(), SYM_TABLE_ENTITY)
-    } else {
-        this->state = 9;    // Processing symbols
-        return this->checkSymbolTable(*elems.begin(), SYM_TABLE_ENTITY)
+
+    std::vector<string> fields = split(s, ',');
+    std::string field;
+    for (std::vector<string>::iterator it = fields.begin() ; it != fields.end(); ++it) {
+        field = *it;
+        if (field.find(")")) {
+            this->state = 10;   // Done processing
+            if (field.length() == 1)
+                return true;
+            return this->checkSymbolTable(*elems.begin(), SYM_TABLE_ENTITY)
+        } else {
+            this->state = 9;    // Processing symbols
+            return this->checkSymbolTable(*elems.begin(), SYM_TABLE_ENTITY)
+        }
     }
     return true;
 }
