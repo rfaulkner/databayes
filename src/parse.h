@@ -35,28 +35,6 @@ using namespace std;
 
 
 /**
- *  Write a function to handle splitting strings on a delimeter
- */
-std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) {
-    std::stringstream ss(s);
-    std::string item;
-    while (std::getline(ss, item, delim)) {
-        elems.push_back(item);
-    }
-    return elems;
-}
-
-/**
- *  Split + factory method for string splitting
- */
-std::vector<std::string> split(const std::string &s, char delim) {
-    std::vector<std::string> elems;
-    split(s, delim, elems);
-    return elems;
-}
-
-
-/**
  *  Implements an SLR parser. Valid Statements:
  *
  *      (1) ADD REL E1(x_1 [, x_2, ..]) E2(y_1 [, y_2, ..])
@@ -80,7 +58,9 @@ public:
     bool analyze(const string&);
     bool checkSymbolTable(const string&, const std::string&);
     void addSymbolTable(const std::pair<std::string, string> elem, const std::string&);
-    vector<string> tokenize(const string &source, const char *delimiter = " ", bool keepEmpty = false);
+
+    std::vector<std::string> tokenize(const std::string &source, const char delimiter = ' ');
+    std::vector<std::string> &tokenize(const std::string &source, const char delimiter, std::vector<std::string> &elems);
 
     bool processField(const string &source);
 };
@@ -140,7 +120,7 @@ bool Parser::analyze(const std::string& s) {
 
         if (s.find("(")) {  // '(' found ready to begin reading fields
             this->state == 6;
-            elems = split(s, '(');
+            elems = this->tokenize(s, '(');
             entity = *elems.begin();
 
         } else {
@@ -157,7 +137,7 @@ bool Parser::analyze(const std::string& s) {
     } else if (this->state == 5) {  // DEFINING new entities
 
         //  1. Check if s contains a left bracket .. split off the pre-string
-        std::vector<string> elems = split(s, '(');
+        std::vector<string> elems = this->tokenize(s, '(');
         this->currEntity = *elems.begin();
 
         this->state == 7;
@@ -201,40 +181,10 @@ void Parser::addSymbolTable(const std::pair<std::string, string> elem, const std
 
 
 /**
- *  Tokenizes a string for parsing
- */
-vector<string> Parser::tokenize(const string &source, const char *delimiter, bool keepEmpty)
-{
-    vector<string> results;
-    
-    size_t prev = 0;
-    size_t next = 0;
-    
-    while ((next = source.find_first_of(delimiter, prev)) != string::npos) {
-        if (keepEmpty || (next - prev != 0)) {
-            results.push_back(source.substr(prev, next - prev));
-        }
-
-        // Detect last chunk
-        if (prev == next++)
-            break;
-        else
-            prev = next++;
-    }
-    
-    if (prev < source.size()) {
-        results.push_back(source.substr(prev));
-    }
-    
-    return results;
-}
-
-
-/**
  *  Handle entity fields
  */
 bool Parser::processField(const string &fieldStr) {
-    std::vector<string> fields = split(fieldStr, ',');
+    std::vector<string> fields = this->tokenize(fieldStr, ',');
     std::string field;
     for (std::vector<string>::iterator it = fields.begin() ; it != fields.end(); ++it) {
         field = *it;
@@ -248,6 +198,27 @@ bool Parser::processField(const string &fieldStr) {
         }
     }
     return true;
+}
+
+/**
+ *  Write a function to handle splitting strings on a delimeter
+ */
+std::vector<std::string> &Parser::tokenize(const std::string &s, const char delim, std::vector<std::string> &elems) {
+    std::stringstream ss(s);
+    std::string item;
+    while (std::getline(ss, item, delim)) {
+        elems.push_back(item);
+    }
+    return elems;
+}
+
+/**
+ *  Split + factory method for string splitting
+ */
+std::vector<std::string> Parser::tokenize(const std::string &s, const char delim) {
+    std::vector<std::string> elems;
+    this->tokenize(s, delim, elems);
+    return elems;
 }
 
 #endif
