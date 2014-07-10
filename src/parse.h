@@ -51,6 +51,7 @@ class Parser {
     std::string currEntity;
     unordered_map<std::string, string>* entityTable;
     unordered_map<std::string, /*ColumnBase*/ string>* fieldTable;
+    std::string parserCmd;
 
 public:
     Parser();
@@ -80,7 +81,10 @@ Parser::Parser() {
  *  Parse loop, calls analyzer
  */
 bool Parser::parse(const string& s) {
-    
+
+    // Initialize parser command
+    this->parserCmd = "";
+
     vector<string> tokens = this->tokenize(s);
     for (std::vector<string>::iterator it = tokens.begin() ; it != tokens.end(); ++it) {
         if (!this->analyze(*it))
