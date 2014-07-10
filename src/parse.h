@@ -90,6 +90,7 @@ bool Parser::parse(const string& s) {
         if (!this->analyze(*it))
             return false;
     }
+    // cout << this->parserCmd << endl;
     return true;
 }
 
@@ -134,6 +135,9 @@ bool Parser::analyze(const std::string& s) {
         //  2. Check entity symbol table, Ensure the entity exists
         if (!this->checkSymbolTable(*elems.begin(), SYM_TABLE_ENTITY))
             return BAD_INPUT;
+
+        //
+        this->parserCmd.append(entity);
 
         // Process any fields
         this->processField(elems[1]);
@@ -192,12 +196,23 @@ bool Parser::processField(const string &fieldStr) {
     std::string field;
     for (std::vector<string>::iterator it = fields.begin() ; it != fields.end(); ++it) {
         field = *it;
-        if (field.find(")")) {
+
+        if (field.compare(")") == 0) {
             this->state = 10;   // Done processing
-            if (field.length() == 1)
-                return true;
-            return this->checkSymbolTable(field.substr(0, field.length() - 1), SYM_TABLE_FIELD);
+            return true;
+
+        } else if (field.find(')')) {
+            this->state = 10;   // Done processing
+
+            field = field.substr(0, field.length() - 1);
+            this->parserCmd.append(" ");
+            this->parserCmd.append(field);
+
+            return this->checkSymbolTable(field, SYM_TABLE_FIELD);
+
         } else {
+            this->parserCmd.append(" ");
+            this->parserCmd.append(field);
             return this->checkSymbolTable(field, SYM_TABLE_FIELD);
         }
     }
