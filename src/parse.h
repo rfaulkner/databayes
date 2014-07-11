@@ -197,12 +197,14 @@ void Parser::addSymbolTable(const std::pair<std::string, string> elem, const std
 bool Parser::processField(const string &fieldStr) {
     std::vector<string> fields = this->tokenize(fieldStr, ',');
     std::string field;
+    bool symbolsValid = true;
+
     for (std::vector<string>::iterator it = fields.begin() ; it != fields.end(); ++it) {
         field = *it;
-
+        // cout << field << endl;
         if (field.compare(")") == 0) {
             this->state = 10;   // Done processing
-            return true;
+            return symbolsValid;
 
         } else if (field.find(')')) {
             this->state = 10;   // Done processing
@@ -211,15 +213,18 @@ bool Parser::processField(const string &fieldStr) {
             this->parserCmd.append(" ");
             this->parserCmd.append(field);
 
-            return this->checkSymbolTable(field, SYM_TABLE_FIELD);
+            symbolsValid = symbolsValid && this->checkSymbolTable(field, SYM_TABLE_FIELD);
+
+            // TODO - Ensure no additional symbols are present
+            return symbolsValid;
 
         } else {
             this->parserCmd.append(" ");
             this->parserCmd.append(field);
-            return this->checkSymbolTable(field, SYM_TABLE_FIELD);
+            symbolsValid = symbolsValid && this->checkSymbolTable(field, SYM_TABLE_FIELD);
         }
     }
-    return true;
+    return symbolsValid;
 }
 
 /**
