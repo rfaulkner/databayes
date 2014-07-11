@@ -31,6 +31,8 @@
 #define SYM_TABLE_ENTITY "ENTITY"
 #define SYM_TABLE_FIELD "FIELD"
 
+#define STATE_START 0
+
 using namespace std;
 
 
@@ -71,7 +73,7 @@ public:
  *  Constructor - initialize state and empty symbol table
  */
 Parser::Parser() {
-    this->state = 0;
+    this->state = STATE_START;
     this->entityTable = new unordered_map<string, string>();
     this->fieldTable = new unordered_map<string, /* ColumnBase*/ string>();
 }
@@ -90,6 +92,7 @@ bool Parser::parse(const string& s) {
         if (!this->analyze(*it))
             return false;
     }
+    this->state = STATE_START;
     // cout << this->parserCmd << endl;
     return true;
 }
@@ -100,7 +103,7 @@ bool Parser::parse(const string& s) {
  */
 bool Parser::analyze(const std::string& s) {
 
-    if (this->state == 0) {
+    if (this->state == STATE_START) {
         if (s.compare(STR_CMD_ADD) == 0)
             this->state = 1;
         else if (s.compare(STR_CMD_GET) == 0)
