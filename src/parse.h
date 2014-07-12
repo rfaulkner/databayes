@@ -201,6 +201,11 @@ bool Parser::processField(const string &fieldStr) {
 
     for (std::vector<string>::iterator it = fields.begin() ; it != fields.end(); ++it) {
         field = *it;
+
+        if (this->state == 10) {    // Processing should be complete
+            return false;
+        }
+
         // cout << field << endl;
         if (field.compare(")") == 0) {
             this->state = 10;   // Done processing
@@ -214,8 +219,6 @@ bool Parser::processField(const string &fieldStr) {
             this->parserCmd.append(field);
 
             symbolsValid = symbolsValid && this->checkSymbolTable(field, SYM_TABLE_FIELD);
-
-            // TODO - Ensure no additional symbols are present
             return symbolsValid;
 
         } else {
