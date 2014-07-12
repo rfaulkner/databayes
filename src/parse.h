@@ -52,6 +52,7 @@ using namespace std;
 class Parser {
     int state;
     std::string currEntity;
+    std::string errStr;
     unordered_map<std::string, string>* entityTable;
     unordered_map<std::string, /*ColumnBase*/ string>* fieldTable;
     std::string parserCmd;
@@ -75,6 +76,7 @@ public:
  */
 Parser::Parser() {
     this->state = STATE_START;
+    this->errStr = "";
     this->entityTable = new unordered_map<string, string>();
     this->fieldTable = new unordered_map<string, /* ColumnBase*/ string>();
 }
@@ -90,10 +92,13 @@ bool Parser::parse(const string& s) {
 
     vector<string> tokens = this->tokenize(s);
     for (std::vector<string>::iterator it = tokens.begin() ; it != tokens.end(); ++it) {
-        if (!this->analyze(*it))
+        if (!this->analyze(*it)) {
+            cout << this->errStr << endl;
             return false;
+        }
     }
     this->state = STATE_START;
+    this->errStr = "";
     return true;
 }
 
@@ -221,6 +226,7 @@ bool Parser::processField(const string &fieldStr) {
             return symbolsValid;
 
         } else if (field.find(')') < field.length() - 1) { // no chars after '('
+            this->errStr = "No symbols permitted after ')'";
             return false;
 
         } else {
