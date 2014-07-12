@@ -32,6 +32,7 @@
 #define SYM_TABLE_FIELD "FIELD"
 
 #define STATE_START 0
+#define STATE_FINISH 99
 
 using namespace std;
 
@@ -159,7 +160,7 @@ bool Parser::analyze(const std::string& s) {
     } else if (this->state == 6) {  // Continue processing fields
         this->processField(s);
 
-    } else if (this->state == 10) {  // Ensure processing is complete
+    } else if (this->state == STATE_FINISH) {  // Ensure processing is complete
         return BAD_EOL;
     }
 
@@ -202,17 +203,17 @@ bool Parser::processField(const string &fieldStr) {
     for (std::vector<string>::iterator it = fields.begin() ; it != fields.end(); ++it) {
         field = *it;
 
-        if (this->state == 10) {    // Processing should be complete
+        if (this->state == STATE_FINISH) {    // Processing should be complete
             return false;
         }
 
         // cout << field << endl;
         if (field.compare(")") == 0) {
-            this->state = 10;   // Done processing
+            this->state = STATE_FINISH;   // Done processing
             return symbolsValid;
 
         } else if (field.find(')')) {
-            this->state = 10;   // Done processing
+            this->state = STATE_FINISH;   // Done processing
 
             field = field.substr(0, field.length() - 1);
             this->parserCmd.append(" ");
