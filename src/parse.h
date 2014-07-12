@@ -205,12 +205,12 @@ bool Parser::processField(const string &fieldStr) {
         if (this->state == STATE_FINISH) {    // Processing should be complete
             return false;
         }
-        cout << field << endl;
+
         if (field.compare(")") == 0) {
             this->state = STATE_FINISH;   // Done processing
             return symbolsValid;
 
-        } else if (field.find(')') == 0) {
+        } else if (field.find(')') < field.length()) {
             this->state = STATE_FINISH;   // Done processing
 
             field = field.substr(0, field.length() - 1);
