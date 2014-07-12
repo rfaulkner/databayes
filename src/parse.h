@@ -210,7 +210,7 @@ bool Parser::processField(const string &fieldStr) {
             this->state = STATE_FINISH;   // Done processing
             return symbolsValid;
 
-        } else if (field.find(')') < field.length()) {
+        } else if (field.find(')') == field.length() - 1) {
             this->state = STATE_FINISH;   // Done processing
 
             field = field.substr(0, field.length() - 1);
@@ -219,6 +219,9 @@ bool Parser::processField(const string &fieldStr) {
 
             symbolsValid = symbolsValid && this->checkSymbolTable(field, SYM_TABLE_FIELD);
             return symbolsValid;
+
+        } else if (field.find(')') < field.length() - 1) { // no chars after '('
+            return false;
 
         } else {
             this->parserCmd.append(" ");
