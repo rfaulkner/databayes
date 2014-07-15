@@ -33,11 +33,13 @@
 
 #define STATE_START 0       // Start state
 #define STATE_ADD 10        // Add a new relation
-#define STATE_ADD_CON 10
+#define STATE_ADD_CON 11
+#define STATE_ADD_P1 12
+#define STATE_ADD_P2 13
 #define STATE_GET 20        // Get relation between two entities with optional conditions
-#define STATE_GET_REL 20
+#define STATE_GET_REL 21
 #define STATE_GEN 30        // Generate an entity given others
-#define STATE_GEN_REL 30
+#define STATE_GEN_REL 31
 #define STATE_DEF 40        // Describes entity definitions
 #define STATE_FINISH 99     // Successfukl end state
 
@@ -58,6 +60,7 @@ using namespace std;
  */
 class Parser {
     int state;
+    bool fieldsProcessed;
     std::string currEntity;
     std::string errStr;
     unordered_map<std::string, string>* entityTable;
@@ -149,7 +152,7 @@ bool Parser::analyze(const std::string& s) {
         std::vector<string> elems;
 
         if (s.find("(")) {  // '(' found ready to begin reading fields
-            this->state == 6;
+            this->state == STATE_ADD_P1;
             elems = this->tokenize(s, '(');
             entity = *elems.begin();
 
@@ -167,6 +170,9 @@ bool Parser::analyze(const std::string& s) {
         // Process any fields
         this->processField(elems[1]);
 
+    } else if (this->state == STATE_ADD_P1) {  // Continue processing fields
+        this->processField(s);
+
     } else if (this->state == STATE_GET_CON) {
 
     } else if (this->state == STATE_GEN_CON) {
@@ -181,9 +187,6 @@ bool Parser::analyze(const std::string& s) {
         this->addSymbolTable(std::pair<std::string, string>(), SYM_TABLE_ENTITY);
 
         // TODO - process fields
-
-    } else if (this->state == 6) {  // Continue processing fields
-        this->processField(s);
 
     } else if (this->state == STATE_FINISH) {  // Ensure processing is complete
         return BAD_EOL;
