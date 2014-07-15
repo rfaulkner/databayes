@@ -33,9 +33,10 @@
 
 #define STATE_START 0       // Start state
 #define STATE_ADD 10        // Add a new relation
-#define STATE_ADD_CON 11
+#define STATE_ADD_P1_BEGIN 11
 #define STATE_ADD_P1 12
-#define STATE_ADD_P2 13
+#define STATE_ADD_P2_BEGIN 13
+#define STATE_ADD_P2 14
 #define STATE_GET 20        // Get relation between two entities with optional conditions
 #define STATE_GET_REL 21
 #define STATE_GEN 30        // Generate an entity given others
@@ -132,7 +133,7 @@ bool Parser::analyze(const std::string& s) {
         if (s.compare(STR_CMD_REL) == 0)
             switch (this->state) {
             case STATE_ADD:
-                this->state = STATE_ADD_CON;
+                this->state = STATE_ADD_P1_BEGIN;
                 break;
             case STATE_GET:
                 this->state = STATE_GET_CON;
@@ -144,7 +145,7 @@ bool Parser::analyze(const std::string& s) {
         else
             return BAD_INPUT;
 
-    } else if (this->state == STATE_ADD_CON) {
+    } else if (this->state == STATE_ADD_P1_BEGIN || this->state == STATE_ADD_P2_BEGIN) {
 
         //  1. Check if s contains a left bracket .. split off the pre-string
         std::string entity;
@@ -152,7 +153,12 @@ bool Parser::analyze(const std::string& s) {
         std::vector<string> elems;
 
         if (s.find("(")) {  // '(' found ready to begin reading fields
-            this->state == STATE_ADD_P1;
+
+            if (this->state == STATE_ADD_P1_BEGIN)
+                this->state == STATE_ADD_P1;
+            else if (this->state == STATE_ADD_P2_BEGIN)
+                this->state == STATE_ADD_P2;
+
             elems = this->tokenize(s, '(');
             entity = *elems.begin();
             this->fieldsProcessed = false;
@@ -161,8 +167,8 @@ bool Parser::analyze(const std::string& s) {
             return BAD_INPUT;
         }
 
-        //  2. Check entity symbol table, Ensure the entity exists
-        if (!this->checkSymbolTable(*elems.begin(), SYM_TABLE_ENTITY))
+        //  Check entity symbol table, Ensure the entity exists
+        if (!this->checkSymbolTable(entity, SYM_TABLE_ENTITY))
             return BAD_INPUT;
 
         // Add the entity to the parse command
@@ -171,8 +177,14 @@ bool Parser::analyze(const std::string& s) {
         // Process any fields
         this->processField(elems[1]);
 
-    } else if (this->state == STATE_ADD_P1) {  // Continue processing fields
+    } else if (this->state == STATE_ADD_P1 || this->state == STATE_ADD_P2) {  // Continue processing fields
         this->processField(s);
+
+        // Check if fields have been processed for each arg and transition accordingly
+        if (this->fieldsProcessed == true && this->state == STATE_ADD_P1)
+            this->state = STATE_ADD_P2_BEGIN;
+        else if (this->fieldsProcessed == true && this->state == STATE_ADD_P2)
+            this->state = STATE_FINISH;
 
     } else if (this->state == STATE_GET_CON) {
 
@@ -189,7 +201,7 @@ bool Parser::analyze(const std::string& s) {
 
         // TODO - process fields
 
-    } else if (this->state == STATE_FINISH) {  // Ensure processing is complete
+    } else if (this->state == STATE_FINISH) {  // Ensure processing is complete - no symbols should be left at this point
         return BAD_EOL;
     }
 
