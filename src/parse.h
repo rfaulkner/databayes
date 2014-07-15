@@ -31,8 +31,15 @@
 #define SYM_TABLE_ENTITY "ENTITY"
 #define SYM_TABLE_FIELD "FIELD"
 
-#define STATE_START 0
-#define STATE_FINISH 99
+#define STATE_START 0       // Start state
+#define STATE_ADD 10        // Add a new relation
+#define STATE_ADD_CON 10
+#define STATE_GET 20        // Get relation between two entities with optional conditions
+#define STATE_GET_REL 20
+#define STATE_GEN 30        // Generate an entity given others
+#define STATE_GEN_REL 30
+#define STATE_DEF 40        // Describes entity definitions
+#define STATE_FINISH 99     // Successfukl end state
 
 using namespace std;
 
