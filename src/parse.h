@@ -117,21 +117,31 @@ bool Parser::analyze(const std::string& s) {
 
     if (this->state == STATE_START) {
         if (s.compare(STR_CMD_ADD) == 0)
-            this->state = 1;
+            this->state = STATE_ADD;
         else if (s.compare(STR_CMD_GET) == 0)
-            this->state = 2;
+            this->state = STATE_GET;
         else if (s.compare(STR_CMD_GEN) == 0)
-            this->state = 3;
+            this->state = STATE_GEN;
         else if (s.compare(STR_CMD_DEF) == 0)
-            this->state = 5;
+            this->state = STATE_DEF;
 
-    } else if (this->state == 1 || this->state == 2 || this->state == 3) {
+    } else if (this->state == STATE_ADD || this->state == STATE_GET || this->state == STATE_GEN) {
         if (s.compare(STR_CMD_REL) == 0)
-            this->state = 4;
+            switch (this->state) {
+            case STATE_ADD:
+                this->state = STATE_ADD_CON;
+                break;
+            case STATE_GET:
+                this->state = STATE_GET_CON;
+                break;
+            case STATE_GEN:
+                this->state = STATE_GEN_CON;
+                break;
+            }
         else
             return BAD_INPUT;
 
-    } else if (this->state == 4) {
+    } else if (this->state == STATE_ADD_CON) {
 
         //  1. Check if s contains a left bracket .. split off the pre-string
         std::string entity;
@@ -157,7 +167,11 @@ bool Parser::analyze(const std::string& s) {
         // Process any fields
         this->processField(elems[1]);
 
-    } else if (this->state == 5) {  // DEFINING new entities
+    } else if (this->state == STATE_GET_CON) {
+
+    } else if (this->state == STATE_GEN_CON) {
+
+    } else if (this->state == STATE_DEF) {  // DEFINING new entities
 
         //  1. Check if s contains a left bracket .. split off the pre-string
         std::vector<string> elems = this->tokenize(s, '(');
