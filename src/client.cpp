@@ -13,6 +13,8 @@
 #include <redis3m/connection.h>
 #include "parse.h"
 
+#define BAD_CMD "Bad command."
+
 using namespace std;
 
 bool handleUserInput(string input) {
@@ -28,7 +30,10 @@ int main() {
     while (1) {
         cout << "databayes> ";
         getline (cin, line);
-        parser->parse(line);
+        if (!parser->parse(line)) {
+            cout << BAD_CMD << endl;
+        }
+
     }
     return 0;
 }
