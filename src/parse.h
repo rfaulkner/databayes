@@ -136,10 +136,10 @@ bool Parser::analyze(const std::string& s) {
                 this->state = STATE_ADD_P1_BEGIN;
                 break;
             case STATE_GET:
-                this->state = STATE_GET_CON;
+                this->state = STATE_GET_REL;
                 break;
             case STATE_GEN:
-                this->state = STATE_GEN_CON;
+                this->state = STATE_GEN_REL;
                 break;
             }
         else
@@ -186,9 +186,9 @@ bool Parser::analyze(const std::string& s) {
         else if (this->fieldsProcessed == true && this->state == STATE_ADD_P2)
             this->state = STATE_FINISH;
 
-    } else if (this->state == STATE_GET_CON) {
+    } else if (this->state == STATE_GET_REL) {
 
-    } else if (this->state == STATE_GEN_CON) {
+    } else if (this->state == STATE_GEN_REL) {
 
     } else if (this->state == STATE_DEF) {  // DEFINING new entities
 
