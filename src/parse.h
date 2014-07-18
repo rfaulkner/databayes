@@ -150,13 +150,7 @@ bool Parser::analyze(const std::string& s) {
         this->parseEntitySymbol(s);
 
     } else if (this->state == STATE_ADD_P1 || this->state == STATE_ADD_P2) {  // Continue processing fields
-        this->processField(s);
-
-        // Check if fields have been processed for each arg and transition accordingly
-        if (this->fieldsProcessed == true && this->state == STATE_ADD_P1)
-            this->state = STATE_ADD_P2_BEGIN;
-        else if (this->fieldsProcessed == true && this->state == STATE_ADD_P2)
-            this->state = STATE_FINISH;
+        this->parseEntityFields(s);
 
     } else if (this->state == STATE_GET_REL) {
 
@@ -304,8 +298,16 @@ void Parser::parseEntitySymbol(std::string s) {
 }
 
 /**
- *
+ *  Parses the fields of an entity expression
  */
-void Parser::parseEntityFields() {}
+void Parser::parseEntityFields(std::string s) {
+    this->processField(s);
+
+    // Check if fields have been processed for each arg and transition accordingly
+    if (this->fieldsProcessed == true && this->state == STATE_ADD_P1)
+        this->state = STATE_ADD_P2_BEGIN;
+    else if (this->fieldsProcessed == true && this->state == STATE_ADD_P2)
+        this->state = STATE_FINISH;
+}
 
 #endif
