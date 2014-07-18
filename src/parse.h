@@ -42,6 +42,7 @@
 #define STATE_GEN 30        // Generate an entity given others
 #define STATE_GEN_REL 31
 #define STATE_DEF 40        // Describes entity definitions
+#define STATE_DEF_P1_BEGIN 41        // Describes entity definitions
 #define STATE_FINISH 99     // Successfukl end state
 
 using namespace std;
@@ -196,10 +197,8 @@ bool Parser::analyze(const std::string& s) {
         std::vector<string> elems = this->tokenize(s, '(');
         this->currEntity = *elems.begin();
 
-        this->state == 7;
+        this->state == STATE_DEF_P1_BEGIN;
         this->addSymbolTable(std::pair<std::string, string>(), SYM_TABLE_ENTITY);
-
-        // TODO - process fields
 
     } else if (this->state == STATE_FINISH) {  // Ensure processing is complete - no symbols should be left at this point
         return BAD_EOL;
