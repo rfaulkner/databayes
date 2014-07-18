@@ -147,36 +147,7 @@ bool Parser::analyze(const std::string& s) {
             return BAD_INPUT;
 
     } else if (this->state == STATE_ADD_P1_BEGIN || this->state == STATE_ADD_P2_BEGIN) {
-
-        //  1. Check if s contains a left bracket .. split off the pre-string
-        std::string entity;
-        std::string field;
-        std::vector<string> elems;
-
-        if (s.find("(")) {  // '(' found ready to begin reading fields
-
-            if (this->state == STATE_ADD_P1_BEGIN)
-                this->state == STATE_ADD_P1;
-            else if (this->state == STATE_ADD_P2_BEGIN)
-                this->state == STATE_ADD_P2;
-
-            elems = this->tokenize(s, '(');
-            entity = *elems.begin();
-            this->fieldsProcessed = false;
-
-        } else {
-            return BAD_INPUT;
-        }
-
-        //  Check entity symbol table, Ensure the entity exists
-        if (!this->checkSymbolTable(entity, SYM_TABLE_ENTITY))
-            return BAD_INPUT;
-
-        // Add the entity to the parse command
-        this->parserCmd.append(entity);
-
-        // Process any fields
-        this->processField(elems[1]);
+        this->parseEntitySymbol(s);
 
     } else if (this->state == STATE_ADD_P1 || this->state == STATE_ADD_P2) {  // Continue processing fields
         this->processField(s);
@@ -294,5 +265,47 @@ std::vector<std::string> Parser::tokenize(const std::string &s, const char delim
     this->tokenize(s, delim, elems);
     return elems;
 }
+
+
+/**
+ *  Parses the entity value
+ */
+void Parser::parseEntitySymbol(std::string s) {
+
+        //   Check if s contains a left bracket .. split off the pre-string
+        std::string entity;
+        std::string field;
+        std::vector<string> elems;
+
+        if (s.find("(")) {  // '(' found ready to begin reading fields
+
+            if (this->state == STATE_ADD_P1_BEGIN)
+                this->state == STATE_ADD_P1;
+            else if (this->state == STATE_ADD_P2_BEGIN)
+                this->state == STATE_ADD_P2;
+
+            elems = this->tokenize(s, '(');
+            entity = *elems.begin();
+            this->fieldsProcessed = false;
+
+        } else {
+            return BAD_INPUT;
+        }
+
+        //  Check entity symbol table, Ensure the entity exists
+        if (!this->checkSymbolTable(entity, SYM_TABLE_ENTITY))
+            return BAD_INPUT;
+
+        // Add the entity to the parse command
+        this->parserCmd.append(entity);
+
+        // Process any fields
+        this->processField(elems[1]);
+}
+
+/**
+ *
+ */
+void Parser::parseEntityFields() {}
 
 #endif
