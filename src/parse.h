@@ -42,7 +42,7 @@
 #define STATE_GEN 30        // Generate an entity given others
 #define STATE_GEN_REL 31
 #define STATE_DEF 40        // Describes entity definitions
-#define STATE_DEF_P1_BEGIN 41        // Describes entity definitions
+#define STATE_DEF_P1 41        // Describes entity definitions
 #define STATE_FINISH 99     // Successfukl end state
 
 using namespace std;
@@ -54,10 +54,10 @@ using namespace std;
  *      (1) ADD REL E1(x_1 [, x_2, ..]) E2(y_1 [, y_2, ..])
  *      (2) GET REL E1[(x_1=v_1, x_2=v_2, ...)] [E2(y_1=u_1, y_2=u_2, ...)]
  *      (3) GEN REL E1[(x_1=v_1, x_2=v_2, ...)] CONSTRAIN E2[, E3, ...]
- *      (3) DEF E1[(x_1=v_1, x_2=v_2, ...)]
+ *      (4) DEF E1[(x_1=v_1, x_2=v_2, ...)]
  *
- *  (1) provides a facility for insertion into the system, (2) for fetching existing relations, and (3) yields
- *  a generative function given an entity.
+ *  (1) provides a facility for insertion into the system, (2) for fetching existing relations, (3) yields
+ *  a generative function given an entity, and (4) allows the creation of new entities.
  *
  */
 class Parser {
@@ -157,16 +157,24 @@ bool Parser::analyze(const std::string& s) {
     } else if (this->state == STATE_GEN_REL) {
 
     } else if (this->state == STATE_DEF) {  // DEFINING new entities
+        this->parseEntitySymbol(s);
+        this->state == STATE_DEF_ARGS;
 
-        //  1. Check if s contains a left bracket .. split off the pre-string
-        std::vector<string> elems = this->tokenize(s, '(');
-        this->currEntity = *elems.begin();
+    } else if (this->state == STATE_DEF_ARGS) {
+        this->parseEntityFields(s);
 
-        this->state == STATE_DEF_P1_BEGIN;
-        this->addSymbolTable(std::pair<std::string, string>(), SYM_TABLE_ENTITY);
+        std::string hash = "";
+        if (!this->addSymbolTable(std::pair<std::string, string>(hash, entity), SYM_TABLE_ENTITY))
+            return BAD_INPUT;
 
     } else if (this->state == STATE_FINISH) {  // Ensure processing is complete - no symbols should be left at this point
         return BAD_EOL;
+    }
+
+    if (this->state == STATE_FINISH)
+        switch (this->state) {
+            case STATE_DEF:
+        }
     }
 
     return true;
@@ -287,8 +295,10 @@ void Parser::parseEntitySymbol(std::string s) {
         }
 
         //  Check entity symbol table, Ensure the entity exists
-        if (!this->checkSymbolTable(entity, SYM_TABLE_ENTITY))
-            return BAD_INPUT;
+        if (this->state != STATE_DEF) {
+            if (!this->checkSymbolTable(entity, SYM_TABLE_ENTITY))
+                return BAD_INPUT;
+        }
 
         // Add the entity to the parse command
         this->parserCmd.append(entity);
