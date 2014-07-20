@@ -67,8 +67,10 @@ class Parser {
 
     bool fieldsProcessed;
 
-    std::string currEntity;
+    bool error;
     std::string errStr;
+
+    std::string currEntity;
     unordered_map<std::string, string>* entityTable;
     unordered_map<std::string, /*ColumnBase*/ string>* fieldTable;
     std::string parserCmd;
@@ -76,9 +78,12 @@ class Parser {
 public:
     Parser();
     bool parse(const string&);
-    bool analyze(const string&);
+    void analyze(const string&);
     bool checkSymbolTable(const string&, const std::string&);
-    void addSymbolTable(const std::pair<std::string, string> elem, const std::string&);
+    bool addSymbolTable(const std::pair<std::string, string> elem, const std::string&);
+
+    void parseEntityFields(std::string);
+    void parseEntitySymbol(std::string);
 
     std::vector<std::string> tokenize(const std::string &source, const char delimiter = ' ');
     std::vector<std::string> &tokenize(const std::string &source, const char delimiter, std::vector<std::string> &elems);
@@ -92,6 +97,7 @@ public:
  */
 Parser::Parser() {
     this->state = STATE_START;
+    this->error = false;
     this->errStr = "";
     this->entityTable = new unordered_map<string, string>();
     this->fieldTable = new unordered_map<string, /* ColumnBase*/ string>();
@@ -103,18 +109,20 @@ Parser::Parser() {
  */
 bool Parser::parse(const string& s) {
 
-    // Initialize parser command
-    this->parserCmd = "";
-
     vector<string> tokens = this->tokenize(s);
+
+    this->parserCmd = "";           // Initialize parser command
+    this->state = STATE_START;      // Initialize state
+    this->error = false;            // Initialize error condition
+    this->errStr = "";              // Initialize error message
+
     for (std::vector<string>::iterator it = tokens.begin() ; it != tokens.end(); ++it) {
-        if (!this->analyze(*it)) {
+        this->analyze(*it);
+        if (this->error) {
             cout << this->errStr << endl;
             return false;
         }
     }
-    this->state = STATE_START;
-    this->errStr = "";
     return true;
 }
 
@@ -122,7 +130,7 @@ bool Parser::parse(const string& s) {
 /**
  * Lexical analyzer and state interpreter (FSM mealy model)
  */
-bool Parser::analyze(const std::string& s) {
+void Parser::analyze(const std::string& s) {
 
     if (this->state == STATE_START) {
         if (s.compare(STR_CMD_ADD) == 0) {
@@ -152,8 +160,11 @@ bool Parser::analyze(const std::string& s) {
                 this->state = STATE_GEN_REL;
                 break;
             }
-        else
-            return BAD_INPUT;
+        else {
+            this->error = true;
+            this->errStr = BAD_INPUT;
+            return;
+        }
 
     } else if (this->state == STATE_ADD_P1_BEGIN || this->state == STATE_ADD_P2_BEGIN) {
         this->parseEntitySymbol(s);
@@ -173,11 +184,16 @@ bool Parser::analyze(const std::string& s) {
         this->parseEntityFields(s);
 
         std::string hash = "";
-        if (!this->addSymbolTable(std::pair<std::string, string>(hash, entity), SYM_TABLE_ENTITY))
-            return BAD_INPUT;
+        if (!this->addSymbolTable(std::pair<std::string, string>(hash, this->currEntity), SYM_TABLE_ENTITY)) {
+            this->error = true;
+            this->errStr = BAD_INPUT;
+            return;
+        }
 
     } else if (this->state == STATE_FINISH) {  // Ensure processing is complete - no symbols should be left at this point
-        return BAD_EOL;
+        this->error = true;
+        this->errStr = BAD_EOL;
+        return;
     }
 
 //    if (this->state == STATE_FINISH)
@@ -188,7 +204,6 @@ bool Parser::analyze(const std::string& s) {
 //        }
 //    }
 
-    return true;
 }
 
 
@@ -207,12 +222,16 @@ bool Parser::checkSymbolTable(const string& s, const std::string& tableName) {
 /**
  *  Add a new non-terminal symbol
  */
-void Parser::addSymbolTable(const std::pair<std::string, string> elem, const std::string& tableName) {
+bool Parser::addSymbolTable(const std::pair<std::string, string> elem, const std::string& tableName) {
     if (tableName.compare(SYM_TABLE_ENTITY) == 0) {
         this->entityTable->insert(elem);
-    } else if (tableName.compare(SYM_TABLE_ENTITY) == 0) {
+    } else if (tableName.compare(SYM_TABLE_FIELD) == 0) {
         this->fieldTable->insert(elem);
+    } else {
+        return false;
     }
+
+    return true;
 }
 
 
@@ -286,7 +305,6 @@ std::vector<std::string> Parser::tokenize(const std::string &s, const char delim
 void Parser::parseEntitySymbol(std::string s) {
 
         //   Check if s contains a left bracket .. split off the pre-string
-        std::string entity;
         std::string field;
         std::vector<string> elems;
 
@@ -298,21 +316,23 @@ void Parser::parseEntitySymbol(std::string s) {
                 this->state == STATE_ADD_P2;
 
             elems = this->tokenize(s, '(');
-            entity = *elems.begin();
+            this->currEntity = *elems.begin();
             this->fieldsProcessed = false;
 
         } else {
-            return BAD_INPUT;
+            this->errStr = BAD_INPUT;
+            return;
         }
 
         //  Check entity symbol table, Ensure the entity exists
         if (this->state != STATE_DEF) {
-            if (!this->checkSymbolTable(entity, SYM_TABLE_ENTITY))
-                return BAD_INPUT;
+            if (!this->checkSymbolTable(this->currEntity, SYM_TABLE_ENTITY))
+                this->errStr = BAD_INPUT;
+                return;
         }
 
         // Add the entity to the parse command
-        this->parserCmd.append(entity);
+        this->parserCmd.append(this->currEntity);
 
         // Process any fields
         this->processField(elems[1]);
