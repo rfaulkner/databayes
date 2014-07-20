@@ -42,7 +42,7 @@
 #define STATE_GEN 30        // Generate an entity given others
 #define STATE_GEN_REL 31
 #define STATE_DEF 40        // Describes entity definitions
-#define STATE_DEF_P1 41        // Describes entity definitions
+#define STATE_DEF_ARGS 41        // Describes entity definitions
 #define STATE_FINISH 99     // Successfukl end state
 
 using namespace std;
@@ -61,8 +61,12 @@ using namespace std;
  *
  */
 class Parser {
+
     int state;
+    int macroState;
+
     bool fieldsProcessed;
+
     std::string currEntity;
     std::string errStr;
     unordered_map<std::string, string>* entityTable;
@@ -121,14 +125,19 @@ bool Parser::parse(const string& s) {
 bool Parser::analyze(const std::string& s) {
 
     if (this->state == STATE_START) {
-        if (s.compare(STR_CMD_ADD) == 0)
+        if (s.compare(STR_CMD_ADD) == 0) {
             this->state = STATE_ADD;
-        else if (s.compare(STR_CMD_GET) == 0)
+            this->macroState = STATE_ADD;
+        } else if (s.compare(STR_CMD_GET) == 0) {
             this->state = STATE_GET;
-        else if (s.compare(STR_CMD_GEN) == 0)
+            this->macroState = STATE_GET;
+        } else if (s.compare(STR_CMD_GEN) == 0) {
             this->state = STATE_GEN;
-        else if (s.compare(STR_CMD_DEF) == 0)
+            this->macroState = STATE_GEN;
+        } else if (s.compare(STR_CMD_DEF) == 0) {
             this->state = STATE_DEF;
+            this->macroState = STATE_DEF;
+        }
 
     } else if (this->state == STATE_ADD || this->state == STATE_GET || this->state == STATE_GEN) {
         if (s.compare(STR_CMD_REL) == 0)
@@ -171,11 +180,13 @@ bool Parser::analyze(const std::string& s) {
         return BAD_EOL;
     }
 
-    if (this->state == STATE_FINISH)
-        switch (this->state) {
-            case STATE_DEF:
-        }
-    }
+//    if (this->state == STATE_FINISH)
+//        switch (this->state) {
+//            case STATE_DEF:
+//                ;
+//
+//        }
+//    }
 
     return true;
 }
@@ -319,5 +330,8 @@ void Parser::parseEntityFields(std::string s) {
     else if (this->fieldsProcessed == true && this->state == STATE_ADD_P2)
         this->state = STATE_FINISH;
 }
+
+//void Parser::transitionState(std::string s) {
+//}
 
 #endif
