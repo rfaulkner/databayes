@@ -1,5 +1,5 @@
 /*
- *  parse.h
+ *  parse.cpp
  *
  *  Handles parsing rules for QL
  *
@@ -142,7 +142,19 @@ bool Parser::parse(const string& s) {
 void Parser::analyze(const std::string& s) {
 
     if (this->state == STATE_START) {
-        this->transitionState();
+        if (s.compare(STR_CMD_ADD) == 0) {
+            this->state = STATE_ADD;
+            this->macroState = STATE_ADD;
+        } else if (s.compare(STR_CMD_GET) == 0) {
+            this->state = STATE_GET;
+            this->macroState = STATE_GET;
+        } else if (s.compare(STR_CMD_GEN) == 0) {
+            this->state = STATE_GEN;
+            this->macroState = STATE_GEN;
+        } else if (s.compare(STR_CMD_DEF) == 0) {
+            this->state = STATE_DEF;
+            this->macroState = STATE_DEF;
+        }
 
     } else if (this->state == STATE_ADD || this->state == STATE_GET || this->state == STATE_GEN) {
         if (s.compare(STR_CMD_REL) == 0)
@@ -348,24 +360,7 @@ void Parser::parseEntityFields(std::string s) {
         this->state = STATE_FINISH;
 }
 
-
-/**
-  * Handles state transitioning for QL - assumes a successful signal
-  */
-void Parser::transitionState() {
-    if (this->state.compare(STR_CMD_ADD) == 0) {
-        this->state = STATE_ADD;
-        this->macroState = STATE_ADD;
-    } else if (this->state.compare(STR_CMD_GET) == 0) {
-        this->state = STATE_GET;
-        this->macroState = STATE_GET;
-    } else if (this->state.compare(STR_CMD_GEN) == 0) {
-        this->state = STATE_GEN;
-        this->macroState = STATE_GEN;
-    } else if (this->state.compare(STR_CMD_DEF) == 0) {
-        this->state = STATE_DEF;
-        this->macroState = STATE_DEF;
-    }
-}
+//void Parser::transitionState(std::string s) {
+//}
 
 #endif
