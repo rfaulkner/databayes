@@ -57,8 +57,7 @@ using namespace std;
  *      (4) DEF E1[(x_1=v_1, x_2=v_2, ...)]
  *      (5) LIST REL [E1 [E2]]
  *
- *  (1) provides a facility for insertion into the system, (2) for fetching existing relations, (3) yields
- *  a generative function given an entity, and (4) allows the creation of new entities.
+ *  (1) provides a facility for insertion into the system
  *
  *  (2) get a specific relation if it exists
  *
