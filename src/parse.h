@@ -108,13 +108,11 @@ public:
     bool checkSymbolTable(const string&, const std::string&);
     bool addSymbolTable(const std::pair<std::string, string> elem, const std::string&);
 
-    void parseEntityFields(std::string);
     void parseEntitySymbol(std::string);
+    void processField(const string &source);
 
     std::vector<std::string> tokenize(const std::string &source, const char delimiter = ' ');
     std::vector<std::string> &tokenize(const std::string &source, const char delimiter, std::vector<std::string> &elems);
-
-    bool processField(const string &source);
 };
 
 
@@ -199,7 +197,7 @@ void Parser::analyze(const std::string& s) {
         this->parseEntitySymbol(s);
 
     } else if (this->state == STATE_ADD_P1 || this->state == STATE_ADD_P2) {  // Continue processing fields
-        this->parseEntityFields(s);
+        this->processField(s);
 
     } else if (this->state == STATE_GET_REL) {
 
@@ -323,10 +321,12 @@ void Parser::parseEntitySymbol(std::string s) {
 
         //   Check if s contains a left bracket .. split off the pre-string
         std::string field;
-        std::vector<string> elems = NULL;
+        std::vector<string> elems;
+        bool noFields = true;
 
         // If the input contains
         if (s.find("(")) {
+            noFields = false;
             elems = this->tokenize(s, '(');
             this->currEntity = *elems.begin();
         } else
@@ -339,7 +339,7 @@ void Parser::parseEntitySymbol(std::string s) {
         this->parserCmd.append(this->currEntity);
 
         // Process any fields
-        if (elems != NULL)
+        if (!noFields)
             this->processField(elems[1]);
 }
 
@@ -384,7 +384,7 @@ void Parser::processField(const string &fieldStr) {
             this->parserCmd.append(" ");
             this->parserCmd.append(field);
             cout << "Reading field: " << field << endl; // DEBUG
-            symbolsValid = symbolsValid && this->checkSymbolTable(field, SYM_TABLE_FIELD);
+            this->error = this->error && this->checkSymbolTable(field, SYM_TABLE_FIELD);
         }
     }
 }
