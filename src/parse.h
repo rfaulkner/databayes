@@ -51,6 +51,7 @@
 #define STATE_GEN_REL 31
 
 #define STATE_DEF 40        // Describes entity definitions
+#define STATE_DEF_NAME 41
 #define STATE_DEF_ARGS 41
 
 #define STATE_LST 50        // Lists entities or relations
@@ -205,11 +206,20 @@ void Parser::analyze(const std::string& s) {
     } else if (this->state == STATE_GEN_REL) {
 
     } else if (this->state == STATE_DEF) {  // DEFINING new entities
-        this->parseEntitySymbol(s);
-        this->state == STATE_DEF_ARGS;
+        this->state == STATE_DEF_NAME;
+
+    } else if (this->state == STATE_DEF) {  // DEFINING new entities
+        this->state == STATE_DEF_NAME;
 
     } else if (this->state == STATE_DEF_ARGS) {
         this->parseEntityFields(s);
+
+        //  Check entity symbol table, Ensure the entity exists
+        if (this->state != STATE_DEF) {
+            if (!this->checkSymbolTable(this->currEntity, SYM_TABLE_ENTITY))
+                this->errStr = BAD_INPUT;
+                return;
+        }
 
         std::string hash = "";
         if (!this->addSymbolTable(std::pair<std::string, string>(hash, this->currEntity), SYM_TABLE_ENTITY)) {
@@ -350,42 +360,32 @@ std::vector<std::string> Parser::tokenize(const std::string &s, const char delim
 
 
 /**
- *  Parses the entity value
+ *  Parses the entity value.  If the input string contains subsequent fields these are also parsed.
+ *
+ *      @param s    input string
  */
 void Parser::parseEntitySymbol(std::string s) {
 
         //   Check if s contains a left bracket .. split off the pre-string
         std::string field;
-        std::vector<string> elems;
+        std::vector<string> elems = NULL;
 
-        if (s.find("(")) {  // '(' found ready to begin reading fields
-
-            if (this->state == STATE_ADD_P1_BEGIN)
-                this->state == STATE_ADD_P1;
-            else if (this->state == STATE_ADD_P2_BEGIN)
-                this->state == STATE_ADD_P2;
-
+        // If the input contains
+        if (s.find("(")) {
             elems = this->tokenize(s, '(');
             this->currEntity = *elems.begin();
-            this->fieldsProcessed = false;
+        } else
+            this->currEntity = s;
 
-        } else {
-            this->errStr = BAD_INPUT;
-            return;
-        }
-
-        //  Check entity symbol table, Ensure the entity exists
-        if (this->state != STATE_DEF) {
-            if (!this->checkSymbolTable(this->currEntity, SYM_TABLE_ENTITY))
-                this->errStr = BAD_INPUT;
-                return;
-        }
+        cout << "Reading entity: " << this->currEntity << endl; // DEBUG
+        this->fieldsProcessed = false;
 
         // Add the entity to the parse command
         this->parserCmd.append(this->currEntity);
 
         // Process any fields
-        this->processField(elems[1]);
+        if (elems != NULL)
+            this->processField(elems[1]);
 }
 
 /**
