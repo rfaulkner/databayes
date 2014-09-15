@@ -51,7 +51,8 @@
 #define STATE_GEN_REL 31
 
 #define STATE_DEF 40        // Describes entity definitions
-#define STATE_DEF_PROC 41
+#define STATE_DEF_PROC_ENTITY 41
+#define STATE_DEF_PROC_ATTRS 42
 
 #define STATE_LST 50        // Lists entities or relations
 #define STATE_LST_ENT 51        // Lists entities
@@ -205,24 +206,34 @@ void Parser::analyze(const std::string& s) {
     } else if (this->state == STATE_GEN_REL) {
 
     } else if (this->state == STATE_DEF) {  // DEFINING new entities
-        this->state == STATE_DEF_PROC;
+        this->state == STATE_DEF_PROC_ENTITY;
 
-    } else if (this->state == STATE_DEF_PROC) {
-        this->parseEntityFields(s);
+    } else if (this->state == STATE_DEF_PROC_ENTITY) {
 
-        //  Check entity symbol table, Ensure the entity exists
+        this->parseEntitySymbol(s);
+
+        // Ensure this entity has not already been defined
         if (this->state != STATE_DEF) {
             if (!this->checkSymbolTable(this->currEntity, SYM_TABLE_ENTITY))
+                this->error = true;
                 this->errStr = BAD_INPUT;
-                return;
         }
 
+        // Add this entity to the symbol table
         std::string hash = "";
         if (!this->addSymbolTable(std::pair<std::string, string>(hash, this->currEntity), SYM_TABLE_ENTITY)) {
             this->error = true;
             this->errStr = BAD_INPUT;
             return;
         }
+
+        // Process the attributes next.
+        this->state = STATE_DEF_PROC_ATTRS;
+
+    } else if (this->state == STATE_DEF_PROC_ATTRS) {
+        this->processField(s);
+        if (this->fieldsProcessed)
+            this->state = STATE_FINISH;
 
     } else if (this->state == STATE_LST) {
         if (s.compare(STR_CMD_REL) == 0)
@@ -251,17 +262,7 @@ void Parser::analyze(const std::string& s) {
         this->errStr = BAD_EOL;
         return;
     }
-
-//    if (this->state == STATE_FINISH)
-//        switch (this->state) {
-//            case STATE_DEF:
-//                ;
-//
-//        }
-//    }
-
 }
-
 
 /**
  *  Check for the existence of non-terminal symbols
@@ -288,6 +289,58 @@ bool Parser::addSymbolTable(const std::pair<std::string, string> elem, const std
     }
 
     return true;
+}
+
+
+/**
+ *  Write a function to handle splitting strings on a delimeter
+ */
+std::vector<std::string> &Parser::tokenize(const std::string &s, const char delim, std::vector<std::string> &elems) {
+    std::stringstream ss(s);
+    std::string item;
+    while (std::getline(ss, item, delim)) {
+        elems.push_back(item);
+    }
+    return elems;
+}
+
+/**
+ *  Split + factory method for string splitting
+ */
+std::vector<std::string> Parser::tokenize(const std::string &s, const char delim) {
+    std::vector<std::string> elems;
+    this->tokenize(s, delim, elems);
+    return elems;
+}
+
+
+/**
+ *  Parses the entity value.  If the input string contains subsequent fields these are also parsed.
+ *
+ *  @param s    input string
+ */
+void Parser::parseEntitySymbol(std::string s) {
+
+        //   Check if s contains a left bracket .. split off the pre-string
+        std::string field;
+        std::vector<string> elems = NULL;
+
+        // If the input contains
+        if (s.find("(")) {
+            elems = this->tokenize(s, '(');
+            this->currEntity = *elems.begin();
+        } else
+            this->currEntity = s;
+
+        cout << "Reading entity: " << this->currEntity << endl; // DEBUG
+        this->fieldsProcessed = false;
+
+        // Add the entity to the parse command
+        this->parserCmd.append(this->currEntity);
+
+        // Process any fields
+        if (elems != NULL)
+            this->processField(elems[1]);
 }
 
 
@@ -336,55 +389,5 @@ void Parser::processField(const string &fieldStr) {
     }
 }
 
-/**
- *  Write a function to handle splitting strings on a delimeter
- */
-std::vector<std::string> &Parser::tokenize(const std::string &s, const char delim, std::vector<std::string> &elems) {
-    std::stringstream ss(s);
-    std::string item;
-    while (std::getline(ss, item, delim)) {
-        elems.push_back(item);
-    }
-    return elems;
-}
-
-/**
- *  Split + factory method for string splitting
- */
-std::vector<std::string> Parser::tokenize(const std::string &s, const char delim) {
-    std::vector<std::string> elems;
-    this->tokenize(s, delim, elems);
-    return elems;
-}
-
-
-/**
- *  Parses the entity value.  If the input string contains subsequent fields these are also parsed.
- *
- *      @param s    input string
- */
-void Parser::parseEntitySymbol(std::string s) {
-
-        //   Check if s contains a left bracket .. split off the pre-string
-        std::string field;
-        std::vector<string> elems = NULL;
-
-        // If the input contains
-        if (s.find("(")) {
-            elems = this->tokenize(s, '(');
-            this->currEntity = *elems.begin();
-        } else
-            this->currEntity = s;
-
-        cout << "Reading entity: " << this->currEntity << endl; // DEBUG
-        this->fieldsProcessed = false;
-
-        // Add the entity to the parse command
-        this->parserCmd.append(this->currEntity);
-
-        // Process any fields
-        if (elems != NULL)
-            this->processField(elems[1]);
-}
 
 #endif
