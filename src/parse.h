@@ -51,8 +51,7 @@
 #define STATE_GEN_REL 31
 
 #define STATE_DEF 40        // Describes entity definitions
-#define STATE_DEF_NAME 41
-#define STATE_DEF_ARGS 41
+#define STATE_DEF_PROC 41
 
 #define STATE_LST 50        // Lists entities or relations
 #define STATE_LST_ENT 51        // Lists entities
@@ -206,12 +205,9 @@ void Parser::analyze(const std::string& s) {
     } else if (this->state == STATE_GEN_REL) {
 
     } else if (this->state == STATE_DEF) {  // DEFINING new entities
-        this->state == STATE_DEF_NAME;
+        this->state == STATE_DEF_PROC;
 
-    } else if (this->state == STATE_DEF) {  // DEFINING new entities
-        this->state == STATE_DEF_NAME;
-
-    } else if (this->state == STATE_DEF_ARGS) {
+    } else if (this->state == STATE_DEF_PROC) {
         this->parseEntityFields(s);
 
         //  Check entity symbol table, Ensure the entity exists
@@ -390,21 +386,5 @@ void Parser::parseEntitySymbol(std::string s) {
         if (elems != NULL)
             this->processField(elems[1]);
 }
-
-/**
- *  Parses the fields of an entity expression
- */
-void Parser::parseEntityFields(std::string s) {
-    this->processField(s);
-
-    // Check if fields have been processed for each arg and transition accordingly
-    if (this->fieldsProcessed == true && this->state == STATE_ADD_P1)
-        this->state = STATE_ADD_P2_BEGIN;
-    else if (this->fieldsProcessed == true && this->state == STATE_ADD_P2)
-        this->state = STATE_FINISH;
-}
-
-//void Parser::transitionState(std::string s) {
-//}
 
 #endif
