@@ -69,7 +69,7 @@ using namespace std;
  *      (1) ADD REL E1(x_1 [, x_2, ..]) E2(y_1 [, y_2, ..])
  *      (2) GET REL E1[(x_1=v_1, x_2=v_2, ...)] [E2(y_1=u_1, y_2=u_2, ...)]
  *      (3) GEN REL E1[(x_1=v_1, x_2=v_2, ...)] CONSTRAIN E2[, E3, ...]
- *      (4) DEF E1[(x_1=v_1, x_2=v_2, ...)]
+ *      (4) DEF E1[(x_1, x_2, ...)]
  *      (5) LST REL [E1 [E2]]
  *      (6) LST ENT [E1]*
  *
@@ -297,44 +297,47 @@ bool Parser::addSymbolTable(const std::pair<std::string, string> elem, const std
 
 /**
  *  Handle entity fields
+ *
+ *  @param string& fieldStr     Consists of one or more comma separated fields possibly terminated with ')'
  */
-bool Parser::processField(const string &fieldStr) {
+void Parser::processField(const string &fieldStr) {
     std::vector<string> fields = this->tokenize(fieldStr, ',');
     std::string field;
-    bool symbolsValid = true;
 
     for (std::vector<string>::iterator it = fields.begin() ; it != fields.end(); ++it) {
         field = *it;
 
-        if (this->fieldsProcessed == true) {    // Processing should be complete
-            return false;
+        // Processing should be complete
+        if (this->fieldsProcessed == true) {
+            this->error = true;
+            this->errStr = "All fields have already been processed.";
+            break;
         }
 
+        // Evaluate fields
         if (field.compare(")") == 0) {
             this->fieldsProcessed = true;   // Done processing
-            return symbolsValid;
 
-        } else if (field.find(')') == field.length() - 1) {
-            this->fieldsProcessed = true;   // Done processing
-
+        } else if (field.find(')') == field.length() - 1) { // e.g.
+            this->fieldsProcessed = true;
             field = field.substr(0, field.length() - 1);
             this->parserCmd.append(" ");
             this->parserCmd.append(field);
-
-            symbolsValid = symbolsValid && this->checkSymbolTable(field, SYM_TABLE_FIELD);
-            return symbolsValid;
+            cout << "Reading field: " << field << endl; // DEBUG
+            this->error = this->error && this->checkSymbolTable(field, SYM_TABLE_FIELD);
 
         } else if (field.find(')') < field.length() - 1) { // no chars after '('
+            this->error = true;
             this->errStr = "No symbols permitted after ')'";
-            return false;
+            break;
 
         } else {
             this->parserCmd.append(" ");
             this->parserCmd.append(field);
+            cout << "Reading field: " << field << endl; // DEBUG
             symbolsValid = symbolsValid && this->checkSymbolTable(field, SYM_TABLE_FIELD);
         }
     }
-    return symbolsValid;
 }
 
 /**
