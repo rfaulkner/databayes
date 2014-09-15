@@ -24,6 +24,8 @@
 #define STR_CMD_CON "CONTSTRAIN"
 #define STR_CMD_REL "REL"
 #define STR_CMD_DEF "DEF"
+#define STR_CMD_LST "LST"
+#define STR_CMD_ENT "ENT"
 
 #define BAD_INPUT "Bad input symbol"
 #define BAD_EOL "Bad end of line"
@@ -31,19 +33,31 @@
 #define SYM_TABLE_ENTITY "ENTITY"
 #define SYM_TABLE_FIELD "FIELD"
 
+
+// STATE REPRESENTATIONS
+
 #define STATE_START 0       // Start state
+
 #define STATE_ADD 10        // Add a new relation
 #define STATE_ADD_P1_BEGIN 11
 #define STATE_ADD_P1 12
 #define STATE_ADD_P2_BEGIN 13
 #define STATE_ADD_P2 14
+
 #define STATE_GET 20        // Get relation between two entities with optional conditions
 #define STATE_GET_REL 21
+
 #define STATE_GEN 30        // Generate an entity given others
 #define STATE_GEN_REL 31
+
 #define STATE_DEF 40        // Describes entity definitions
-#define STATE_DEF_ARGS 41        // Describes entity definitions
-#define STATE_FINISH 99     // Successfukl end state
+#define STATE_DEF_ARGS 41
+
+#define STATE_LST 50        // Lists entities or relations
+#define STATE_LST_ENT 51        // Lists entities
+#define STATE_LST_REL 52        // Lists relations
+
+#define STATE_FINISH 99     // Successful end state
 
 using namespace std;
 
@@ -55,7 +69,8 @@ using namespace std;
  *      (2) GET REL E1[(x_1=v_1, x_2=v_2, ...)] [E2(y_1=u_1, y_2=u_2, ...)]
  *      (3) GEN REL E1[(x_1=v_1, x_2=v_2, ...)] CONSTRAIN E2[, E3, ...]
  *      (4) DEF E1[(x_1=v_1, x_2=v_2, ...)]
- *      (5) LIST REL [E1 [E2]]
+ *      (5) LST REL [E1 [E2]]
+ *      (6) LST ENT [E1]*
  *
  *  (1) provides a facility for insertion into the system
  *
@@ -66,6 +81,8 @@ using namespace std;
  *  (4) define a new entity
  *
  *  (5) list relations optionally dependent relational entities
+ *
+ *  (6) list entities.  Either specify them or simply list all.
  *
  */
 class Parser {
@@ -153,6 +170,9 @@ void Parser::analyze(const std::string& s) {
         } else if (s.compare(STR_CMD_DEF) == 0) {
             this->state = STATE_DEF;
             this->macroState = STATE_DEF;
+        } else if (s.compare(STR_CMD_LST) == 0) {
+            this->state = STATE_LST;
+            this->macroState = STATE_LST;
         }
 
     } else if (this->state == STATE_ADD || this->state == STATE_GET || this->state == STATE_GEN) {
@@ -197,6 +217,28 @@ void Parser::analyze(const std::string& s) {
             this->errStr = BAD_INPUT;
             return;
         }
+
+    } else if (this->state == STATE_LST) {
+        if (s.compare(STR_CMD_REL) == 0)
+            this->state = STATE_LST_REL;
+        else if (s.compare(STR_CMD_ENT) == 0)
+            this->state = STATE_LST_ENT;
+
+    } else if (this->state == STATE_LST_ENT) {
+
+        // WRITE ENTITIES
+
+        // if the symbol is empty move to the complete state
+        // TODO - actually condition on this
+        this->state = STATE_FINISH;
+
+    } else if (this->state == STATE_LST_REL) {
+
+        // WRITE RELATIONS
+
+        // if the symbol is empty move to the complete state
+        // TODO - actually condition on this
+        this->state = STATE_FINISH;
 
     } else if (this->state == STATE_FINISH) {  // Ensure processing is complete - no symbols should be left at this point
         this->error = true;
