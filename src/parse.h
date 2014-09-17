@@ -92,6 +92,7 @@ class Parser {
     int macroState;
 
     bool fieldsProcessed;
+    bool debug;
 
     bool error;
     std::string errStr;
@@ -122,6 +123,7 @@ public:
 Parser::Parser() {
     this->state = STATE_START;
     this->error = false;
+    this->debug = false;
     this->errStr = "";
     this->entityTable = new unordered_map<string, string>();
     this->fieldTable = new unordered_map<string, /* ColumnBase*/ string>();
@@ -319,28 +321,29 @@ std::vector<std::string> Parser::tokenize(const std::string &s, const char delim
  */
 void Parser::parseEntitySymbol(std::string s) {
 
-        //   Check if s contains a left bracket .. split off the pre-string
-        std::string field;
-        std::vector<string> elems;
-        bool noFields = true;
+    //   Check if s contains a left bracket .. split off the pre-string
+    std::string field;
+    std::vector<string> elems;
+    bool noFields = true;
 
-        // If the input contains
-        if (s.find("(")) {
-            noFields = false;
-            elems = this->tokenize(s, '(');
-            this->currEntity = *elems.begin();
-        } else
-            this->currEntity = s;
+    // If the input contains
+    if (s.find("(")) {
+        noFields = false;
+        elems = this->tokenize(s, '(');
+        this->currEntity = *elems.begin();
+    } else
+        this->currEntity = s;
 
+    if (this->debug)
         cout << "Reading entity: " << this->currEntity << endl; // DEBUG
-        this->fieldsProcessed = false;
+    this->fieldsProcessed = false;
 
-        // Add the entity to the parse command
-        this->parserCmd.append(this->currEntity);
+    // Add the entity to the parse command
+    this->parserCmd.append(this->currEntity);
 
-        // Process any fields
-        if (!noFields)
-            this->processField(elems[1]);
+    // Process any fields
+    if (!noFields)
+        this->processField(elems[1]);
 }
 
 
@@ -372,7 +375,10 @@ void Parser::processField(const string &fieldStr) {
             field = field.substr(0, field.length() - 1);
             this->parserCmd.append(" ");
             this->parserCmd.append(field);
-            cout << "Reading field: " << field << endl; // DEBUG
+
+            if (this->debug)
+                cout << "Reading field: " << field << endl; // DEBUG
+
             this->error = this->error && this->checkSymbolTable(field, SYM_TABLE_FIELD);
 
         } else if (field.find(')') < field.length() - 1) { // no chars after '('
@@ -383,7 +389,10 @@ void Parser::processField(const string &fieldStr) {
         } else {
             this->parserCmd.append(" ");
             this->parserCmd.append(field);
-            cout << "Reading field: " << field << endl; // DEBUG
+
+            if (this->debug)
+                cout << "Reading field: " << field << endl; // DEBUG
+
             this->error = this->error && this->checkSymbolTable(field, SYM_TABLE_FIELD);
         }
     }
