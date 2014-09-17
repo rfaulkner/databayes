@@ -17,6 +17,10 @@
 #include <unordered_map>
 
 #include "column_types.h"
+#include "redis.h"
+
+#define REDISHOST "localhost"
+#define REDISDB "databayes"
 
 #define STR_CMD_ADD "ADD"
 #define STR_CMD_GET "GET"
@@ -124,6 +128,7 @@ Parser::Parser() {
     this->state = STATE_START;
     this->error = false;
     this->debug = false;
+    this->redisHandler = new RedisHandler(REDISHOST, REDISDB);
     this->errStr = "";
     this->entityTable = new unordered_map<string, string>();
     this->fieldTable = new unordered_map<string, /* ColumnBase*/ string>();
