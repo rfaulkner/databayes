@@ -24,8 +24,8 @@ bool handleUserInput(string input) {
 int main() {
     string line;
     Parser* parser = new Parser();
-    // RedisHandler rh;
-    
+    parser->setDebug(true);
+
     // Read the input
     while (1) {
         cout << "databayes> ";

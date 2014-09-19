@@ -110,6 +110,9 @@ class Parser {
 
 public:
     Parser();
+
+    void setDebug(bool);
+
     bool parse(const string&);
     void analyze(const string&);
     bool checkSymbolTable(const string&, const std::string&);
@@ -134,6 +137,14 @@ Parser::Parser() {
     this->errStr = "";
     this->entityTable = new unordered_map<string, string>();
     this->fieldTable = new unordered_map<string, /* ColumnBase*/ string>();
+}
+
+
+/**
+ * Setter for debug property
+ */
+void Parser::setDebug(bool debugVal) {
+    this->debug = debugVal;
 }
 
 
