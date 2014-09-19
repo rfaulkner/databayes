@@ -57,7 +57,7 @@ bool RedisHandler::connect() {
  *  Writes a key value to redis
  */
 bool RedisHandler::write(string key, string value) {
-    redis3m::conn->run(redis3m::command("SET") << key << value );
+    this->conn->run(redis3m::command("SET") << key << value );
     return true;
 }
 
@@ -66,7 +66,7 @@ bool RedisHandler::write(string key, string value) {
  *  Read a value from redis given a key
  */
 string RedisHandler::read(string key) {
-    redis3m::reply r = conn->run(redis3m::command("GET") << key );
+    redis3m::reply r = this->conn->run(redis3m::command("GET") << key );
     return reply;
 }
 
