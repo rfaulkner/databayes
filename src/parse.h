@@ -225,10 +225,9 @@ void Parser::analyze(const std::string& s) {
 
     } else if (this->state == STATE_DEF) {  // DEFINING new entities
         this->state == STATE_DEF_PROC_ENTITY;
+        this->parseEntitySymbol(s);
 
     } else if (this->state == STATE_DEF_PROC_ENTITY) {
-
-        this->parseEntitySymbol(s);
 
         // Ensure this entity has not already been defined
         if (this->state != STATE_DEF) {
