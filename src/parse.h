@@ -101,6 +101,8 @@ class Parser {
     bool error;
     std::string errStr;
 
+    RedisHandler* redisHandler;
+
     std::string currEntity;
     unordered_map<std::string, string>* entityTable;
     unordered_map<std::string, /*ColumnBase*/ string>* fieldTable;
