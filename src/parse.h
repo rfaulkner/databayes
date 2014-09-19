@@ -275,6 +275,18 @@ void Parser::analyze(const std::string& s) {
         return;
     }
 
+    // Post processing if command complete
+    if (this->state == STATE_FINISH) {
+        if (this->macroState == STATE_DEF) {
+            // Add this entity to the symbol table
+            std::string hash = "";
+            if (!this->addSymbolTable(std::pair<std::string, string>(hash, this->currEntity), SYM_TABLE_ENTITY)) {
+                this->error = true;
+                this->errStr = BAD_INPUT;
+                return;
+            }
+        }
+    }
 }
 
 /**
