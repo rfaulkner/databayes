@@ -67,7 +67,7 @@ bool RedisHandler::write(string key, string value) {
  */
 string RedisHandler::read(string key) {
     redis3m::reply r = this->conn->run(redis3m::command("GET") << key );
-    return reply;
+    return r.str();
 }
 
 #endif
