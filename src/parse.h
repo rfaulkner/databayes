@@ -55,8 +55,7 @@
 #define STATE_GEN_REL 31
 
 #define STATE_DEF 40        // Describes entity definitions
-#define STATE_DEF_PROC_ENTITY 41
-#define STATE_DEF_PROC_ATTRS 42
+#define STATE_DEF_PROC 41
 
 #define STATE_LST 50        // Lists entities or relations
 #define STATE_LST_ENT 51        // Lists entities
@@ -230,30 +229,20 @@ void Parser::analyze(const std::string& s) {
     } else if (this->state == STATE_GEN_REL) {
 
     } else if (this->state == STATE_DEF) {  // DEFINING new entities
-        this->state == STATE_DEF_PROC_ENTITY;
+        this->state == STATE_DEF_PROC;
         this->parseEntitySymbol(s);
 
-    } else if (this->state == STATE_DEF_PROC_ENTITY) {
-
         // Ensure this entity has not already been defined
-        if (this->state != STATE_DEF) {
-            if (!this->checkSymbolTable(this->currEntity, SYM_TABLE_ENTITY))
-                this->error = true;
-                this->errStr = BAD_INPUT;
-        }
-
-        // Add this entity to the symbol table
-        std::string hash = "";
-        if (!this->addSymbolTable(std::pair<std::string, string>(hash, this->currEntity), SYM_TABLE_ENTITY)) {
+        if (!this->checkSymbolTable(this->currEntity, SYM_TABLE_ENTITY)) {
             this->error = true;
             this->errStr = BAD_INPUT;
-            return;
+            this->state = STATE_FINISH;
         }
 
-        // Process the attributes next.
-        this->state = STATE_DEF_PROC_ATTRS;
+        if (this->fieldsProcessed)
+            this->state = STATE_FINISH;
 
-    } else if (this->state == STATE_DEF_PROC_ATTRS) {
+    } else if (this->state == STATE_DEF_PROC) {
         this->processField(s);
         if (this->fieldsProcessed)
             this->state = STATE_FINISH;
@@ -285,6 +274,7 @@ void Parser::analyze(const std::string& s) {
         this->errStr = BAD_EOL;
         return;
     }
+
 }
 
 /**
@@ -393,7 +383,7 @@ void Parser::processField(const string &fieldStr) {
         if (field.compare(")") == 0) {
             this->fieldsProcessed = true;   // Done processing
 
-        } else if (field.find(')') == field.length() - 1) { // e.g.
+        } else if (field.find(')') == field.length() - 1) { // e.g. <field>)
             this->fieldsProcessed = true;
             field = field.substr(0, field.length() - 1);
             this->parserCmd.append(" ");
