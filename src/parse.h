@@ -160,6 +160,7 @@ bool Parser::parse(const string& s) {
     this->error = false;            // Initialize error condition
     this->errStr = "";              // Initialize error message
 
+    // Process command tokens
     for (std::vector<string>::iterator it = tokens.begin() ; it != tokens.end(); ++it) {
         this->analyze(*it);
         if (this->error) {
@@ -167,6 +168,11 @@ bool Parser::parse(const string& s) {
             return false;
         }
     }
+
+    // Emit the interpreted command
+    if (this->debug)
+        cout << "PARSE CMD: " << this->parserCmd << endl;
+
     return true;
 }
 
