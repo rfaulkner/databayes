@@ -1,5 +1,5 @@
 /*
- *  disk.cpp
+ *  disk.h
  *
  *  Handles disk interface for storage
  *
