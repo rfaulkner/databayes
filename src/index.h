@@ -16,8 +16,6 @@
 #include <fstream>
 #include <string>
 
-#include "disk.h"
-
 #define IDX_SIZE 100000
 
 // Index types (entities, relations)
