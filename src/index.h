@@ -38,48 +38,42 @@ class IndexHandler {
     int diskBlock;
 
 public:
-    IndexHandler();
+    /**
+     * Constructor and Destructor for index handler
+     */
+    IndexHandler() {
+        this->inMemEnt = new string [IDX_SIZE];
+        this->inMemRel = new string [IDX_SIZE];
+        this->currEnt = 0;
+        this->currRel = 0;
+    }
+    ~IndexHandler() { delete [] inMemEnt; delete [] inMemRel; }
 
-    bool write(int, string);
-    bool writeToDisk();
+    bool write(int const , string);
+    bool writeToDisk(int);
 
-    string fetch();
+    bool fetch(int const, string);
     bool fetchFromDisk(int);   // Loads disk
 };
 
 
-/**
- * Constructor and Destructor for index handler
- */
-IndexHandler::IndexHandler() {
-    this->inMemEnt = new int [IDX_SIZE];
-    this->inMemRel = new int [IDX_SIZE];
-    this->currEnt = 0;
-    this->currRel = 0;
-}
-IndexHandler::~IndexHandler() { delete [] inMemEnt; delete [] inMemRel; }
+
 
 /**
  * Handles writes to in memory index
  */
-bool IndexHandler::write(int type, string entry) {
+bool IndexHandler::write(int const type, string entry) {
     // TODO - handle full in-memory index
     // TODO - Maintain sort order, heap
 
     // Determine the index type
-    switch (type) {
-        case type == IDX_TYPE_ENT:
-            this->inMemEnt[this->currEnt++] = entry;
-            break;
-        case type == IDX_TYPE_REL:
-            this->inMemRel[this->currRel++] = entry;
-            break;
-        default:
-            // bad type
-            return false;
-    }
-
-    return true
+    if (type == IDX_TYPE_ENT)
+        this->inMemEnt[this->currEnt++] = entry;
+    else if (type == IDX_TYPE_REL)
+        this->inMemRel[this->currRel++] = entry;
+    else // bad type
+        return false;
+    return true;
 }
 
 /**
@@ -87,37 +81,31 @@ bool IndexHandler::write(int type, string entry) {
  *
  *  TODO - currently null
  */
-bool IndexHandler::writeToDisk(int type, string entry) {}
+bool IndexHandler::writeToDisk(int type) { return false; }
 
 /**
  * Handles writes to in memory index
  *
  *  TODO - this is currently incredibly inefficient, improve
  */
-bool IndexHandler::fetch(int type, string entry) {
+bool IndexHandler::fetch(int const type, string entry) {
 
     string* inMem;
     int curr;
 
     // Determine the index type
-    switch (type) {
-        case type == IDX_TYPE_ENT:
-            inMem = this->inMemEnt;
-            curr = this->currEnt;
-            break;
-        case type == IDX_TYPE_REL:
-            inMem = this->inMemRel;
-            curr = this->currRel;
-            break;
-        default:
-            // bad type
-            return false;
-
-    }
+    if (type == IDX_TYPE_ENT) {
+        inMem = this->inMemEnt;
+        curr = this->currEnt;
+    } else if (type == IDX_TYPE_REL) {
+        inMem = this->inMemRel;
+        curr = this->currRel;
+    } else // bad type
+        return false;
 
     // Find the entry
-    for (int i = 0; i < this->curr; i++)
-        if (entry == this->inMemEnt[this->currEnt++])
+    for (int i = 0; i < curr; i++)
+        if (entry == this->inMemEnt[i])
             return true;
     return false;
 }
@@ -127,6 +115,6 @@ bool IndexHandler::fetch(int type, string entry) {
  *
  *  TODO - currently null
  */
-bool IndexHandler::fetchFromDisk(int type, string entry) {}
+bool IndexHandler::fetchFromDisk(int type) { return false; }
 
 #endif
