@@ -18,6 +18,7 @@
 
 #include "column_types.h"
 #include "redis.h"
+#include "index.h"
 
 #define REDISHOST "localhost"
 #define REDISDB "databayes"
@@ -101,6 +102,7 @@ class Parser {
     std::string errStr;
 
     RedisHandler* redisHandler;
+    IndexHandler* indexHandler;
 
     std::string currEntity;
     unordered_map<std::string, string>* entityTable;
@@ -133,6 +135,7 @@ Parser::Parser() {
     this->error = false;
     this->debug = false;
     this->redisHandler = new RedisHandler(REDISHOST, REDISDB);
+    this->indexHandler = new IndexHandler();
     this->errStr = "";
     this->entityTable = new unordered_map<string, string>();
     this->fieldTable = new unordered_map<string, /* ColumnBase*/ string>();
@@ -278,13 +281,15 @@ void Parser::analyze(const std::string& s) {
     // Post processing if command complete
     if (this->state == STATE_FINISH) {
         if (this->macroState == STATE_DEF) {
-            // Add this entity to the symbol table
-            std::string hash = "";
-            if (!this->addSymbolTable(std::pair<std::string, string>(hash, this->currEntity), SYM_TABLE_ENTITY)) {
-                this->error = true;
-                this->errStr = BAD_INPUT;
-                return;
-            }
+            // Add this entity to the index
+            this->indexHandler->write(IDX_TYPE_ENT, this->currEntity);
+
+//            std::string hash = "";
+//            if (!this->addSymbolTable(std::pair<std::string, string>(hash, this->currEntity), SYM_TABLE_ENTITY)) {
+//                this->error = true;
+//                this->errStr = BAD_INPUT;
+//                return;
+//            }
         }
     }
 }
