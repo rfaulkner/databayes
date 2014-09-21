@@ -15,6 +15,7 @@
 #include <vector>
 #include <sstream>
 #include <unordered_map>
+#include <algorithm>
 
 #include "column_types.h"
 #include "redis.h"
@@ -23,14 +24,14 @@
 #define REDISHOST "localhost"
 #define REDISDB "databayes"
 
-#define STR_CMD_ADD "ADD"
-#define STR_CMD_GET "GET"
-#define STR_CMD_GEN "GEN"
-#define STR_CMD_CON "CONTSTRAIN"
-#define STR_CMD_REL "REL"
-#define STR_CMD_DEF "DEF"
-#define STR_CMD_LST "LST"
-#define STR_CMD_ENT "ENT"
+#define STR_CMD_ADD "add"
+#define STR_CMD_GET "get"
+#define STR_CMD_GEN "gen"
+#define STR_CMD_CON "constrain"
+#define STR_CMD_REL "rel"
+#define STR_CMD_DEF "def"
+#define STR_CMD_LST "lst"
+#define STR_CMD_ENT "ent"
 
 #define BAD_INPUT "Bad input symbol"
 #define BAD_EOL "Bad end of line"
@@ -184,26 +185,30 @@ bool Parser::parse(const string& s) {
  */
 void Parser::analyze(const std::string& s) {
 
+    // Convert to lower case to enforce case insensitivity
+    string sLower = s;
+    std::transform(sLower.begin(), sLower.end(), sLower.begin(), ::tolower);
+
     if (this->state == STATE_START) {
-        if (s.compare(STR_CMD_ADD) == 0) {
+        if (sLower.compare(STR_CMD_ADD) == 0) {
             this->state = STATE_ADD;
             this->macroState = STATE_ADD;
-        } else if (s.compare(STR_CMD_GET) == 0) {
+        } else if (sLower.compare(STR_CMD_GET) == 0) {
             this->state = STATE_GET;
             this->macroState = STATE_GET;
-        } else if (s.compare(STR_CMD_GEN) == 0) {
+        } else if (sLower.compare(STR_CMD_GEN) == 0) {
             this->state = STATE_GEN;
             this->macroState = STATE_GEN;
-        } else if (s.compare(STR_CMD_DEF) == 0) {
+        } else if (sLower.compare(STR_CMD_DEF) == 0) {
             this->state = STATE_DEF;
             this->macroState = STATE_DEF;
-        } else if (s.compare(STR_CMD_LST) == 0) {
+        } else if (sLower.compare(STR_CMD_LST) == 0) {
             this->state = STATE_LST;
             this->macroState = STATE_LST;
         }
 
     } else if (this->state == STATE_ADD || this->state == STATE_GET || this->state == STATE_GEN) {
-        if (s.compare(STR_CMD_REL) == 0)
+        if (sLower.compare(STR_CMD_REL) == 0)
             switch (this->state) {
             case STATE_ADD:
                 this->state = STATE_ADD_P1_BEGIN;
@@ -251,9 +256,9 @@ void Parser::analyze(const std::string& s) {
             this->state = STATE_FINISH;
 
     } else if (this->state == STATE_LST) {
-        if (s.compare(STR_CMD_REL) == 0)
+        if (sLower.compare(STR_CMD_REL) == 0)
             this->state = STATE_LST_REL;
-        else if (s.compare(STR_CMD_ENT) == 0)
+        else if (sLower.compare(STR_CMD_ENT) == 0)
             this->state = STATE_LST_ENT;
 
     } else if (this->state == STATE_LST_ENT) {
