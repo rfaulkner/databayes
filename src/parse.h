@@ -190,21 +190,27 @@ void Parser::analyze(const std::string& s) {
     std::transform(sLower.begin(), sLower.end(), sLower.begin(), ::tolower);
 
     if (this->state == STATE_START) {
+
         if (sLower.compare(STR_CMD_ADD) == 0) {
             this->state = STATE_ADD;
             this->macroState = STATE_ADD;
+            this->parserCmd.append(STR_CMD_ADD);
         } else if (sLower.compare(STR_CMD_GET) == 0) {
             this->state = STATE_GET;
             this->macroState = STATE_GET;
+            this->parserCmd.append(STR_CMD_GET);
         } else if (sLower.compare(STR_CMD_GEN) == 0) {
             this->state = STATE_GEN;
             this->macroState = STATE_GEN;
+            this->parserCmd.append(STR_CMD_GEN);
         } else if (sLower.compare(STR_CMD_DEF) == 0) {
             this->state = STATE_DEF;
             this->macroState = STATE_DEF;
+            this->parserCmd.append(STR_CMD_DEF);
         } else if (sLower.compare(STR_CMD_LST) == 0) {
             this->state = STATE_LST;
             this->macroState = STATE_LST;
+            this->parserCmd.append(STR_CMD_LST);
         }
 
     } else if (this->state == STATE_ADD || this->state == STATE_GET || this->state == STATE_GEN) {
@@ -237,6 +243,7 @@ void Parser::analyze(const std::string& s) {
     } else if (this->state == STATE_GEN_REL) {
 
     } else if (this->state == STATE_DEF) {  // DEFINING new entities
+
         this->state == STATE_DEF_PROC;
         this->parseEntitySymbol(s);
 
