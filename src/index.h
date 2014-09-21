@@ -53,6 +53,7 @@ public:
     bool writeToDisk(int);
 
     bool fetch(int const, string);
+    string* fetchAll(int const);
     bool fetchFromDisk(int);   // Loads disk
 };
 
@@ -84,7 +85,7 @@ bool IndexHandler::write(int const type, string entry) {
 bool IndexHandler::writeToDisk(int type) { return false; }
 
 /**
- * Handles writes to in memory index
+ * Attempts to fetch an entry from index
  *
  *  TODO - this is currently incredibly inefficient, improve
  */
@@ -108,6 +109,22 @@ bool IndexHandler::fetch(int const type, string entry) {
         if (entry == this->inMemEnt[i])
             return true;
     return false;
+}
+
+/**
+ * Fetch all entities
+ *
+ *  TODO - this only returns the in-memory index
+ */
+string* IndexHandler::fetchAll(int const type) {
+
+    // Determine the index type
+    if (type == IDX_TYPE_ENT) {
+        return this->inMemEnt;
+    } else if (type == IDX_TYPE_REL) {
+        return this->inMemRel;
+    } else // bad type
+        return NULL;
 }
 
 /**
