@@ -39,6 +39,8 @@
 #define SYM_TABLE_ENTITY "ENTITY"
 #define SYM_TABLE_FIELD "FIELD"
 
+#define WILDCARD_CHAR '*'
+
 
 // STATE REPRESENTATIONS
 
@@ -233,7 +235,7 @@ void Parser::analyze(const std::string& s) {
         }
 
     } else if (this->state == STATE_ADD_P1_BEGIN || this->state == STATE_ADD_P2_BEGIN) {
-        this->parseEntitySymbol(s);
+        this->parseEntitySymbol(sLower);
 
     } else if (this->state == STATE_ADD_P1 || this->state == STATE_ADD_P2) {  // Continue processing fields
         this->processField(s);
@@ -245,7 +247,7 @@ void Parser::analyze(const std::string& s) {
     } else if (this->state == STATE_DEF) {  // DEFINING new entities
 
         this->state == STATE_DEF_PROC;
-        this->parseEntitySymbol(s);
+        this->parseEntitySymbol(sLower);
 
         // Ensure this entity has not already been defined
         if (!this->checkSymbolTable(this->currEntity, SYM_TABLE_ENTITY)) {
@@ -258,7 +260,7 @@ void Parser::analyze(const std::string& s) {
             this->state = STATE_FINISH;
 
     } else if (this->state == STATE_DEF_PROC) {
-        this->processField(s);
+        this->processField(sLower);
         if (this->fieldsProcessed)
             this->state = STATE_FINISH;
 
@@ -270,10 +272,27 @@ void Parser::analyze(const std::string& s) {
 
     } else if (this->state == STATE_LST_ENT) {
 
-        // WRITE ENTITIES
+        string* entities;
+        char firstChar;
 
-        // if the symbol is empty move to the complete state
-        // TODO - actually condition on this
+        // Write Entities
+        this->parseEntitySymbol(sLower);
+        firstChar = this->currEntity[0];
+
+        if (WILDCARD_CHAR == firstChar && this->currEntity.size() == 1) {
+            entities = indexHandler->fetchAll(IDX_TYPE_ENT);
+            if (entities != NULL)
+                for (int i = 0; i < sizeof(entities) / sizeof(*entities); ++i)
+                    cout << entities[i] << endl;
+            else
+                cout << "not found." << endl;
+        } else {
+            if (indexHandler->fetch(IDX_TYPE_ENT, this->currEntity))
+                cout << this->currEntity << endl;
+            else
+                cout << "not found." << endl;
+        }
+
         this->state = STATE_FINISH;
 
     } else if (this->state == STATE_LST_REL) {
