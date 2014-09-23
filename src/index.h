@@ -34,6 +34,7 @@ class IndexHandler {
 
     int currEnt;
     int currRel;
+    int* size;
 
     int diskBlock;
 
@@ -46,6 +47,9 @@ public:
         this->inMemRel = new string [IDX_SIZE];
         this->currEnt = 0;
         this->currRel = 0;
+        this->size = new int[2];
+        this->size[0] = 0;
+        this->size[1] = 0;
     }
     ~IndexHandler() { delete [] inMemEnt; delete [] inMemRel; }
 
@@ -55,9 +59,16 @@ public:
     bool fetch(int const, string);
     string* fetchAll(int const);
     bool fetchFromDisk(int);   // Loads disk
+
+    /**
+     *  Getter for index size
+     */
+    int idxSize(int type) {
+        if (type != IDX_TYPE_ENT || type != IDX_TYPE_REL)
+            return 0;
+        return this->idxSize[type];
+    }
 };
-
-
 
 
 /**
