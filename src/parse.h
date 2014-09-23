@@ -283,10 +283,10 @@ void Parser::analyze(const std::string& s) {
 
         if (WILDCARD_CHAR == firstChar && this->currEntity.size() == 1) {
             entities = indexHandler->fetchAll(IDX_TYPE_ENT);
-            if (entities != NULL)
-                for (int i = 0; i < sizeof(entities) / sizeof(*entities); ++i)
+            if (entities != NULL) {
+                for (int i = 0; i < indexHandler->idxSize(IDX_TYPE_ENT); ++i)
                     cout << "-> " << entities[i] << endl;
-            else
+            } else
                 cout << "not found." << endl;
         } else {
             if (indexHandler->fetch(IDX_TYPE_ENT, this->currEntity))
