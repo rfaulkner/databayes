@@ -115,6 +115,11 @@ class Parser {
     unordered_map<std::string, /*ColumnBase*/ string>* fieldTable;
     std::string parserCmd;
 
+    void parseEntitySymbol(std::string);
+    void processField(const string &source);
+    void parseEntityDefinition(std::string);
+    void parseEntityAssign(std::string);
+
 public:
     Parser();
 
@@ -124,12 +129,6 @@ public:
     void analyze(const string&);
     bool checkSymbolTable(const string&, const std::string&);
     bool addSymbolTable(const std::pair<std::string, string> elem, const std::string&);
-
-    void parseEntitySymbol(std::string);
-    void processField(const string &source);
-
-    void parseEntityDefinition(std::string);
-    void parseEntityAssign(std::string);
 
     std::vector<std::string> tokenize(const std::string &source, const char delimiter = ' ');
     std::vector<std::string> &tokenize(const std::string &source, const char delimiter, std::vector<std::string> &elems);
