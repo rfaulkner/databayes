@@ -47,9 +47,10 @@ public:
         this->inMemRel = new string [IDX_SIZE];
         this->currEnt = 0;
         this->currRel = 0;
-        this->size = new int[2];
-        this->size[0] = 0;
-        this->size[1] = 0;
+
+        this->size = new int [2];
+        this->size[IDX_TYPE_ENT] = 0;
+        this->size[IDX_TYPE_REL] = 0;
     }
     ~IndexHandler() { delete [] inMemEnt; delete [] inMemRel; }
 
@@ -64,9 +65,9 @@ public:
      *  Getter for index size
      */
     int idxSize(int type) {
-        if (type != IDX_TYPE_ENT || type != IDX_TYPE_REL)
+        if (type != IDX_TYPE_ENT && type != IDX_TYPE_REL)
             return 0;
-        return this->idxSize[type];
+        return this->size[type];
     }
 };
 
@@ -79,11 +80,13 @@ bool IndexHandler::write(int const type, string entry) {
     // TODO - Maintain sort order, heap
 
     // Determine the index type
-    if (type == IDX_TYPE_ENT)
+    if (type == IDX_TYPE_ENT) {
         this->inMemEnt[this->currEnt++] = entry;
-    else if (type == IDX_TYPE_REL)
+        this->size[IDX_TYPE_ENT]++;
+    } else if (type == IDX_TYPE_REL) {
         this->inMemRel[this->currRel++] = entry;
-    else // bad type
+        this->size[IDX_TYPE_REL]++;
+    } else // bad type
         return false;
     return true;
 }
