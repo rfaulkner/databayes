@@ -400,6 +400,7 @@ void Parser::parseEntitySymbol(std::string s) {
     this->fieldsProcessed = false;
 
     // Add the entity to the parse command
+    this->parserCmd.append(" ");
     this->parserCmd.append(this->currEntity);
 
     // Process any fields
