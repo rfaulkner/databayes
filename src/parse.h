@@ -279,11 +279,13 @@ void Parser::analyze(const std::string& s) {
         this->parseEntitySymbol(sLower);
         firstChar = this->currEntity[0];
 
+        cout << "Current Entities:" << endl;
+
         if (WILDCARD_CHAR == firstChar && this->currEntity.size() == 1) {
             entities = indexHandler->fetchAll(IDX_TYPE_ENT);
             if (entities != NULL)
                 for (int i = 0; i < sizeof(entities) / sizeof(*entities); ++i)
-                    cout << entities[i] << endl;
+                    cout << "-> " << entities[i] << endl;
             else
                 cout << "not found." << endl;
         } else {
