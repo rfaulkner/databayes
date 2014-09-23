@@ -19,6 +19,23 @@
 
 using namespace std;
 
+
+/**
+ *  Control for returning a column type by string
+ */
+ColumnBase getColumnType(string columnType) {
+    if (columnType.compare(COLTYPE_NAME_INT) == 0) {
+        return new IntegerColumn();
+    } else if (columnType.compare(COLTYPE_NAME_FLOAT) == 0) {
+        return new FloatColumn();
+    } else if (columnType.compare(COLTYPE_NAME_STR) == 0) {
+        return new StringColumn();
+    } else {
+        return NULL;
+    }
+}
+
+
 /**
  *  Base class for column types
  */
