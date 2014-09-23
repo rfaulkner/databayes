@@ -104,6 +104,9 @@ class Parser {
     bool error;
     std::string errStr;
 
+    std::string currField;
+    ColumnBase currFieldType;
+
     RedisHandler* redisHandler;
     IndexHandler* indexHandler;
 
@@ -124,6 +127,9 @@ public:
 
     void parseEntitySymbol(std::string);
     void processField(const string &source);
+
+    void parseEntityDefinition(std::string);
+    void parseEntityAssign(std::string);
 
     std::vector<std::string> tokenize(const std::string &source, const char delimiter = ' ');
     std::vector<std::string> &tokenize(const std::string &source, const char delimiter, std::vector<std::string> &elems);
@@ -436,9 +442,16 @@ void Parser::processField(const string &fieldStr) {
 
         } else if (field.find(')') == field.length() - 1) { // e.g. <field>)
             this->fieldsProcessed = true;
+
             field = field.substr(0, field.length() - 1);
             this->parserCmd.append(" ");
             this->parserCmd.append(field);
+
+            // Process definition
+            if (this->macroState == STATE_DEF) {
+
+
+            }
 
             if (this->debug)
                 cout << "Reading field: " << field << endl; // DEBUG
@@ -462,5 +475,48 @@ void Parser::processField(const string &fieldStr) {
     }
 }
 
+
+/**
+ *  Logic for parsing entity definition statements
+ *
+ *  @param string& field
+ */
+void Parser::parseEntityDefinition(std::field) {
+    std::vector<string> fieldItems;
+
+    fieldItems = this->tokenize(field, '_');
+
+    if (fieldItems.size() != 2) {
+        this->error = true;
+        this->errStr = "Invalid Entity definition format";
+    }
+
+    // TODO - extract column type and ensure valid
+
+    this->currField = fieldItems[0];
+    this->currFieldType = getColumnType(fieldItems[1]);
+}
+
+
+/**
+ *  Logic for parsing entity assignment statements
+ *
+ *  @param string& field
+ */
+void Parser::parseEntityAssign(std::field) {
+    std::vector<string> fieldItems;
+
+    fieldItems = this->tokenize(field, '=');
+
+    if (fieldItems.size() != 2) {
+        this->error = true;
+        this->errStr = "Invalid Entity definition format";
+    }
+
+    // TODO - extract column type and ensure valid
+
+    this->currField = fieldItems[0];
+    this->currFieldType = getColumnType(fieldItems[1]);
+}
 
 #endif
