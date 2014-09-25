@@ -447,10 +447,8 @@ void Parser::processField(const string &fieldStr) {
             this->parserCmd.append(field);
 
             // Process definition
-            if (this->macroState == STATE_DEF) {
-
-
-            }
+            if (this->macroState == STATE_DEF) { this->parseEntityDefinition(field); }
+            if (this->macroState == STATE_ADD) { this->parseEntityAssign(field); }
 
             if (this->debug)
                 cout << "Reading field: " << field << endl; // DEBUG
