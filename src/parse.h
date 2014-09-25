@@ -443,12 +443,16 @@ void Parser::processField(const string &fieldStr) {
             this->fieldsProcessed = true;
 
             field = field.substr(0, field.length() - 1);
-            this->parserCmd.append(" ");
-            this->parserCmd.append(field);
 
             // Process definition
             if (this->macroState == STATE_DEF) { this->parseEntityDefinition(field); }
             if (this->macroState == STATE_ADD) { this->parseEntityAssign(field); }
+
+            // add to parse command
+            this->parserCmd.append(" ");
+            this->parserCmd.append(this->currField);
+            this->parserCmd.append(" ");
+            this->parserCmd.append(this->currFieldType);
 
             if (this->debug)
                 cout << "Reading field: " << field << endl; // DEBUG
