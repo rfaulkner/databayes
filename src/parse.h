@@ -452,7 +452,7 @@ void Parser::processField(const string &fieldStr) {
             this->parserCmd.append(" ");
             this->parserCmd.append(this->currField);
             this->parserCmd.append(" ");
-            this->parserCmd.append(this->currFieldType);
+            this->parserCmd.append(this->currFieldType.getType());
 
             if (this->debug)
                 cout << "Reading field: " << field << endl; // DEBUG
@@ -482,7 +482,7 @@ void Parser::processField(const string &fieldStr) {
  *
  *  @param string& field
  */
-void Parser::parseEntityDefinition(std::field) {
+void Parser::parseEntityDefinition(std::string field) {
     std::vector<string> fieldItems;
 
     fieldItems = this->tokenize(field, '_');
@@ -495,7 +495,7 @@ void Parser::parseEntityDefinition(std::field) {
     // TODO - extract column type and ensure valid
 
     this->currField = fieldItems[0];
-    this->currFieldType = getColumnType(fieldItems[1]);
+    this->currFieldType = getColumnType(fieldItems[1]).getType();
 }
 
 
@@ -504,7 +504,7 @@ void Parser::parseEntityDefinition(std::field) {
  *
  *  @param string& field
  */
-void Parser::parseEntityAssign(std::field) {
+void Parser::parseEntityAssign(std::string field) {
     std::vector<string> fieldItems;
 
     fieldItems = this->tokenize(field, '=');
