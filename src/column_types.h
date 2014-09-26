@@ -21,22 +21,6 @@ using namespace std;
 
 
 /**
- *  Control for returning a column type by string
- */
-ColumnBase getColumnType(string columnType) {
-    if (columnType.compare(COLTYPE_NAME_INT) == 0) {
-        return new IntegerColumn();
-    } else if (columnType.compare(COLTYPE_NAME_FLOAT) == 0) {
-        return new FloatColumn();
-    } else if (columnType.compare(COLTYPE_NAME_STR) == 0) {
-        return new StringColumn();
-    } else {
-        return NULL;
-    }
-}
-
-
-/**
  *  Base class for column types
  */
 class ColumnBase {
@@ -63,9 +47,8 @@ public:
 class IntegerColumn : public ColumnBase {
     int value;
 public:
-    IntegerColumn(int value) {
-        this->value = value;
-    }
+    IntegerColumn() { this->value = 0; }
+    IntegerColumn(int value) { this->value = value; }
     string getType() {
         return COLTYPE_NAME_INT;
     }
@@ -79,9 +62,8 @@ public:
 class FloatColumn : public ColumnBase {
     float value;
 public:
-    FloatColumn(float value) {
-        this->value = value;
-    }
+    FloatColumn() { this->value = 0.0; }
+    FloatColumn(float value) { this->value = value; }
     string getType() {
         return COLTYPE_NAME_FLOAT;
     }
@@ -94,14 +76,28 @@ public:
 class StringColumn : public ColumnBase {
     string value;
 public:
-    StringColumn(float value) {
-        this->value = value;
-    }
+    StringColumn() { this->value = ""; }
+    StringColumn(string value) { this->value = value; }
     string getType() {
         return COLTYPE_NAME_STR;
     }
 
 };
 
+
+/**
+ *  Control for returning a column type by string
+ */
+ColumnBase* getColumnType(string columnType) {
+    if (columnType.compare(COLTYPE_NAME_INT) == 0) {
+        return new IntegerColumn();
+    } else if (columnType.compare(COLTYPE_NAME_FLOAT) == 0) {
+        return new FloatColumn();
+    } else if (columnType.compare(COLTYPE_NAME_STR) == 0) {
+        return new StringColumn();
+    } else {
+        return NULL;
+    }
+}
 
 #endif

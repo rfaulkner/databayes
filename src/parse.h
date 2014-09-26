@@ -105,7 +105,7 @@ class Parser {
     std::string errStr;
 
     std::string currField;
-    ColumnBase currFieldType;
+    ColumnBase* currFieldType;
 
     RedisHandler* redisHandler;
     IndexHandler* indexHandler;
@@ -452,7 +452,7 @@ void Parser::processField(const string &fieldStr) {
             this->parserCmd.append(" ");
             this->parserCmd.append(this->currField);
             this->parserCmd.append(" ");
-            this->parserCmd.append(this->currFieldType.getType());
+                this->parserCmd.append(this->currFieldType->getType());
 
             if (this->debug)
                 cout << "Reading field: " << field << endl; // DEBUG
@@ -495,7 +495,7 @@ void Parser::parseEntityDefinition(std::string field) {
     // TODO - extract column type and ensure valid
 
     this->currField = fieldItems[0];
-    this->currFieldType = getColumnType(fieldItems[1]).getType();
+    this->currFieldType = getColumnType(fieldItems[1]);
 }
 
 
