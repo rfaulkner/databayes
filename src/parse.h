@@ -181,7 +181,7 @@ bool Parser::parse(const string& s) {
 
     // Emit the interpreted command
     if (this->debug)
-        cout << "PARSE CMD: " << this->parserCmd << endl;
+        cout << "DEBUG -- PARSE CMD: " << this->parserCmd << endl;
 
     return true;
 }
@@ -403,7 +403,7 @@ void Parser::parseEntitySymbol(std::string s) {
         this->currEntity = s;
 
     if (this->debug)
-        cout << "Reading entity: " << this->currEntity << endl; // DEBUG
+        cout << "DEBUG -- Reading entity: " << this->currEntity << endl; // DEBUG
     this->fieldsProcessed = false;
 
     // Add the entity to the parse command
@@ -455,7 +455,7 @@ void Parser::processField(const string &fieldStr) {
                 this->parserCmd.append(this->currFieldType->getType());
 
             if (this->debug)
-                cout << "Reading field: " << field << endl; // DEBUG
+                cout << "DEBUG -- Reading field: " << field << endl; // DEBUG
 
             this->error = this->error && this->checkSymbolTable(field, SYM_TABLE_FIELD);
 
@@ -469,7 +469,7 @@ void Parser::processField(const string &fieldStr) {
             this->parserCmd.append(field);
 
             if (this->debug)
-                cout << "Reading field: " << field << endl; // DEBUG
+                cout << "DEBUG -- Reading field: " << field << endl; // DEBUG
 
             this->error = this->error && this->checkSymbolTable(field, SYM_TABLE_FIELD);
         }
@@ -490,6 +490,7 @@ void Parser::parseEntityDefinition(std::string field) {
     if (fieldItems.size() != 2) {
         this->error = true;
         this->errStr = "Invalid Entity definition format";
+        return;
     }
 
     // TODO - extract column type and ensure valid
@@ -512,6 +513,7 @@ void Parser::parseEntityAssign(std::string field) {
     if (fieldItems.size() != 2) {
         this->error = true;
         this->errStr = "Invalid Entity definition format";
+        return;
     }
 
     // TODO - extract column type and ensure valid
