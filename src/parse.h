@@ -457,7 +457,7 @@ void Parser::processField(const string &fieldStr) {
             if (this->debug)
                 cout << "DEBUG -- Reading field: " << field << endl; // DEBUG
 
-            this->error = this->error && this->checkSymbolTable(field, SYM_TABLE_FIELD);
+            this->error = this->error || this->checkSymbolTable(field, SYM_TABLE_FIELD);
 
         } else if (field.find(')') < field.length() - 1) { // no chars after '('
             this->error = true;
@@ -471,7 +471,7 @@ void Parser::processField(const string &fieldStr) {
             if (this->debug)
                 cout << "DEBUG -- Reading field: " << field << endl; // DEBUG
 
-            this->error = this->error && this->checkSymbolTable(field, SYM_TABLE_FIELD);
+            this->error = this->error || this->checkSymbolTable(field, SYM_TABLE_FIELD);
         }
     }
 }
