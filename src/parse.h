@@ -105,6 +105,7 @@ class Parser {
     std::string errStr;
 
     std::string currField;
+    std::string currFieldValue;
     ColumnBase* currFieldType;
 
     RedisHandler* redisHandler;
@@ -117,8 +118,8 @@ class Parser {
 
     void parseEntitySymbol(std::string);
     void processField(const string &source);
-    void parseEntityDefinition(std::string);
-    void parseEntityAssign(std::string);
+    void parseEntityDefinitionField(std::string);
+    void parseEntityAssignField(std::string);
 
 public:
     Parser();
@@ -256,7 +257,7 @@ void Parser::analyze(const std::string& s) {
         this->state == STATE_DEF_PROC;
         this->parseEntitySymbol(sLower);
 
-        // Ensure this entity has not already been defined
+        // TODO - Ensure this entity has not already been defined
 //        if (!this->checkSymbolTable(this->currEntity, SYM_TABLE_ENTITY)) {
 //            this->error = true;
 //            this->errStr = BAD_INPUT;
@@ -434,7 +435,7 @@ void Parser::processField(const string &fieldStr) {
         if (this->fieldsProcessed == true) {
             this->error = true;
             this->errStr = "All fields have already been processed.";
-            break;
+            return;
         }
 
         // Evaluate fields
@@ -443,38 +444,22 @@ void Parser::processField(const string &fieldStr) {
 
         } else if (field.find(')') == field.length() - 1) { // e.g. <field>)
             this->fieldsProcessed = true;
-
             field = field.substr(0, field.length() - 1);
-
-            // Process definition
-            if (this->macroState == STATE_DEF) { this->parseEntityDefinition(field); }
-            if (this->macroState == STATE_ADD) { this->parseEntityAssign(field); }
-
-            // add to parse command
-            this->parserCmd.append(" ");
-            this->parserCmd.append(this->currField);
-            this->parserCmd.append(" ");
-                this->parserCmd.append(this->currFieldType->getType());
-
-            if (this->debug)
-                cout << "DEBUG -- Reading field: " << field << endl; // DEBUG
-
-            this->error = this->error || this->checkSymbolTable(field, SYM_TABLE_FIELD);
 
         } else if (field.find(')') < field.length() - 1) { // no chars after '('
             this->error = true;
             this->errStr = "No symbols permitted after ')'";
-            break;
-
-        } else {
-            this->parserCmd.append(" ");
-            this->parserCmd.append(field);
-
-            if (this->debug)
-                cout << "DEBUG -- Reading field: " << field << endl; // DEBUG
-
-            this->error = this->error || this->checkSymbolTable(field, SYM_TABLE_FIELD);
+            return;
         }
+
+        // PROCESS FIELD STATEMENT
+        if (this->macroState == STATE_DEF) { this->parseEntityDefinitionField(field); }
+        if (this->macroState == STATE_ADD) { this->parseEntityAssignField(field); }
+
+        if (this->debug)
+            cout << "DEBUG -- Reading field: " << field << endl; // DEBUG
+
+        this->error = this->error || this->checkSymbolTable(field, SYM_TABLE_FIELD);
     }
 }
 
@@ -484,7 +469,7 @@ void Parser::processField(const string &fieldStr) {
  *
  *  @param string& field
  */
-void Parser::parseEntityDefinition(std::string field) {
+void Parser::parseEntityDefinitionField(std::string field) {
     std::vector<string> fieldItems;
 
     fieldItems = this->tokenize(field, '_');
@@ -495,10 +480,20 @@ void Parser::parseEntityDefinition(std::string field) {
         return;
     }
 
-    // TODO - extract column type and ensure valid
-
     this->currField = fieldItems[0];
     this->currFieldType = getColumnType(fieldItems[1]);
+
+    if (this->currFieldType == NULL) {
+        this->error = true;
+        this->errStr = "Invalid field type";
+        return;
+    }
+
+    // ADD TO PARSE COMMAND
+    this->parserCmd.append(" ");
+    this->parserCmd.append(this->currField);
+    this->parserCmd.append(" ");
+    this->parserCmd.append(this->currFieldType->getType());
 }
 
 
@@ -507,7 +502,7 @@ void Parser::parseEntityDefinition(std::string field) {
  *
  *  @param string& field
  */
-void Parser::parseEntityAssign(std::string field) {
+void Parser::parseEntityAssignField(std::string field) {
     std::vector<string> fieldItems;
 
     fieldItems = this->tokenize(field, '=');
@@ -518,10 +513,14 @@ void Parser::parseEntityAssign(std::string field) {
         return;
     }
 
-    // TODO - extract column type and ensure valid
-
     this->currField = fieldItems[0];
-    this->currFieldType = getColumnType(fieldItems[1]);
+    this->currFieldValue = fieldItems[1];
+
+    // ADD TO PARSE COMMAND
+    this->parserCmd.append(" ");
+    this->parserCmd.append(this->currField);
+    this->parserCmd.append(" ");
+    this->parserCmd.append(this->currFieldValue);
 }
 
 #endif
