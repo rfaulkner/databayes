@@ -35,7 +35,7 @@ public:
     void setValue(void* value) {
         this->value = value;
     }
-    string getType() {
+    virtual string getType() {
         return COLTYPE_NAME_BASE;
     }
 };
