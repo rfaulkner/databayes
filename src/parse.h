@@ -117,7 +117,7 @@ class Parser {
     std::string parserCmd;
 
     void parseEntitySymbol(std::string);
-    void processField(const string &source);
+    void processFieldStatement(const string &source);
     void parseEntityDefinitionField(std::string);
     void parseEntityAssignField(std::string);
 
@@ -246,7 +246,7 @@ void Parser::analyze(const std::string& s) {
         this->parseEntitySymbol(sLower);
 
     } else if (this->state == STATE_ADD_P1 || this->state == STATE_ADD_P2) {  // Continue processing fields
-        this->processField(s);
+        this->processFieldStatement(s);
 
     } else if (this->state == STATE_GET_REL) {
 
@@ -268,7 +268,7 @@ void Parser::analyze(const std::string& s) {
             this->state = STATE_FINISH;
 
     } else if (this->state == STATE_DEF_PROC) {
-        this->processField(sLower);
+        this->processFieldStatement(sLower);
         if (this->fieldsProcessed)
             this->state = STATE_FINISH;
 
@@ -415,7 +415,7 @@ void Parser::parseEntitySymbol(std::string s) {
 
     // Process any fields
     if (!noFields)
-        this->processField(elems[1]);
+        this->processFieldStatement(elems[1]);
 }
 
 
@@ -424,7 +424,7 @@ void Parser::parseEntitySymbol(std::string s) {
  *
  *  @param string& fieldStr     Consists of one or more comma separated fields possibly terminated with ')'
  */
-void Parser::processField(const string &fieldStr) {
+void Parser::processFieldStatement(const string &fieldStr) {
     std::vector<string> fields = this->tokenize(fieldStr, ',');
     std::string field;
 
