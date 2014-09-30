@@ -172,6 +172,8 @@ bool Parser::parse(const string& s) {
 
     // Process command tokens
     for (std::vector<string>::iterator it = tokens.begin() ; it != tokens.end(); ++it) {
+        if (this->debug)
+            cout << "DEBUG -- Processing input token: " << *it << endl; // DEBUG
         this->analyze(*it);
         if (this->error) {
             cout << this->errStr << endl;
@@ -255,11 +257,11 @@ void Parser::analyze(const std::string& s) {
         this->parseEntitySymbol(sLower);
 
         // Ensure this entity has not already been defined
-        if (!this->checkSymbolTable(this->currEntity, SYM_TABLE_ENTITY)) {
-            this->error = true;
-            this->errStr = BAD_INPUT;
-            this->state = STATE_FINISH;
-        }
+//        if (!this->checkSymbolTable(this->currEntity, SYM_TABLE_ENTITY)) {
+//            this->error = true;
+//            this->errStr = BAD_INPUT;
+//            this->state = STATE_FINISH;
+//        }
 
         if (this->fieldsProcessed)
             this->state = STATE_FINISH;
@@ -318,7 +320,7 @@ void Parser::analyze(const std::string& s) {
 
     // Post processing if command complete
     if (this->state == STATE_FINISH) {
-        if (this->macroState == STATE_DEF) {
+        if (this->macroState == STATE_DEF && !this->error) {
             // Add this entity to the index
             this->indexHandler->write(IDX_TYPE_ENT, this->currEntity);
 
