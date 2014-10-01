@@ -15,6 +15,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <json/json.h>
 
 #define IDX_SIZE 100000
 
