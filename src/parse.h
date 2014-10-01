@@ -413,7 +413,7 @@ void Parser::processFieldStatement(const string &fieldStr) {
         if (this->debug)
             cout << "DEBUG -- Reading field: " << field << endl; // DEBUG
 
-        // this->error = this->error || this->checkSymbolTable(field, SYM_TABLE_FIELD);
+        this->error = this->error || this->indexHandler->fetch(IDX_TYPE_FIELD, field);
     }
 }
 

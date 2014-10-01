@@ -19,9 +19,10 @@
 
 #define IDX_SIZE 100000
 
-// Index types (entities, relations)
+// Index types (entities, relations, fields)
 #define IDX_TYPE_ENT 0
 #define IDX_TYPE_REL 1
+#define IDX_TYPE_FIELD 2
 
 
 using namespace std;
