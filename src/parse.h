@@ -36,9 +36,6 @@
 #define BAD_INPUT "Bad input symbol"
 #define BAD_EOL "Bad end of line"
 
-#define SYM_TABLE_ENTITY "ENTITY"
-#define SYM_TABLE_FIELD "FIELD"
-
 #define WILDCARD_CHAR '*'
 
 
@@ -128,8 +125,6 @@ public:
 
     bool parse(const string&);
     void analyze(const string&);
-    bool checkSymbolTable(const string&, const std::string&);
-    bool addSymbolTable(const std::pair<std::string, string> elem, const std::string&);
 
     std::vector<std::string> tokenize(const std::string &source, const char delimiter = ' ');
     std::vector<std::string> &tokenize(const std::string &source, const char delimiter, std::vector<std::string> &elems);
@@ -323,34 +318,6 @@ void Parser::analyze(const std::string& s) {
 }
 
 /**
- *  Check for the existence of non-terminal symbols
- */
-bool Parser::checkSymbolTable(const string& s, const std::string& tableName) {
-    if (tableName.compare(SYM_TABLE_ENTITY) == 0) {
-        return this->entityTable->end() == this->entityTable->find(s);
-    } else if (tableName.compare(SYM_TABLE_ENTITY) == 0) {
-        return this->fieldTable->end() == this->fieldTable->find(s);
-    }
-}
-
-
-/**
- *  Add a new non-terminal symbol
- */
-bool Parser::addSymbolTable(const std::pair<std::string, string> elem, const std::string& tableName) {
-    if (tableName.compare(SYM_TABLE_ENTITY) == 0) {
-        this->entityTable->insert(elem);
-    } else if (tableName.compare(SYM_TABLE_FIELD) == 0) {
-        this->fieldTable->insert(elem);
-    } else {
-        return false;
-    }
-
-    return true;
-}
-
-
-/**
  *  Write a function to handle splitting strings on a delimeter
  */
 std::vector<std::string> &Parser::tokenize(const std::string &s, const char delim, std::vector<std::string> &elems) {
@@ -446,7 +413,7 @@ void Parser::processFieldStatement(const string &fieldStr) {
         if (this->debug)
             cout << "DEBUG -- Reading field: " << field << endl; // DEBUG
 
-        this->error = this->error || this->checkSymbolTable(field, SYM_TABLE_FIELD);
+        // this->error = this->error || this->checkSymbolTable(field, SYM_TABLE_FIELD);
     }
 }
 
