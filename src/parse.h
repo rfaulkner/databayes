@@ -16,6 +16,7 @@
 #include <sstream>
 #include <unordered_map>
 #include <algorithm>
+#include <json/json.h>
 
 #include "column_types.h"
 #include "redis.h"
@@ -101,7 +102,7 @@ class Parser {
     bool error;
     std::string errStr;
 
-    std::vector<std::pair<ColumnBase&, std::string>>* currFields;
+    std::vector<std::pair<ColumnBase*, std::string>>* currFields;
     std::string currField;
     std::string currFieldValue;
     ColumnBase* currFieldType;
@@ -267,7 +268,7 @@ void Parser::analyze(const std::string& s) {
 
     } else if (this->state == STATE_LST_ENT) {
 
-        string* entities;
+        Json::Value* entities;
         char firstChar;
 
         // Write Entities

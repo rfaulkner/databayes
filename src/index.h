@@ -56,11 +56,11 @@ public:
     }
     ~IndexHandler() { delete [] inMemEnt; delete [] inMemRel; }
 
-    bool writeEntity(std::string, vector<std::pair<ColumnBase&, std::string>>);
-    bool writeRelation(std::string, std::string, std::vector<std::pair<ColumnBase&, std::string>>, std::vector<std::pair<ColumnBase&, std::string>>);
+    bool writeEntity(std::string, vector<std::pair<ColumnBase*, std::string>>*);
+    bool writeRelation(std::string, std::string, std::vector<std::pair<ColumnBase*, std::string>>*, std::vector<std::pair<ColumnBase*, std::string>>*);
     bool writeToDisk(int);
 
-    bool fetch(int const, Json::Value&);
+    bool fetch(int const, std::string);
     Json::Value* fetchAll(int const);
     bool fetchFromDisk(int);   // Loads disk
 
@@ -80,7 +80,7 @@ public:
  *
  *  e.g. {"entity": <string:entname>, "fields": <string_array:[<f1,f2,...>]>}
  */
-bool IndexHandler::writeEntity(string entity, std::vector<std::pair<ColumnBase&, std::string>> fields) {
+bool IndexHandler::writeEntity(string entity, std::vector<std::pair<ColumnBase*, std::string>>* fields) {
     // TODO - Maintain sort order, heap
 
     Json::Value jsonVal;
@@ -102,8 +102,8 @@ bool IndexHandler::writeEntity(string entity, std::vector<std::pair<ColumnBase&,
 bool IndexHandler::writeRelation(
                     string entityL,
                     string entityR,
-                    std::vector<std::pair<ColumnBase&, std::string>> fieldsL,
-                    std::vector<std::pair<ColumnBase&, std::string>> fieldsR) {
+                    std::vector<std::pair<ColumnBase*, std::string>>* fieldsL,
+                    std::vector<std::pair<ColumnBase*, std::string>>* fieldsR) {
     // TODO - Maintain sort order, heap
 
     Json::Value jsonVal;
@@ -131,7 +131,7 @@ bool IndexHandler::writeToDisk(int type) { return false; }
  *
  *  TODO - this is currently incredibly inefficient, improve
  */
-bool IndexHandler::fetch(int const type, Json::Value& entry) {
+bool IndexHandler::fetch(int const type, string entity) {
 
     Json::Value* inMem;
     int curr;
@@ -147,10 +147,11 @@ bool IndexHandler::fetch(int const type, Json::Value& entry) {
         return false;
 
     // Find the entry
-    for (int i = 0; i < curr; i++)
-        if (entry == inMem[i])
-            return true;
-    return false;
+//    for (int i = 0; i < curr; i++)
+//        if (entity == inMem[i]["entity"])
+//            return true;
+//    return false;
+    return true;
 }
 
 /**
