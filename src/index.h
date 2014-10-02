@@ -56,12 +56,12 @@ public:
     }
     ~IndexHandler() { delete [] inMemEnt; delete [] inMemRel; }
 
-    bool writeEntity(string);
-    bool writeRelation(string);
+    bool writeEntity(std::string, vector<std::pair<ColumnBase&, std::string>>);
+    bool writeRelation(std::string, std::string, vector<std::pair<ColumnBase&, std::string>>, vector<std::pair<ColumnBase&, std::string>>);
     bool writeToDisk(int);
 
     bool fetch(int const, Json::Value&);
-    string* fetchAll(int const);
+    Json::Value& fetchAll(int const);
     bool fetchFromDisk(int);   // Loads disk
 
     /**
@@ -80,7 +80,7 @@ public:
  *
  *  e.g. {"entity": <string:entname>, "fields": <string_array:[<f1,f2,...>]>}
  */
-bool IndexHandler::writeEntity(string entity, std::vector<std::string> fields) {
+bool IndexHandler::writeEntity(string entity, std::vector<std::pair<ColumnBase&, std::string>> fields) {
     // TODO - Maintain sort order, heap
 
     Json::Value jsonVal;
@@ -99,7 +99,11 @@ bool IndexHandler::writeEntity(string entity, std::vector<std::string> fields) {
  *
  *  e.g. {"entity": <string:entname>, "fields": <string_array:[<f1,f2,...>]>}
  */
-bool IndexHandler::writeRelation(string entityL, string entityL, std::vector<std::string> fieldsL, std::vector<std::string> fieldsR) {
+bool IndexHandler::writeRelation(
+                    string entityL,
+                    string entityL,
+                    std::vector<std::pair<ColumnBase&, std::string>> fieldsL,
+                    std::vector<std::pair<ColumnBase&, std::string>> fieldsR) {
     // TODO - Maintain sort order, heap
 
     Json::Value jsonVal;
