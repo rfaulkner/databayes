@@ -31,8 +31,8 @@ using namespace std;
 
 class IndexHandler {
 
-    string* inMemEnt;  // In memory instance for entities
-    string* inMemRel;  // In memory instance for relations
+    Json::Value* inMemEnt;  // In memory instance for entities
+    Json::Value* inMemRel;  // In memory instance for relations
 
     int currEnt;
     int currRel;
@@ -56,10 +56,11 @@ public:
     }
     ~IndexHandler() { delete [] inMemEnt; delete [] inMemRel; }
 
-    bool write(int const , string);
+    bool writeEntity(string);
+    bool writeRelation(string);
     bool writeToDisk(int);
 
-    bool fetch(int const, string);
+    bool fetch(int const, Json::Value&);
     string* fetchAll(int const);
     bool fetchFromDisk(int);   // Loads disk
 
@@ -75,21 +76,42 @@ public:
 
 
 /**
- * Handles writes to in memory index
+ * Writes of entities to in memory index.
+ *
+ *  e.g. {"entity": <string:entname>, "fields": <string_array:[<f1,f2,...>]>}
  */
-bool IndexHandler::write(int const type, string entry) {
-    // TODO - handle full in-memory index
+bool IndexHandler::writeEntity(string entity, std::vector<std::string> fields) {
     // TODO - Maintain sort order, heap
 
-    // Determine the index type
-    if (type == IDX_TYPE_ENT) {
-        this->inMemEnt[this->currEnt++] = entry;
-        this->size[IDX_TYPE_ENT]++;
-    } else if (type == IDX_TYPE_REL) {
-        this->inMemRel[this->currRel++] = entry;
-        this->size[IDX_TYPE_REL]++;
-    } else // bad type
-        return false;
+    Json::Value jsonVal;
+
+    jsonVal["entity"] = entity;
+    jsonVal["fields"] = &fields[0];
+
+    this->inMemEnt[this->currEnt++] = &jsonVal;
+    this->size[IDX_TYPE_ENT]++;
+
+    return true;
+}
+
+/**
+ * Writes relation to in memory index.
+ *
+ *  e.g. {"entity": <string:entname>, "fields": <string_array:[<f1,f2,...>]>}
+ */
+bool IndexHandler::writeRelation(string entityL, string entityL, std::vector<std::string> fieldsL, std::vector<std::string> fieldsR) {
+    // TODO - Maintain sort order, heap
+
+    Json::Value jsonVal;
+
+    jsonVal["entityL"] = entityL;
+    jsonVal["fieldsL"] = &fieldsL[0];
+    jsonVal["entityR"] = entityR;
+    jsonVal["fieldsR"] = &fieldsR[0];
+
+    this->inMemRel[this->currRel++] = &jsonVal;
+    this->size[IDX_TYPE_REL]++;
+
     return true;
 }
 
@@ -105,7 +127,7 @@ bool IndexHandler::writeToDisk(int type) { return false; }
  *
  *  TODO - this is currently incredibly inefficient, improve
  */
-bool IndexHandler::fetch(int const type, string entry) {
+bool IndexHandler::fetch(int const type, Json::Value& entry) {
 
     string* inMem;
     int curr;
