@@ -16,6 +16,7 @@
 #include <sstream>
 #include <unordered_map>
 #include <algorithm>
+#include <json/json.h>
 
 #include "column_types.h"
 #include "redis.h"
@@ -101,6 +102,7 @@ class Parser {
     bool error;
     std::string errStr;
 
+    std::vector<std::pair<ColumnBase*, std::string>>* currFields;
     std::string currField;
     std::string currFieldValue;
     ColumnBase* currFieldType;
@@ -109,8 +111,6 @@ class Parser {
     IndexHandler* indexHandler;
 
     std::string currEntity;
-    unordered_map<std::string, string>* entityTable;
-    unordered_map<std::string, /*ColumnBase*/ string>* fieldTable;
     std::string parserCmd;
 
     void parseEntitySymbol(std::string);
@@ -141,8 +141,6 @@ Parser::Parser() {
     this->redisHandler = new RedisHandler(REDISHOST, REDISDB);
     this->indexHandler = new IndexHandler();
     this->errStr = "";
-    this->entityTable = new unordered_map<string, string>();
-    this->fieldTable = new unordered_map<string, /* ColumnBase*/ string>();
 }
 
 
@@ -270,7 +268,7 @@ void Parser::analyze(const std::string& s) {
 
     } else if (this->state == STATE_LST_ENT) {
 
-        string* entities;
+        Json::Value* entities;
         char firstChar;
 
         // Write Entities
@@ -312,7 +310,7 @@ void Parser::analyze(const std::string& s) {
     // Post processing if command complete
     if (this->state == STATE_FINISH) {
         if (this->macroState == STATE_DEF && !this->error) { // Add this entity to the index
-            this->indexHandler->write(IDX_TYPE_ENT, this->currEntity);
+            this->indexHandler->writeEntity(this->currEntity, this->currFields);
         }
     }
 }
@@ -436,6 +434,7 @@ void Parser::parseEntityDefinitionField(std::string field) {
 
     this->currField = fieldItems[0];
     this->currFieldType = getColumnType(fieldItems[1]);
+    this->currFields->push_back(std::make_pair(this->currFieldType, fieldItems[0]));
 
     if (this->currFieldType == NULL) {
         this->error = true;
@@ -469,6 +468,7 @@ void Parser::parseEntityAssignField(std::string field) {
 
     this->currField = fieldItems[0];
     this->currFieldValue = fieldItems[1];
+    this->currFields->push_back(std::make_pair(this->currFieldType, fieldItems[0]));
 
     // ADD TO PARSE COMMAND
     this->parserCmd.append(" ");

@@ -31,8 +31,8 @@ using namespace std;
 
 class IndexHandler {
 
-    string* inMemEnt;  // In memory instance for entities
-    string* inMemRel;  // In memory instance for relations
+    Json::Value* inMemEnt;  // In memory instance for entities
+    Json::Value* inMemRel;  // In memory instance for relations
 
     int currEnt;
     int currRel;
@@ -45,8 +45,8 @@ public:
      * Constructor and Destructor for index handler
      */
     IndexHandler() {
-        this->inMemEnt = new string [IDX_SIZE];
-        this->inMemRel = new string [IDX_SIZE];
+        this->inMemEnt = new Json::Value [IDX_SIZE];
+        this->inMemRel = new Json::Value [IDX_SIZE];
         this->currEnt = 0;
         this->currRel = 0;
 
@@ -56,11 +56,12 @@ public:
     }
     ~IndexHandler() { delete [] inMemEnt; delete [] inMemRel; }
 
-    bool write(int const , string);
+    bool writeEntity(std::string, vector<std::pair<ColumnBase*, std::string>>*);
+    bool writeRelation(std::string, std::string, std::vector<std::pair<ColumnBase*, std::string>>*, std::vector<std::pair<ColumnBase*, std::string>>*);
     bool writeToDisk(int);
 
-    bool fetch(int const, string);
-    string* fetchAll(int const);
+    bool fetch(int const, std::string);
+    Json::Value* fetchAll(int const);
     bool fetchFromDisk(int);   // Loads disk
 
     /**
@@ -75,21 +76,46 @@ public:
 
 
 /**
- * Handles writes to in memory index
+ * Writes of entities to in memory index.
+ *
+ *  e.g. {"entity": <string:entname>, "fields": <string_array:[<f1,f2,...>]>}
  */
-bool IndexHandler::write(int const type, string entry) {
-    // TODO - handle full in-memory index
+bool IndexHandler::writeEntity(string entity, std::vector<std::pair<ColumnBase*, std::string>>* fields) {
     // TODO - Maintain sort order, heap
 
-    // Determine the index type
-    if (type == IDX_TYPE_ENT) {
-        this->inMemEnt[this->currEnt++] = entry;
-        this->size[IDX_TYPE_ENT]++;
-    } else if (type == IDX_TYPE_REL) {
-        this->inMemRel[this->currRel++] = entry;
-        this->size[IDX_TYPE_REL]++;
-    } else // bad type
-        return false;
+    Json::Value jsonVal;
+
+    jsonVal["entity"] = entity;
+    jsonVal["fields"] = &fields[0];
+
+    this->inMemEnt[this->currEnt++] = &jsonVal;
+    this->size[IDX_TYPE_ENT]++;
+
+    return true;
+}
+
+/**
+ * Writes relation to in memory index.
+ *
+ *  e.g. {"entity": <string:entname>, "fields": <string_array:[<f1,f2,...>]>}
+ */
+bool IndexHandler::writeRelation(
+                    string entityL,
+                    string entityR,
+                    std::vector<std::pair<ColumnBase*, std::string>>* fieldsL,
+                    std::vector<std::pair<ColumnBase*, std::string>>* fieldsR) {
+    // TODO - Maintain sort order, heap
+
+    Json::Value jsonVal;
+
+    jsonVal["entityL"] = entityL;
+    jsonVal["fieldsL"] = &fieldsL[0];
+    jsonVal["entityR"] = entityR;
+    jsonVal["fieldsR"] = &fieldsR[0];
+
+    this->inMemRel[this->currRel++] = &jsonVal;
+    this->size[IDX_TYPE_REL]++;
+
     return true;
 }
 
@@ -105,9 +131,9 @@ bool IndexHandler::writeToDisk(int type) { return false; }
  *
  *  TODO - this is currently incredibly inefficient, improve
  */
-bool IndexHandler::fetch(int const type, string entry) {
+bool IndexHandler::fetch(int const type, string entity) {
 
-    string* inMem;
+    Json::Value* inMem;
     int curr;
 
     // Determine the index type
@@ -121,10 +147,11 @@ bool IndexHandler::fetch(int const type, string entry) {
         return false;
 
     // Find the entry
-    for (int i = 0; i < curr; i++)
-        if (entry == this->inMemEnt[i])
-            return true;
-    return false;
+//    for (int i = 0; i < curr; i++)
+//        if (entity == inMem[i]["entity"])
+//            return true;
+//    return false;
+    return true;
 }
 
 /**
@@ -132,7 +159,7 @@ bool IndexHandler::fetch(int const type, string entry) {
  *
  *  TODO - this only returns the in-memory index
  */
-string* IndexHandler::fetchAll(int const type) {
+Json::Value* IndexHandler::fetchAll(int const type) {
 
     // Determine the index type
     if (type == IDX_TYPE_ENT) {
