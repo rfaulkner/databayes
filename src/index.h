@@ -45,8 +45,8 @@ public:
      * Constructor and Destructor for index handler
      */
     IndexHandler() {
-        this->inMemEnt = new string [IDX_SIZE];
-        this->inMemRel = new string [IDX_SIZE];
+        this->inMemEnt = new Json::Value [IDX_SIZE];
+        this->inMemRel = new Json::Value [IDX_SIZE];
         this->currEnt = 0;
         this->currRel = 0;
 
@@ -57,11 +57,11 @@ public:
     ~IndexHandler() { delete [] inMemEnt; delete [] inMemRel; }
 
     bool writeEntity(std::string, vector<std::pair<ColumnBase&, std::string>>);
-    bool writeRelation(std::string, std::string, vector<std::pair<ColumnBase&, std::string>>, vector<std::pair<ColumnBase&, std::string>>);
+    bool writeRelation(std::string, std::string, std::vector<std::pair<ColumnBase&, std::string>>, std::vector<std::pair<ColumnBase&, std::string>>);
     bool writeToDisk(int);
 
     bool fetch(int const, Json::Value&);
-    Json::Value& fetchAll(int const);
+    Json::Value* fetchAll(int const);
     bool fetchFromDisk(int);   // Loads disk
 
     /**
@@ -101,7 +101,7 @@ bool IndexHandler::writeEntity(string entity, std::vector<std::pair<ColumnBase&,
  */
 bool IndexHandler::writeRelation(
                     string entityL,
-                    string entityL,
+                    string entityR,
                     std::vector<std::pair<ColumnBase&, std::string>> fieldsL,
                     std::vector<std::pair<ColumnBase&, std::string>> fieldsR) {
     // TODO - Maintain sort order, heap
@@ -133,7 +133,7 @@ bool IndexHandler::writeToDisk(int type) { return false; }
  */
 bool IndexHandler::fetch(int const type, Json::Value& entry) {
 
-    string* inMem;
+    Json::Value* inMem;
     int curr;
 
     // Determine the index type
@@ -148,7 +148,7 @@ bool IndexHandler::fetch(int const type, Json::Value& entry) {
 
     // Find the entry
     for (int i = 0; i < curr; i++)
-        if (entry == this->inMemEnt[i])
+        if (entry == inMem[i])
             return true;
     return false;
 }
@@ -158,7 +158,7 @@ bool IndexHandler::fetch(int const type, Json::Value& entry) {
  *
  *  TODO - this only returns the in-memory index
  */
-string* IndexHandler::fetchAll(int const type) {
+Json::Value* IndexHandler::fetchAll(int const type) {
 
     // Determine the index type
     if (type == IDX_TYPE_ENT) {
