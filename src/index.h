@@ -1,6 +1,8 @@
 /*
  *  index.h
  *
+ *  THIS OPERATES IN MEMORY ONLY - NO DISK WRITES YET
+ *
  *  Defines interface for the index.  Provides an in memory instance to fetch results quickly and
  *  provides an interface to disk storage where needed.  Use a heap to maintain order.
  *
@@ -35,32 +37,12 @@ class IndexHandler {
 
     RedisHandler* redisHandler;
 
-    Json::Value* inMemEnt;  // In memory instance for entities
-    Json::Value* inMemRel;  // In memory instance for relations
-
-    int currEnt;
-    int currRel;
-    int* size;
-
-    int diskBlock;
-
 public:
     /**
      * Constructor and Destructor for index handler
      */
-    IndexHandler() {
-
-        this->redisHandler = new RedisHandler(REDISHOST, REDISDB);
-        this->inMemEnt = new Json::Value [IDX_SIZE];
-        this->inMemRel = new Json::Value [IDX_SIZE];
-        this->currEnt = 0;
-        this->currRel = 0;
-
-        this->size = new int [2];
-        this->size[IDX_TYPE_ENT] = 0;
-        this->size[IDX_TYPE_REL] = 0;
-    }
-    ~IndexHandler() { delete [] inMemEnt; delete [] inMemRel; }
+    IndexHandler() { this->redisHandler = new RedisHandler(REDISHOST, REDISDB); }
+    ~IndexHandler() { delete redisHandler; }
 
     bool writeEntity(std::string, vector<std::pair<ColumnBase*, std::string>>*);
     bool writeRelation(std::string, std::string, std::vector<std::pair<ColumnBase*, std::string>>*, std::vector<std::pair<ColumnBase*, std::string>>*);
@@ -70,14 +52,6 @@ public:
     Json::Value* fetchAll(int const);
     bool fetchFromDisk(int);   // Loads disk
 
-    /**
-     *  Getter for index size
-     */
-    int idxSize(int type) {
-        if (type != IDX_TYPE_ENT && type != IDX_TYPE_REL)
-            return 0;
-        return this->size[type];
-    }
 };
 
 
@@ -98,17 +72,14 @@ string IndexHandler::getIndexKey(std::string keyStr) {
  *
  *  e.g. {"entity": <string:entname>, "fields": <string_array:[<f1,f2,...>]>}
  */
-bool IndexHandler::writeEntity(string entity, std::vector<std::pair<ColumnBase*, std::string>>* fields) {
-    // TODO - Maintain sort order, heap
-
+bool IndexHandler::writeEntity(
+                        std::string key,
+                        std::string entity,
+                        std::vector<std::pair<ColumnBase*, std::string>>* fields) {
     Json::Value jsonVal;
-
     jsonVal["entity"] = entity;
     jsonVal["fields"] = &fields[0];
-
-    this->inMemEnt[this->currEnt++] = &jsonVal;
-    this->size[IDX_TYPE_ENT]++;
-
+    this->RedisHandler->write(this->getIndexKey(key), jsonVal.asString());
     return true;
 }
 
@@ -118,22 +89,17 @@ bool IndexHandler::writeEntity(string entity, std::vector<std::pair<ColumnBase*,
  *  e.g. {"entity": <string:entname>, "fields": <string_array:[<f1,f2,...>]>}
  */
 bool IndexHandler::writeRelation(
-                    string entityL,
-                    string entityR,
+                    std::string key,
+                    std::string entityL,
+                    std::string entityR,
                     std::vector<std::pair<ColumnBase*, std::string>>* fieldsL,
                     std::vector<std::pair<ColumnBase*, std::string>>* fieldsR) {
-    // TODO - Maintain sort order, heap
-
     Json::Value jsonVal;
-
     jsonVal["entityL"] = entityL;
     jsonVal["fieldsL"] = &fieldsL[0];
     jsonVal["entityR"] = entityR;
     jsonVal["fieldsR"] = &fieldsR[0];
-
-    this->inMemRel[this->currRel++] = &jsonVal;
-    this->size[IDX_TYPE_REL]++;
-
+    this->RedisHandler->write(this->getIndexKey(key), jsonVal.asString());
     return true;
 }
 
@@ -147,45 +113,39 @@ bool IndexHandler::writeToDisk(int type) { return false; }
 /**
  * Attempts to fetch an entry from index
  *
- *  TODO - this is currently incredibly inefficient, improve
+ * @param string key    key string for the requested entry
  */
-bool IndexHandler::fetch(int const type, string entity) {
-
-    Json::Value* inMem;
-    int curr;
-
-    // Determine the index type
-    if (type == IDX_TYPE_ENT) {
-        inMem = this->inMemEnt;
-        curr = this->currEnt;
-    } else if (type == IDX_TYPE_REL) {
-        inMem = this->inMemRel;
-        curr = this->currRel;
-    } else // bad type
-        return false;
-
-    // Find the entry
-//    for (int i = 0; i < curr; i++)
-//        if (entity == inMem[i]["entity"])
-//            return true;
-//    return false;
-    return true;
+Json::Value* IndexHandler::fetch(std::string key) {
+    Json::Value inMem;
+    Json::Reader reader;
+    this->RedisHandler->read(this->getIndexKey(key));
+    parsedSuccess = reader.parse(this->RedisHandler->read(this->getIndexKey(key)), inMem, false);
+    if (parsedSuccess)
+        return &inMem;
+    else
+        return NULL;
 }
 
 /**
- * Fetch all entities
+ * Fetch all recs
  *
  *  TODO - this only returns the in-memory index
  */
-Json::Value* IndexHandler::fetchAll(int const type) {
+Json::Value* IndexHandler::fetchAll() {
+    Json::Value inMem;
+    Json::Reader reader;
+    std::string redisRsp;
+    redisRsp = this->RedisHandler->read("*", inMem, false)
 
-    // Determine the index type
-    if (type == IDX_TYPE_ENT) {
-        return this->inMemEnt;
-    } else if (type == IDX_TYPE_REL) {
-        return this->inMemRel;
-    } else // bad type
-        return NULL;
+    // TODO - Iterate through recs
+
+    // parsedSuccess = reader.parse();
+
+//    if (parsedSuccess)
+//        return &inMem;
+//    else
+//        return NULL;
+    return NULL;
 }
 
 /**
