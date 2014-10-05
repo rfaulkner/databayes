@@ -17,6 +17,8 @@
 #include <string>
 #include <json/json.h>
 
+#include "redis.h"
+
 #define IDX_SIZE 100000
 
 // Index types (entities, relations, fields)
@@ -30,6 +32,8 @@ using namespace std;
 // TODO - implement heap UDT to handle
 
 class IndexHandler {
+
+    RedisHandler* redisHandler;
 
     Json::Value* inMemEnt;  // In memory instance for entities
     Json::Value* inMemRel;  // In memory instance for relations
@@ -45,6 +49,8 @@ public:
      * Constructor and Destructor for index handler
      */
     IndexHandler() {
+
+        this->redisHandler = new RedisHandler(REDISHOST, REDISDB);
         this->inMemEnt = new Json::Value [IDX_SIZE];
         this->inMemRel = new Json::Value [IDX_SIZE];
         this->currEnt = 0;

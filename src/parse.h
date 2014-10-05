@@ -19,7 +19,6 @@
 #include <json/json.h>
 
 #include "column_types.h"
-#include "redis.h"
 #include "index.h"
 
 #define REDISHOST "localhost"
@@ -107,7 +106,6 @@ class Parser {
     std::string currFieldValue;
     ColumnBase* currFieldType;
 
-    RedisHandler* redisHandler;
     IndexHandler* indexHandler;
 
     std::string currEntity;
@@ -138,7 +136,6 @@ Parser::Parser() {
     this->state = STATE_START;
     this->error = false;
     this->debug = false;
-    this->redisHandler = new RedisHandler(REDISHOST, REDISDB);
     this->indexHandler = new IndexHandler();
     this->errStr = "";
 }
