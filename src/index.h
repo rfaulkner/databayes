@@ -76,6 +76,18 @@ public:
 
 
 /**
+ * Generate an md5 hash
+ *
+ *  @param string keyStr    the value to be hashed
+ */
+string IndexHandler::getIndexKey(std::string keyStr) {
+    std::string hash = "";
+    // TODO - invoke md5 alg on string
+    return hash;
+}
+
+
+/**
  * Writes of entities to in memory index.
  *
  *  e.g. {"entity": <string:entname>, "fields": <string_array:[<f1,f2,...>]>}
