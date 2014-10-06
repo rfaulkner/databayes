@@ -31,7 +31,8 @@ public:
     
     bool connect();
     bool write(std::string, std::string);
-    string read(std::string);
+    std::string read(std::string);
+    std::string keys(std::string);
 };
 
 
@@ -65,8 +66,16 @@ bool RedisHandler::write(std::string key, std::string value) {
 /**
  *  Read a value from redis given a key
  */
-string RedisHandler::read(std::string key) {
+std::string RedisHandler::read(std::string key) {
     redis3m::reply r = this->conn->run(redis3m::command("GET") << key );
+    return r.str();
+}
+
+/**
+ *  Read a value from redis given a key
+ */
+std::string RedisHandler::keys(std::string pattern) {
+    redis3m::reply r = this->conn->run(redis3m::command("KEYS") << pattern );
     return r.str();
 }
 
