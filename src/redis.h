@@ -21,24 +21,24 @@ using namespace std;
  *  Defines interface to redis server
  */
 class RedisHandler {
-    string host;
-    string database;
+    std::string host;
+    std::string database;
     redis3m::connection::ptr_t conn;
     
 public:
     RedisHandler() {}
-    RedisHandler(string, string);
+    RedisHandler(std::string, std::string);
     
     bool connect();
-    bool write(string, string);
-    string read(string);
+    bool write(std::string, std::string);
+    string read(std::string);
 };
 
 
 /**
  *  Constructor that allows specification of host and db
  */
-RedisHandler::RedisHandler(string host, string database) {
+RedisHandler::RedisHandler(std::string host, std::string database) {
     this->host = host;
     this->database = database;
 }
@@ -56,7 +56,7 @@ bool RedisHandler::connect() {
 /**
  *  Writes a key value to redis
  */
-bool RedisHandler::write(string key, string value) {
+bool RedisHandler::write(std::string key, std::string value) {
     this->conn->run(redis3m::command("SET") << key << value );
     return true;
 }
@@ -65,7 +65,7 @@ bool RedisHandler::write(string key, string value) {
 /**
  *  Read a value from redis given a key
  */
-string RedisHandler::read(string key) {
+string RedisHandler::read(std::string key) {
     redis3m::reply r = this->conn->run(redis3m::command("GET") << key );
     return r.str();
 }
