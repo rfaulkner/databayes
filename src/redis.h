@@ -27,44 +27,29 @@ using namespace std;
 class RedisHandler {
 
     std::string host;
-    std::string port;
+    int port;
 
     redisContext *context;
     
 public:
-    RedisHandler();
-    RedisHandler(std::string, std::string);
+    RedisHandler() { this->host = REDISHOST; this->port = REDISPORT; }
+    RedisHandler(std::string, int) { this->host = host; this->port = port; }
     
-    bool connect();
-    bool write(std::string, std::string);
+    void connect();
+    void write(std::string, std::string);
     std::string read(std::string);
     std::string keys(std::string);
 };
 
 
-/**
- *  Constructor
- */
-RedisHandler::RedisHandler() { this->host = REDISHOST; this->port = REDISPORT; }
-
-
-/**
- *  Constructor that allows specification of host and db
- */
-RedisHandler::RedisHandler(std::string host, std::string port) { this->host = host; this->port = port; }
-
-
-/**
- *  Establishes a connection to a redis instance
- */
-void RedisHandler::connect() {
-    this->context = redisConnect(REDISHOST, REDISPORT);
-    return true;
-}
+/** Establishes a connection to a redis instance */
+void RedisHandler::connect() { this->context = redisConnect(REDISHOST, REDISPORT); }
 
 
 /** Writes a key value to redis */
-void RedisHandler::write(std::string key, std::string value) { redisCommand(c, "SET %s %s", key, value); }
+void RedisHandler::write(std::string key, std::string value) {
+    redisCommand(this->context, "SET %s %s", key.c_str(), value.c_str());
+}
 
 
 ///**
