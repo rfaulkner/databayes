@@ -37,35 +37,26 @@ public:
     
     void connect();
     void write(std::string, std::string);
-    std::string read(std::string);
-    std::string keys(std::string);
+    void read(std::string);
+    void keys(std::string);
 };
-
 
 /** Establishes a connection to a redis instance */
 void RedisHandler::connect() { this->context = redisConnect(REDISHOST, REDISPORT); }
-
 
 /** Writes a key value to redis */
 void RedisHandler::write(std::string key, std::string value) {
     redisCommand(this->context, "SET %s %s", key.c_str(), value.c_str());
 }
 
+/** Read a value from redis given a key */
+void RedisHandler::read(std::string key) {
+    redisReply *reply = (redisReply*)redisCommand(this->context, "GET %s", key.c_str());
+}
 
-///**
-// *  Read a value from redis given a key
-// */
-//std::string RedisHandler::read(std::string key) {
-//    redis3m::reply r = this->conn->run(redis3m::command("GET") << key );
-//    return r.str();
-//}
-//
-///**
-// *  Read a value from redis given a key
-// */
-//std::string RedisHandler::keys(std::string pattern) {
-//    redis3m::reply r = this->conn->run(redis3m::command("KEYS") << pattern );
-//    return r.str();
-//}
+/** Read a value from redis given a key */
+void RedisHandler::keys(std::string pattern) {
+    redisReply *reply = (redisReply*)redisCommand(this->context, "KEYS %s", pattern.c_str());
+}
 
 #endif
