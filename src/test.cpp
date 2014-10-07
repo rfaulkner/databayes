@@ -13,22 +13,19 @@
 
 #include "redis.h"
 
-#define REDISHOST "localhost"
-#define REDISDB "databayes_test"
+#define REDISHOST "127.0.0.1"
+#define REDISPORT 6379
 
 using namespace std;
 
-/**
- * Test to ensure that redis keys are correctly returned
- */
-bool testRedisKeys() {
-    RedisHandler* redisHandler = new RedisHandler(REDISHOST, REDISDB);
-    redisHandler->write("k1", "v1");
-    redisHandler->write("k2", "v2");
-    cout << redisHandler->keys("*") << endl;
+/** Test to ensure that redis keys are correctly returned */
+void testRedisSet() {
+    RedisHandler r;
+    r.connect();
+    r.write("foo", "bar");
 }
 
 int main() {
-    testRedisKeys();
+    testRedisSet();
     return 0;
 }
