@@ -40,7 +40,7 @@ public:
     void connect();
     void write(std::string, std::string);
     std::string read(std::string);
-    std::vector<string>* keys(std::string);
+    std::vector<std::string>* keys(std::string);
 };
 
 /** Establishes a connection to a redis instance */
@@ -61,7 +61,7 @@ std::string RedisHandler::read(std::string key) {
 }
 
 /** Read a value from redis given a key pattern */
-std::vector<string>* RedisHandler::keys(std::string pattern) {
+std::vector<std::string>* RedisHandler::keys(std::string pattern) {
     std::vector<string>* elems = new std::vector<string>();
     redisReply *reply = (redisReply*)redisCommand(this->context, "KEYS %s", pattern.c_str());
 

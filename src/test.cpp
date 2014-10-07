@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include "redis.h"
 
@@ -25,7 +26,31 @@ void testRedisSet() {
     r.write("foo", "bar");
 }
 
+/** Test to ensure that redis keys are correctly returned */
+void testRedisGet() {
+    RedisHandler r;
+    r.connect();
+    cout << endl << "VALUE FOR KEY foo" << endl;
+    cout << r.read("foo") << endl << endl;
+}
+
+/** Test to ensure that redis keys are correctly returned */
+void testRedisKeys() {
+    RedisHandler r;
+    std::vector<string>* vec;
+
+    r.connect();
+    vec = r.keys("*");
+    cout << "KEY LIST FOR *" << endl;
+    for (std::vector<std::string>::iterator it = vec->begin() ; it != vec->end(); ++it) {
+        cout << *it << endl;
+    }
+    cout << endl;
+}
+
 int main() {
     testRedisSet();
+    testRedisGet();
+    testRedisKeys();
     return 0;
 }
