@@ -12,7 +12,11 @@
 
 #include <iostream>
 #include <string>
-#include <redis3m/redis3m.hpp>
+#include "hiredis/hiredis.h"
+
+#define REDISHOST "127.0.0.1"
+#define REDISPORT 6379
+
 
 using namespace std;
 
@@ -21,12 +25,14 @@ using namespace std;
  *  Defines interface to redis server
  */
 class RedisHandler {
+
     std::string host;
-    std::string database;
-    redis3m::connection::ptr_t conn;
+    std::string port;
+
+    redisContext *context;
     
 public:
-    RedisHandler() {}
+    RedisHandler();
     RedisHandler(std::string, std::string);
     
     bool connect();
@@ -37,46 +43,44 @@ public:
 
 
 /**
+ *  Constructor
+ */
+RedisHandler::RedisHandler() { this->host = REDISHOST; this->port = REDISPORT; }
+
+
+/**
  *  Constructor that allows specification of host and db
  */
-RedisHandler::RedisHandler(std::string host, std::string database) {
-    this->host = host;
-    this->database = database;
-}
+RedisHandler::RedisHandler(std::string host, std::string port) { this->host = host; this->port = port; }
 
 
 /**
  *  Establishes a connection to a redis instance
  */
-bool RedisHandler::connect() {
-    redis3m::connection::ptr_t conn = redis3m::connection::create();
+void RedisHandler::connect() {
+    this->context = redisConnect(REDISHOST, REDISPORT);
     return true;
 }
 
 
-/**
- *  Writes a key value to redis
- */
-bool RedisHandler::write(std::string key, std::string value) {
-    this->conn->run(redis3m::command("SET") << key << value );
-    return true;
-}
+/** Writes a key value to redis */
+void RedisHandler::write(std::string key, std::string value) { redisCommand(c, "SET %s %s", key, value); }
 
 
-/**
- *  Read a value from redis given a key
- */
-std::string RedisHandler::read(std::string key) {
-    redis3m::reply r = this->conn->run(redis3m::command("GET") << key );
-    return r.str();
-}
-
-/**
- *  Read a value from redis given a key
- */
-std::string RedisHandler::keys(std::string pattern) {
-    redis3m::reply r = this->conn->run(redis3m::command("KEYS") << pattern );
-    return r.str();
-}
+///**
+// *  Read a value from redis given a key
+// */
+//std::string RedisHandler::read(std::string key) {
+//    redis3m::reply r = this->conn->run(redis3m::command("GET") << key );
+//    return r.str();
+//}
+//
+///**
+// *  Read a value from redis given a key
+// */
+//std::string RedisHandler::keys(std::string pattern) {
+//    redis3m::reply r = this->conn->run(redis3m::command("KEYS") << pattern );
+//    return r.str();
+//}
 
 #endif
