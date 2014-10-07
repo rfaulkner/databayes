@@ -12,6 +12,8 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
+
 #include "hiredis/hiredis.h"
 
 #define REDISHOST "127.0.0.1"
@@ -38,7 +40,7 @@ public:
     void connect();
     void write(std::string, std::string);
     std::string read(std::string);
-    std::string keys(std::string);
+    std::vector<string>* keys(std::string);
 };
 
 /** Establishes a connection to a redis instance */
@@ -51,14 +53,27 @@ void RedisHandler::write(std::string key, std::string value) {
 
 /** Read a value from redis given a key */
 std::string RedisHandler::read(std::string key) {
+    std::string result;
     redisReply *reply = (redisReply*)redisCommand(this->context, "GET %s", key.c_str());
-    return reply->str;
+    result = reply->str;
+    freeReplyObject(reply);
+    return result;
 }
 
-/** Read a value from redis given a key */
-std::string RedisHandler::keys(std::string pattern) {
+/** Read a value from redis given a key pattern */
+std::vector<string>* RedisHandler::keys(std::string pattern) {
+    std::vector<string>* elems = new std::vector<string>();
     redisReply *reply = (redisReply*)redisCommand(this->context, "KEYS %s", pattern.c_str());
-    return reply->str;
+
+    // Determine if the reply is an array and iterate through elems if so
+    if (reply->type == REDIS_REPLY_ARRAY) {
+        for (int j = 0; j < reply->elements; j++) {
+            elems->push_back(reply->element[j]->str);
+        }
+    }
+
+    freeReplyObject(reply);
+    return elems;
 }
 
 #endif
