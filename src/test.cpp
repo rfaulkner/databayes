@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "redis.h"
+#include "md5.h"
 
 #define REDISHOST "127.0.0.1"
 #define REDISPORT 6379
@@ -48,9 +49,19 @@ void testRedisKeys() {
     cout << endl;
 }
 
+/** Test to ensure that md5 hashing works */
+void md5Hashing() {
+    cout << endl << "md5 of 'mykey': " << md5("mykey") << endl;
+}
+
 int main() {
+
     testRedisSet();
     testRedisGet();
     testRedisKeys();
+    md5Hashing();
+
+    cout << endl;
+
     return 0;
 }
