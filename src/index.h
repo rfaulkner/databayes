@@ -48,8 +48,8 @@ public:
     bool writeRelation(std::string, std::string, std::vector<std::pair<ColumnBase*, std::string>>*, std::vector<std::pair<ColumnBase*, std::string>>*);
     bool writeToDisk(int);
 
-    bool fetch(int const, std::string);
-    Json::Value* fetchAll(int const);
+    Json::Value* fetch(int const, std::string);
+    std::vector<Json::Value>* IndexHandler::fetchPattern(std::string);
     bool fetchFromDisk(int);   // Loads disk
 
 };
@@ -127,25 +127,28 @@ Json::Value* IndexHandler::fetch(std::string key) {
 }
 
 /**
- * Fetch all recs
+ * Fetch all redis records matching a pattern
  *
- *  TODO - this only returns the in-memory index
+ * Returns a vector of JSON values
  */
-Json::Value* IndexHandler::fetchAll() {
+std::vector<Json::Value>* IndexHandler::fetchPattern(std::string pattern) {
+
+    std::vector<Json::Value>* elems = new std::vector<Json::Value>();
     Json::Value inMem;
     Json::Reader reader;
+
     std::string redisRsp;
-    redisRsp = this->RedisHandler->read("*", inMem, false)
+    std::vector<string>* vec;
 
-    // TODO - Iterate through recs
+    vec = this->RedisHandler.keys(pattern);
 
-    // parsedSuccess = reader.parse();
-
-//    if (parsedSuccess)
-//        return &inMem;
-//    else
-//        return NULL;
-    return NULL;
+    // Iterate over all entries returned from redis
+    for (std::vector<std::string>::iterator it = vec->begin() ; it != vec->end(); ++it) {
+        parsedSuccess = reader.parse(*it, inMem, false);
+        if (parsedSuccess)
+            elems.push_back(inMem);
+    }
+    return elems;
 }
 
 /**
