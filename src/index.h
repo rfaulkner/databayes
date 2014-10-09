@@ -56,18 +56,6 @@ public:
 
 
 /**
- * Generate an md5 hash
- *
- *  @param string keyStr    the value to be hashed
- */
-string IndexHandler::getIndexKey(std::string keyStr) {
-    std::string hash = "";
-    // TODO - invoke md5 alg on string
-    return hash;
-}
-
-
-/**
  * Writes of entities to in memory index.
  *
  *  e.g. {"entity": <string:entname>, "fields": <string_array:[<f1,f2,...>]>}
@@ -79,7 +67,7 @@ bool IndexHandler::writeEntity(
     Json::Value jsonVal;
     jsonVal["entity"] = entity;
     jsonVal["fields"] = &fields[0];
-    this->RedisHandler->write(this->getIndexKey(key), jsonVal.asString());
+    this->RedisHandler->write(key, jsonVal.asString());
     return true;
 }
 
@@ -99,7 +87,7 @@ bool IndexHandler::writeRelation(
     jsonVal["fieldsL"] = &fieldsL[0];
     jsonVal["entityR"] = entityR;
     jsonVal["fieldsR"] = &fieldsR[0];
-    this->RedisHandler->write(this->getIndexKey(key), jsonVal.asString());
+    this->RedisHandler->write(key, jsonVal.asString());
     return true;
 }
 
@@ -118,8 +106,8 @@ bool IndexHandler::writeToDisk(int type) { return false; }
 Json::Value* IndexHandler::fetch(std::string key) {
     Json::Value inMem;
     Json::Reader reader;
-    this->RedisHandler->read(this->getIndexKey(key));
-    parsedSuccess = reader.parse(this->RedisHandler->read(this->getIndexKey(key)), inMem, false);
+    this->RedisHandler->read(key);
+    parsedSuccess = reader.parse(this->RedisHandler->read(key), inMem, false);
     if (parsedSuccess)
         return &inMem;
     else
