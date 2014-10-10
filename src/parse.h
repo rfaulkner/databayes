@@ -275,14 +275,14 @@ void Parser::analyze(const std::string& s) {
         cout << "Current Entities:" << endl;
 
         if (WILDCARD_CHAR == firstChar && this->currEntity.size() == 1) {
-            entities = indexHandler->fetchAll(IDX_TYPE_ENT);
+            entities = this->indexHandler->fetchPattern("ent_*");
             if (entities != NULL) {
                 for (int i = 0; i < indexHandler->idxSize(IDX_TYPE_ENT); ++i)
                     cout << "-> " << entities[i] << endl;
             } else
                 cout << "not found." << endl;
         } else {
-            if (indexHandler->fetch(IDX_TYPE_ENT, this->currEntity))
+            if (indexHandler->fetchEntity(this->currEntity))
                 cout << this->currEntity << endl;
             else
                 cout << "not found." << endl;
@@ -408,7 +408,7 @@ void Parser::processFieldStatement(const string &fieldStr) {
         if (this->debug)
             cout << "DEBUG -- Reading field: " << field << endl; // DEBUG
 
-        this->error = this->error || this->indexHandler->fetch(IDX_TYPE_FIELD, field);
+        // this->error = this->error || this->indexHandler->fetch(IDX_TYPE_FIELD, field);
     }
 }
 

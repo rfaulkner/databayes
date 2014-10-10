@@ -50,7 +50,10 @@ public:
     bool writeRelation(std::string, std::string, std::vector<std::pair<ColumnBase*, std::string>>*, std::vector<std::pair<ColumnBase*, std::string>>*);
     bool writeToDisk(int);
 
-    Json::Value* fetch(int const, std::string);
+    Json::Value* fetch(std::string);
+    Json::Value* fetchEntity(std::string);
+    Json::Value* fetchRelation(std::string);
+
     std::vector<Json::Value>* fetchPattern(std::string);
     bool fetchFromDisk(int);   // Loads disk
 
@@ -127,13 +130,18 @@ bool IndexHandler::writeToDisk(int type) { return false; }
 Json::Value* IndexHandler::fetch(std::string key) {
     Json::Value inMem;
     Json::Reader reader;
-    this->RedisHandler->read(key);
-    parsedSuccess = reader.parse(this->RedisHandler->read(key), inMem, false);
+    parsedSuccess = reader.parse(key, inMem, false);
     if (parsedSuccess)
         return &inMem;
     else
         return NULL;
 }
+
+/** Attempts to fetch an entity from index */
+Json::Value* IndexHandler::fetchEntity(std::string entity) { return this->fetch(this->RedisHandler->read(this->generateEntityKey(entity))); }
+
+/** Attempts to fetch a relation from index */
+Json::Value* IndexHandler::fetchRelation(std::string entity) { return this->fetch(this->RedisHandler->read(this->generateRelationKey(entity))); }
 
 /**
  * Fetch all redis records matching a pattern
