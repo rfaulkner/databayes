@@ -85,10 +85,7 @@ private void IndexHandler::buildFieldJSON(Json::Value& value,
  *
  *  e.g. {"entity": <string:entname>, "fields": <string_array:[<f1,f2,...>]>}
  */
-bool IndexHandler::writeEntity(
-                        std::string key,
-                        std::string entity,
-                        std::vector<std::pair<ColumnBase*, std::string>>* fields) {
+bool IndexHandler::writeEntity(std::string entity, std::vector<std::pair<ColumnBase*, std::string>>* fields) {
     Json::Value jsonVal;
     jsonVal["entity"] = entity;
     this->buildFieldJSON(&jsonVal, fields, "fields");
@@ -102,7 +99,6 @@ bool IndexHandler::writeEntity(
  *  e.g. {"entity": <string:entname>, "fields": <string_array:[<f1,f2,...>]>}
  */
 bool IndexHandler::writeRelation(
-                    std::string key,
                     std::string entityL,
                     std::string entityR,
                     std::vector<std::pair<ColumnBase*, std::string>>* fieldsL,
