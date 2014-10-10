@@ -37,6 +37,8 @@ class IndexHandler {
 
     RedisHandler* redisHandler;
 
+    void buildFieldJSON(Json::Value&, std::vector<std::pair<ColumnBase*, std::string>>*, std::string);
+
 public:
     /**
      * Constructor and Destructor for index handler
@@ -56,6 +58,20 @@ public:
 
 
 /**
+ * Handles forming the json for field vectors in the index
+ */
+private void IndexHandler::buildFieldJSON(Json::Value& value,
+                                          std::vector<std::pair<ColumnBase*, std::string>>* fields,
+                                          std::string prefix) {
+    int counter = 0;
+    for (std::vector<std::string>::iterator it = fieldsL->begin() ; it != fieldsL->end(); ++it) {
+        jsonVal[prefix + "_type_" + std::to_string(i)] = *it[0]->getType();
+        jsonVal[prefix + "_value_" + std::to_string(i)] = *it[1];
+        counter++;
+    }
+}
+
+/**
  * Writes of entities to in memory index.
  *
  *  e.g. {"entity": <string:entname>, "fields": <string_array:[<f1,f2,...>]>}
@@ -66,7 +82,7 @@ bool IndexHandler::writeEntity(
                         std::vector<std::pair<ColumnBase*, std::string>>* fields) {
     Json::Value jsonVal;
     jsonVal["entity"] = entity;
-    jsonVal["fields"] = &fields[0];
+    this->buildFieldJSON(&jsonVal, fields, "fields");
     this->RedisHandler->write(key, jsonVal.asString());
     return true;
 }
@@ -84,9 +100,9 @@ bool IndexHandler::writeRelation(
                     std::vector<std::pair<ColumnBase*, std::string>>* fieldsR) {
     Json::Value jsonVal;
     jsonVal["entityL"] = entityL;
-    jsonVal["fieldsL"] = &fieldsL[0];
     jsonVal["entityR"] = entityR;
-    jsonVal["fieldsR"] = &fieldsR[0];
+    this->buildFieldJSON(&jsonVal, fieldsL, "fieldsL");
+    this->buildFieldJSON(&jsonVal, fieldsR, "fieldsR");
     this->RedisHandler->write(key, jsonVal.asString());
     return true;
 }
