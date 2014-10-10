@@ -69,6 +69,7 @@ private void IndexHandler::buildFieldJSON(Json::Value& value,
         jsonVal[prefix + "_value_" + std::to_string(i)] = *it[1];
         counter++;
     }
+    jsonVal[prefix + "_count"] = std::to_string(counter);
 }
 
 /**
