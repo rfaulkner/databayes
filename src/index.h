@@ -51,11 +51,19 @@ public:
     bool writeToDisk(int);
 
     Json::Value* fetch(int const, std::string);
-    std::vector<Json::Value>* IndexHandler::fetchPattern(std::string);
+    std::vector<Json::Value>* fetchPattern(std::string);
     bool fetchFromDisk(int);   // Loads disk
+
+    std::string generateEntityKey(std::string);
+    std::string generateRelationKey(std::string, std::string);
 
 };
 
+/** Generate a key for an entity entry in the index */
+std::string IndexHandler::generateEntityKey(std::string entity) { return return "ent_" + entity; }
+
+/** Generate a key for a relation entry in the index */
+std::string IndexHandler::generateRelationKey(std::string entityL, std::string entityR) { return "rel_" + entityL + "_" + entityR; }
 
 /**
  * Handles forming the json for field vectors in the index
@@ -84,7 +92,7 @@ bool IndexHandler::writeEntity(
     Json::Value jsonVal;
     jsonVal["entity"] = entity;
     this->buildFieldJSON(&jsonVal, fields, "fields");
-    this->RedisHandler->write(key, jsonVal.asString());
+    this->RedisHandler->write(this->generateEntityKey(entity), jsonVal.asString());
     return true;
 }
 
@@ -104,7 +112,7 @@ bool IndexHandler::writeRelation(
     jsonVal["entityR"] = entityR;
     this->buildFieldJSON(&jsonVal, fieldsL, "fieldsL");
     this->buildFieldJSON(&jsonVal, fieldsR, "fieldsR");
-    this->RedisHandler->write(key, jsonVal.asString());
+    this->RedisHandler->write(this->generateRelationKey(entityL, entityR), jsonVal.asString());
     return true;
 }
 
