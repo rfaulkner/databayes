@@ -21,9 +21,6 @@
 #include "column_types.h"
 #include "index.h"
 
-#define REDISHOST "localhost"
-#define REDISDB "databayes"
-
 #define STR_CMD_ADD "add"
 #define STR_CMD_GET "get"
 #define STR_CMD_GEN "gen"
