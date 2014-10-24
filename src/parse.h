@@ -273,8 +273,8 @@ void Parser::analyze(const std::string& s) {
 
         entities = this->indexHandler->fetchPattern("ent_" + this->currEntity);
         if (entities != NULL) {
-            for (std::vector<std::pair<ColumnBase*, std::string>::iterator it = entities->begin() ; it != entities->end(); ++it)
-                cout << "-> " << *it["entity"] << endl;
+            for (std::vector<Json::Value>::iterator it = entities->begin() ; it != entities->end(); ++it)
+                cout << "-> " << (*it)["entity"] << endl;
         } else
             cout << "not found." << endl;
 
