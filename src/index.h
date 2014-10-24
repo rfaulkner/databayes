@@ -43,7 +43,7 @@ public:
     /**
      * Constructor and Destructor for index handler
      */
-    IndexHandler() { this->redisHandler = new RedisHandler(REDISHOST, REDISDB); }
+    IndexHandler() { this->redisHandler = new RedisHandler(REDISHOST, REDISPORT); }
     ~IndexHandler() { delete redisHandler; }
 
     bool writeEntity(std::string, vector<std::pair<ColumnBase*, std::string>>*);
@@ -63,7 +63,7 @@ public:
 };
 
 /** Generate a key for an entity entry in the index */
-std::string IndexHandler::generateEntityKey(std::string entity) { return return "ent_" + entity; }
+std::string IndexHandler::generateEntityKey(std::string entity) { return "ent_" + entity; }
 
 /** Generate a key for a relation entry in the index */
 std::string IndexHandler::generateRelationKey(std::string entityL, std::string entityR) { return "rel_" + entityL + "_" + entityR; }
@@ -71,13 +71,13 @@ std::string IndexHandler::generateRelationKey(std::string entityL, std::string e
 /**
  * Handles forming the json for field vectors in the index
  */
-private void IndexHandler::buildFieldJSON(Json::Value& value,
+void IndexHandler::buildFieldJSON(Json::Value& value,
                                           std::vector<std::pair<ColumnBase*, std::string>>* fields,
                                           std::string prefix) {
     int counter = 0;
-    for (std::vector<std::string>::iterator it = fieldsL->begin() ; it != fieldsL->end(); ++it) {
-        jsonVal[prefix + "_type_" + std::to_string(i)] = *it[0]->getType();
-        jsonVal[prefix + "_value_" + std::to_string(i)] = *it[1];
+    for (std::vector<std::pair<ColumnBase*, std::string>::iterator it = fields->begin() ; it != fields->end(); ++it) {
+        jsonVal[prefix + "_type_" + std::to_string(counter)] = *it[0]->getType();
+        jsonVal[prefix + "_value_" + std::to_string(counter)] = *it[1];
         counter++;
     }
     jsonVal[prefix + "_count"] = std::to_string(counter);
