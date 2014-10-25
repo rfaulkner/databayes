@@ -128,12 +128,12 @@ bool IndexHandler::writeToDisk(int type) { return false; }
  * @param string key    key string for the requested entry
  */
 Json::Value* IndexHandler::fetch(std::string key) {
-    Json::Value inMem;
+    Json::Value* inMem = new Json::Value();
     Json::Reader reader;
     bool parsedSuccess;
-    parsedSuccess = reader.parse(key, inMem, false);
+    parsedSuccess = reader.parse(key, *inMem, false);
     if (parsedSuccess)
-        return &inMem;
+        return inMem;
     else
         return NULL;
 }
