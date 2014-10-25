@@ -91,7 +91,7 @@ void IndexHandler::buildFieldJSON(Json::Value& value,
 bool IndexHandler::writeEntity(std::string entity, std::vector<std::pair<ColumnBase*, std::string>>* fields) {
     Json::Value jsonVal;
     jsonVal["entity"] = entity;
-    this->buildFieldJSON(&jsonVal, fields, "fields");
+    this->buildFieldJSON(jsonVal, fields, "fields");
     this->redisHandler->write(this->generateEntityKey(entity), jsonVal.asString());
     return true;
 }
@@ -130,6 +130,7 @@ bool IndexHandler::writeToDisk(int type) { return false; }
 Json::Value* IndexHandler::fetch(std::string key) {
     Json::Value inMem;
     Json::Reader reader;
+    bool parsedSuccess;
     parsedSuccess = reader.parse(key, inMem, false);
     if (parsedSuccess)
         return &inMem;
@@ -155,17 +156,18 @@ std::vector<Json::Value>* IndexHandler::fetchPattern(std::string pattern) {
     std::vector<Json::Value>* elems = new std::vector<Json::Value>();
     Json::Value inMem;
     Json::Reader reader;
+    bool parsedSuccess;
 
     std::string redisRsp;
     std::vector<string>* vec;
 
-    vec = this->redisHandler.keys(pattern);
+    vec = this->redisHandler->keys(pattern);
 
     // Iterate over all entries returned from redis
     for (std::vector<std::string>::iterator it = vec->begin() ; it != vec->end(); ++it) {
         parsedSuccess = reader.parse(*it, inMem, false);
         if (parsedSuccess)
-            elems.push_back(inMem);
+            elems->push_back(inMem);
     }
     return elems;
 }
