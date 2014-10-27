@@ -367,6 +367,8 @@ void Parser::processFieldStatement(const string &fieldStr) {
     std::vector<string> fields = this->tokenize(fieldStr, ',');
     std::string field;
 
+    cout << "DEBUG -- Reading field: " << fieldStr << endl; // DEBUG
+
     for (std::vector<string>::iterator it = fields.begin() ; it != fields.end(); ++it) {
         field = *it;
 
@@ -412,6 +414,9 @@ void Parser::parseEntityDefinitionField(std::string field) {
     std::vector<string> fieldItems;
 
     fieldItems = this->tokenize(field, '_');
+
+    cout << "DEBUG -- Processing field definition name: " << fieldItems[0] << endl; // DEBUG
+    cout << "DEBUG -- Processing field definition type: " << fieldItems[1] << endl; // DEBUG
 
     if (fieldItems.size() != 2) {
         this->error = true;
