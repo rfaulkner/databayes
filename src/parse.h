@@ -403,8 +403,10 @@ void Parser::parseEntityDefinitionField(std::string field) {
 
     fieldItems = this->tokenize(field, '_');
 
-    cout << "DEBUG -- Processing field definition name: " << fieldItems[0] << endl; // DEBUG
-    cout << "DEBUG -- Processing field definition type: " << fieldItems[1] << endl; // DEBUG
+    if (this->debug) {
+        cout << "DEBUG -- Processing field definition name: " << fieldItems[0] << endl; // DEBUG
+        cout << "DEBUG -- Processing field definition type: " << fieldItems[1] << endl; // DEBUG
+    }
 
     if (fieldItems.size() != 2) {
         this->error = true;
