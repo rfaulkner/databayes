@@ -106,7 +106,6 @@ class Parser {
     IndexHandler* indexHandler;
 
     std::string currEntity;
-    std::string parserCmd;
 
     void parseEntitySymbol(std::string);
     void processFieldStatement(const string &source);
@@ -154,7 +153,6 @@ bool Parser::parse(const string& s) {
 
     vector<string> tokens = this->tokenize(s);
 
-    this->parserCmd = "";           // Initialize parser command
     this->state = STATE_START;      // Initialize state
     this->error = false;            // Initialize error condition
     this->errStr = "";              // Initialize error message
@@ -172,7 +170,7 @@ bool Parser::parse(const string& s) {
 
     // Emit the interpreted command
     if (this->debug)
-        cout << "DEBUG -- PARSE CMD: " << this->parserCmd << endl;
+        1; // TODO - output translated input
 
     return true;
 }
@@ -192,23 +190,18 @@ void Parser::analyze(const std::string& s) {
         if (sLower.compare(STR_CMD_ADD) == 0) {
             this->state = STATE_ADD;
             this->macroState = STATE_ADD;
-            this->parserCmd.append(STR_CMD_ADD);
         } else if (sLower.compare(STR_CMD_GET) == 0) {
             this->state = STATE_GET;
             this->macroState = STATE_GET;
-            this->parserCmd.append(STR_CMD_GET);
         } else if (sLower.compare(STR_CMD_GEN) == 0) {
             this->state = STATE_GEN;
             this->macroState = STATE_GEN;
-            this->parserCmd.append(STR_CMD_GEN);
         } else if (sLower.compare(STR_CMD_DEF) == 0) {
             this->state = STATE_DEF;
             this->macroState = STATE_DEF;
-            this->parserCmd.append(STR_CMD_DEF);
         } else if (sLower.compare(STR_CMD_LST) == 0) {
             this->state = STATE_LST;
             this->macroState = STATE_LST;
-            this->parserCmd.append(STR_CMD_LST);
         }
 
     } else if (this->state == STATE_ADD || this->state == STATE_GET || this->state == STATE_GEN) {
@@ -349,10 +342,6 @@ void Parser::parseEntitySymbol(std::string s) {
         cout << "DEBUG -- Reading entity: " << this->currEntity << endl; // DEBUG
     this->fieldsProcessed = false;
 
-    // Add the entity to the parse command
-    this->parserCmd.append(" ");
-    this->parserCmd.append(this->currEntity);
-
     // Process any fields
     if (!noFields)
         this->processFieldStatement(elems[1]);
@@ -432,12 +421,6 @@ void Parser::parseEntityDefinitionField(std::string field) {
         this->errStr = "Invalid field type";
         return;
     }
-
-    // ADD TO PARSE COMMAND
-    this->parserCmd.append(" ");
-    this->parserCmd.append(this->currField);
-    this->parserCmd.append(" ");
-    this->parserCmd.append(this->currFieldType->getType());
 }
 
 
@@ -460,12 +443,6 @@ void Parser::parseEntityAssignField(std::string field) {
     this->currField = fieldItems[0];
     this->currFieldValue = fieldItems[1];
     this->currFields->push_back(std::make_pair(this->currFieldType, fieldItems[0]));
-
-    // ADD TO PARSE COMMAND
-    this->parserCmd.append(" ");
-    this->parserCmd.append(this->currField);
-    this->parserCmd.append(" ");
-    this->parserCmd.append(this->currFieldValue);
 }
 
 #endif
