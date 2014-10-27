@@ -92,7 +92,8 @@ bool IndexHandler::writeEntity(std::string entity, std::vector<std::pair<ColumnB
     Json::Value jsonVal;
     jsonVal["entity"] = entity;
     this->buildFieldJSON(jsonVal, fields, "fields");
-    this->redisHandler->write(this->generateEntityKey(entity), jsonVal.asString());
+    this->redisHandler->connect();
+    this->redisHandler->write(this->generateEntityKey(entity), jsonVal.toStyledString());
     return true;
 }
 
@@ -111,6 +112,7 @@ bool IndexHandler::writeRelation(
     jsonVal["entityR"] = entityR;
     this->buildFieldJSON(jsonVal, fieldsL, "fieldsL");
     this->buildFieldJSON(jsonVal, fieldsR, "fieldsR");
+    this->redisHandler->connect();
     this->redisHandler->write(this->generateRelationKey(entityL, entityR), jsonVal.asString());
     return true;
 }
@@ -139,10 +141,14 @@ Json::Value* IndexHandler::fetch(std::string key) {
 }
 
 /** Attempts to fetch an entity from index */
-Json::Value* IndexHandler::fetchEntity(std::string entity) { return this->fetch(this->redisHandler->read(this->generateEntityKey(entity))); }
+Json::Value* IndexHandler::fetchEntity(std::string entity) {
+    this->redisHandler->connect();
+    return this->fetch(this->redisHandler->read(this->generateEntityKey(entity)));
+}
 
 /** Attempts to fetch a relation from index */
 Json::Value* IndexHandler::fetchRelation(std::string entityL, std::string entityR) {
+    this->redisHandler->connect();
     return this->fetch(this->redisHandler->read(this->generateRelationKey(entityL, entityR)));
 }
 
@@ -161,6 +167,7 @@ std::vector<Json::Value>* IndexHandler::fetchPattern(std::string pattern) {
     std::string redisRsp;
     std::vector<string>* vec;
 
+    this->redisHandler->connect();
     vec = this->redisHandler->keys(pattern);
 
     // Iterate over all entries returned from redis
