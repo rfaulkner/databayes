@@ -54,7 +54,8 @@ public:
     Json::Value* fetchEntity(std::string);
     Json::Value* fetchRelation(std::string, std::string);
 
-    std::vector<Json::Value>* fetchPattern(std::string);
+    std::vector<Json::Value>* fetchPatternJson(std::string);
+    std::vector<std::string>* fetchPatternKeys(std::string);
     bool fetchFromDisk(int);   // Loads disk
 
     std::string generateEntityKey(std::string);
@@ -153,18 +154,16 @@ Json::Value* IndexHandler::fetchRelation(std::string entityL, std::string entity
 }
 
 /**
+ * TODO - fix to properly fetch json
  * Fetch all redis records matching a pattern
  *
  * Returns a vector of JSON values
  */
-std::vector<Json::Value>* IndexHandler::fetchPattern(std::string pattern) {
-
+std::vector<Json::Value>* IndexHandler::fetchPatternJson(std::string pattern) {
     std::vector<Json::Value>* elems = new std::vector<Json::Value>();
     Json::Value inMem;
     Json::Reader reader;
     bool parsedSuccess;
-
-    std::string redisRsp;
     std::vector<string>* vec;
 
     this->redisHandler->connect();
@@ -176,6 +175,21 @@ std::vector<Json::Value>* IndexHandler::fetchPattern(std::string pattern) {
         if (parsedSuccess)
             elems->push_back(inMem);
     }
+    return elems;
+}
+
+/**
+ * Fetch all redis keys matching a pattern
+ *
+ * Returns a vector of matching keys
+ */
+std::vector<string>* IndexHandler::fetchPatternKeys(std::string pattern) {
+    std::vector<std::string>* elems = new std::vector<std::string>();
+    std::vector<string>* vec;
+    this->redisHandler->connect();
+    vec = this->redisHandler->keys(pattern);
+    for (std::vector<std::string>::iterator it = vec->begin() ; it != vec->end(); ++it)
+        elems->push_back((*it).substr(4, (*it).length()));
     return elems;
 }
 
