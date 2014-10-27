@@ -135,6 +135,7 @@ Parser::Parser() {
     this->debug = false;
     this->indexHandler = new IndexHandler();
     this->errStr = "";
+    this->currFields = new vector<std::pair<ColumnBase*, std::string>>;
 }
 
 
@@ -367,7 +368,8 @@ void Parser::processFieldStatement(const string &fieldStr) {
     std::vector<string> fields = this->tokenize(fieldStr, ',');
     std::string field;
 
-    cout << "DEBUG -- Reading field: " << fieldStr << endl; // DEBUG
+    if (this->debug)
+        cout << "DEBUG -- Reading field: " << fieldStr << endl; // DEBUG
 
     for (std::vector<string>::iterator it = fields.begin() ; it != fields.end(); ++it) {
         field = *it;
@@ -396,9 +398,6 @@ void Parser::processFieldStatement(const string &fieldStr) {
         // PROCESS FIELD STATEMENT
         if (this->macroState == STATE_DEF) { this->parseEntityDefinitionField(field); }
         if (this->macroState == STATE_ADD) { this->parseEntityAssignField(field); }
-
-        if (this->debug)
-            cout << "DEBUG -- Reading field: " << field << endl; // DEBUG
 
         // this->error = this->error || this->indexHandler->fetch(IDX_TYPE_FIELD, field);
     }
