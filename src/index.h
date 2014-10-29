@@ -154,7 +154,6 @@ Json::Value* IndexHandler::fetchRelation(std::string entityL, std::string entity
 }
 
 /**
- * TODO - fix to properly fetch json
  * Fetch all redis records matching a pattern
  *
  * Returns a vector of JSON values
@@ -171,7 +170,7 @@ std::vector<Json::Value>* IndexHandler::fetchPatternJson(std::string pattern) {
 
     // Iterate over all entries returned from redis
     for (std::vector<std::string>::iterator it = vec->begin() ; it != vec->end(); ++it) {
-        parsedSuccess = reader.parse(*it, inMem, false);
+        parsedSuccess = reader.parse(this->redisHandler->read(*it), inMem, false);
         if (parsedSuccess)
             elems->push_back(inMem);
     }
