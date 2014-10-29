@@ -256,17 +256,21 @@ void Parser::analyze(const std::string& s) {
 
     } else if (this->state == STATE_LST_ENT) {
 
-        std::vector<std::string>* entities;
+        std::vector<Json::Value>* entities;
 
         // Write Entities
         this->parseEntitySymbol(sLower);
 
         cout << "Current Matched Entities for \"" << this->currEntity << "\""<< endl;
 
-        entities = this->indexHandler->fetchPatternKeys("ent_" + this->currEntity);
+        entities = this->indexHandler->fetchPatternJson("ent_" + this->currEntity);
         if (entities != NULL) {
-            for (std::vector<std::string>::iterator it = entities->begin() ; it != entities->end(); ++it)
-                cout << "-> " << (*it) << endl;
+            for (std::vector<Json::Value>::iterator it = entities->begin() ; it != entities->end(); ++it) {
+                // cout << "-> " << it->toStyledString() << endl;
+                cout << it->toStyledString() << endl << endl;
+            }
+
+
         } else
             cout << "not found." << endl;
 
