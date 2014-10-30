@@ -97,15 +97,19 @@ class Parser {
     bool error;
     std::string errStr;
 
+    // Define lists that store state of newly defined fields and values
     std::vector<std::pair<ColumnBase*, std::string>>* currFields;
     std::vector<std::pair<ColumnBase*, std::string>>* currValues;
     std::vector<std::pair<ColumnBase*, std::string>>* bufferValues;
 
-    IndexHandler* indexHandler;
-
+    // Define internal state that stores entity handles
     std::string currEntity;
     std::string bufferEntity;
 
+    // Index interface pointer
+    IndexHandler* indexHandler;
+
+    // Parse methods
     void parseEntitySymbol(std::string);
     void processFieldStatement(const string &source);
     void parseEntityDefinitionField(std::string);
@@ -459,6 +463,7 @@ void Parser::parseEntityAssignField(std::string field) {
         this->errStr = "Invalid Entity definition format";
         return;
     }
+    // TODO - fetch entity definition, verify it exists and that types match
     this->currValues->push_back(std::make_pair(fieldItems[0], fieldItems[1]));
 }
 
