@@ -98,6 +98,8 @@ class Parser {
     std::string errStr;
 
     std::vector<std::pair<ColumnBase*, std::string>>* currFields;
+    std::vector<std::pair<ColumnBase*, std::string>>* bufferFields;
+
     std::string currField;
     std::string currFieldValue;
     ColumnBase* currFieldType;
@@ -105,6 +107,7 @@ class Parser {
     IndexHandler* indexHandler;
 
     std::string currEntity;
+    std::string bufferEntity;
 
     void parseEntitySymbol(std::string);
     void processFieldStatement(const string &source);
@@ -235,9 +238,12 @@ void Parser::analyze(const std::string& s) {
 
         // If all fields have been processed transition
         if (this->fieldsProcessed)
-            if (this->state == STATE_ADD_P1)
+            if (this->state == STATE_ADD_P1) {
                 this->state = STATE_ADD_P2
-            else if (this->state == STATE_ADD_P2)
+                this->bufferEntity = this->currEntity;
+                this->bufferFields = this->currFields;
+
+            } else if (this->state == STATE_ADD_P2)
                 this->state = STATE_FINISH
 
     } else if (this->state == STATE_GET_REL) {
@@ -305,6 +311,8 @@ void Parser::analyze(const std::string& s) {
     if (this->state == STATE_FINISH) {
         if (this->macroState == STATE_DEF && !this->error) { // Add this entity to the index
             this->indexHandler->writeEntity(this->currEntity, this->currFields);
+        } else if (this->macroState == STATE_ADD) {
+            this->indexHandler->writeRelation(this->bufferEntity, this->currEntity, this->bufferFields, this->currFields);
         }
     }
 }
