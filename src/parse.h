@@ -137,7 +137,7 @@ Parser::Parser() {
     this->debug = false;
     this->indexHandler = new IndexHandler();
     this->errStr = "";
-    this->currFields = new vector<std::pair<ColumnBase*, std::string>>;
+    this->currFields = NULL;
     this->currValues = NULL;
 }
 
@@ -254,6 +254,7 @@ void Parser::analyze(const std::string& s) {
 
     } else if (this->state == STATE_DEF) {  // DEFINING new entities
 
+        this->currFields = new vector<std::pair<ColumnBase*, std::string>>;
         this->state == STATE_DEF_PROC;
         this->parseEntitySymbol(sLower);
 
@@ -288,8 +289,6 @@ void Parser::analyze(const std::string& s) {
                 // cout << "-> " << it->toStyledString() << endl;
                 cout << it->toStyledString() << endl << endl;
             }
-
-
         } else
             cout << "not found." << endl;
 
@@ -316,6 +315,11 @@ void Parser::analyze(const std::string& s) {
         } else if (this->macroState == STATE_ADD) {
             this->indexHandler->writeRelation(this->bufferEntity, this->currEntity, this->bufferFields, this->currFields);
         }
+
+        // Cleanup
+        if (this->currFields != NULL) delete this->currFields;
+        if (this->currValues != NULL) delete this->currValues;
+        if (this->bufferValues != NULL) delete this->bufferValues;
     }
 }
 
