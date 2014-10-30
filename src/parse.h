@@ -101,9 +101,6 @@ class Parser {
     std::vector<std::pair<ColumnBase*, std::string>>* currValues;
     std::vector<std::pair<ColumnBase*, std::string>>* bufferValues;
 
-    std::string currFieldValue;
-    ColumnBase* currFieldType;
-
     IndexHandler* indexHandler;
 
     std::string currEntity;
