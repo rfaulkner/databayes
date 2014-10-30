@@ -224,6 +224,9 @@ void Parser::analyze(const std::string& s) {
         }
 
     } else if (this->state == STATE_ADD_P1_BEGIN || this->state == STATE_ADD_P2_BEGIN) {
+        if (this->currFields != NULL)
+            delete this->currFields;
+        this->currFields = new vector<std::pair<ColumnBase*, std::string>>;
         this->parseEntitySymbol(sLower);
 
     } else if (this->state == STATE_ADD_P1 || this->state == STATE_ADD_P2) {  // Continue processing fields
