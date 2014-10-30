@@ -98,9 +98,9 @@ class Parser {
     std::string errStr;
 
     std::vector<std::pair<ColumnBase*, std::string>>* currFields;
-    std::vector<std::pair<ColumnBase*, std::string>>* bufferFields;
+    std::vector<std::pair<ColumnBase*, std::string>>* currValues;
+    std::vector<std::pair<ColumnBase*, std::string>>* bufferValues;
 
-    std::string currField;
     std::string currFieldValue;
     ColumnBase* currFieldType;
 
@@ -137,6 +137,7 @@ Parser::Parser() {
     this->indexHandler = new IndexHandler();
     this->errStr = "";
     this->currFields = new vector<std::pair<ColumnBase*, std::string>>;
+    this->currValues = NULL;
 }
 
 
@@ -231,8 +232,8 @@ void Parser::analyze(const std::string& s) {
         if (this->entityProcessed) {
             this->processFieldStatement(sLower);
         } else {
-            if (this->currFields != NULL) delete this->currFields;
-            this->currFields = new vector<std::pair<ColumnBase*, std::string>>;
+            if (this->currValues != NULL) delete this->currValues;
+            this->currValues = new vector<std::pair<std::string, std::string>>;
             this->parseEntitySymbol(sLower);
         }
 
@@ -241,7 +242,7 @@ void Parser::analyze(const std::string& s) {
             if (this->state == STATE_ADD_P1) {
                 this->state = STATE_ADD_P2
                 this->bufferEntity = this->currEntity;
-                this->bufferFields = this->currFields;
+                this->bufferValues = this->currValues;
 
             } else if (this->state == STATE_ADD_P2)
                 this->state = STATE_FINISH
@@ -422,6 +423,7 @@ void Parser::processFieldStatement(const string &fieldStr) {
  */
 void Parser::parseEntityDefinitionField(std::string field) {
     std::vector<string> fieldItems;
+    ColumnBase* fieldType;
 
     fieldItems = this->tokenize(field, '_');
 
@@ -436,11 +438,10 @@ void Parser::parseEntityDefinitionField(std::string field) {
         return;
     }
 
-    this->currField = fieldItems[0];
-    this->currFieldType = getColumnType(fieldItems[1]);
-    this->currFields->push_back(std::make_pair(this->currFieldType, fieldItems[0]));
+    fieldType = getColumnType(fieldItems[1]);
+    this->currFields->push_back(std::make_pair(fieldType, fieldItems[0]));
 
-    if (this->currFieldType == NULL) {
+    if (fieldType == NULL) {
         this->error = true;
         this->errStr = "Invalid field type";
         return;
@@ -455,18 +456,13 @@ void Parser::parseEntityDefinitionField(std::string field) {
  */
 void Parser::parseEntityAssignField(std::string field) {
     std::vector<string> fieldItems;
-
     fieldItems = this->tokenize(field, '=');
-
     if (fieldItems.size() != 2) {
         this->error = true;
         this->errStr = "Invalid Entity definition format";
         return;
     }
-
-    this->currField = fieldItems[0];
-    this->currFieldValue = fieldItems[1];
-    this->currFields->push_back(std::make_pair(this->currFieldType, fieldItems[0]));
+    this->currValues->push_back(std::make_pair(fieldItems[0], fieldItems[1]));
 }
 
 #endif
