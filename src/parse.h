@@ -41,9 +41,7 @@
 #define STATE_START 0       // Start state
 
 #define STATE_ADD 10        // Add a new relation
-#define STATE_ADD_P1_BEGIN 11
 #define STATE_ADD_P1 12
-#define STATE_ADD_P2_BEGIN 13
 #define STATE_ADD_P2 14
 
 #define STATE_GET 20        // Get relation between two entities with optional conditions
@@ -92,6 +90,7 @@ class Parser {
     int state;
     int macroState;
 
+    bool entityProcessed;
     bool fieldsProcessed;
     bool debug;
 
@@ -208,7 +207,7 @@ void Parser::analyze(const std::string& s) {
         if (sLower.compare(STR_CMD_REL) == 0)
             switch (this->state) {
             case STATE_ADD:
-                this->state = STATE_ADD_P1_BEGIN;
+                this->state = STATE_ADD_P1;
                 break;
             case STATE_GET:
                 this->state = STATE_GET_REL;
@@ -223,14 +222,23 @@ void Parser::analyze(const std::string& s) {
             return;
         }
 
-    } else if (this->state == STATE_ADD_P1_BEGIN || this->state == STATE_ADD_P2_BEGIN) {
-        if (this->currFields != NULL)
-            delete this->currFields;
-        this->currFields = new vector<std::pair<ColumnBase*, std::string>>;
-        this->parseEntitySymbol(sLower);
+    } else if (this->state == STATE_ADD_P1 || this->state == STATE_ADD_P2) {
 
-    } else if (this->state == STATE_ADD_P1 || this->state == STATE_ADD_P2) {  // Continue processing fields
-        this->processFieldStatement(s);
+        // Determine if entity or fields need to be processed
+        if (this->entityProcessed) {
+            this->processFieldStatement(sLower);
+        } else {
+            if (this->currFields != NULL) delete this->currFields;
+            this->currFields = new vector<std::pair<ColumnBase*, std::string>>;
+            this->parseEntitySymbol(sLower);
+        }
+
+        // If all fields have been processed transition
+        if (this->fieldsProcessed)
+            if (this->state == STATE_ADD_P1)
+                this->state = STATE_ADD_P2
+            else if (this->state == STATE_ADD_P2)
+                this->state = STATE_FINISH
 
     } else if (this->state == STATE_GET_REL) {
 
@@ -346,6 +354,7 @@ void Parser::parseEntitySymbol(std::string s) {
     if (this->debug)
         cout << "DEBUG -- Reading entity: " << this->currEntity << endl; // DEBUG
     this->fieldsProcessed = false;
+    this->entityProcessed = true;
 
     // Process any fields
     if (!noFields)
