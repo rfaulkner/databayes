@@ -129,7 +129,7 @@ bool IndexHandler::writeRelation(
     this->buildFieldJSONValue(jsonVal, fieldsL, "fieldsL");
     this->buildFieldJSONValue(jsonVal, fieldsR, "fieldsR");
     this->redisHandler->connect();
-    this->redisHandler->write(this->generateRelationKey(entityL, entityR), jsonVal.asString());
+    this->redisHandler->write(this->generateRelationKey(entityL, entityR), jsonVal.toStyledString());
     return true;
 }
 
