@@ -99,8 +99,8 @@ class Parser {
 
     // Define lists that store state of newly defined fields and values
     std::vector<std::pair<ColumnBase*, std::string>>* currFields;
-    std::vector<std::pair<std::string*, std::string>>* currValues;
-    std::vector<std::pair<std::string*, std::string>>* bufferValues;
+    std::vector<std::pair<std::string, std::string>>* currValues;
+    std::vector<std::pair<std::string, std::string>>* bufferValues;
 
     // Define internal state that stores entity handles
     std::string currEntity;
@@ -241,12 +241,12 @@ void Parser::analyze(const std::string& s) {
         // If all fields have been processed transition
         if (this->fieldsProcessed)
             if (this->state == STATE_ADD_P1) {
-                this->state = STATE_ADD_P2
+                this->state = STATE_ADD_P2;
                 this->bufferEntity = this->currEntity;
                 this->bufferValues = this->currValues;
 
             } else if (this->state == STATE_ADD_P2)
-                this->state = STATE_FINISH
+                this->state = STATE_FINISH;
 
     } else if (this->state == STATE_GET_REL) {
 
@@ -313,7 +313,7 @@ void Parser::analyze(const std::string& s) {
         if (this->macroState == STATE_DEF && !this->error) { // Add this entity to the index
             this->indexHandler->writeEntity(this->currEntity, this->currFields);
         } else if (this->macroState == STATE_ADD) {
-            this->indexHandler->writeRelation(this->bufferEntity, this->currEntity, this->bufferFields, this->currFields);
+            this->indexHandler->writeRelation(this->bufferEntity, this->currEntity, this->bufferValues, this->currValues);
         }
 
         // Cleanup

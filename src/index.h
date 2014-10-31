@@ -37,7 +37,8 @@ class IndexHandler {
 
     RedisHandler* redisHandler;
 
-    void buildFieldJSON(Json::Value&, std::vector<std::pair<ColumnBase*, std::string>>*, std::string);
+    void buildFieldJSONDefinition(Json::Value&, std::vector<std::pair<ColumnBase*, std::string>>*, std::string);
+    void buildFieldJSONValue(Json::Value&, std::vector<std::pair<std::string, std::string>>*, std::string);
 
 public:
     /**
@@ -47,7 +48,7 @@ public:
     ~IndexHandler() { delete redisHandler; }
 
     bool writeEntity(std::string, vector<std::pair<ColumnBase*, std::string>>*);
-    bool writeRelation(std::string, std::string, std::vector<std::pair<ColumnBase*, std::string>>*, std::vector<std::pair<ColumnBase*, std::string>>*);
+    bool writeRelation(std::string, std::string, std::vector<std::pair<std::string, std::string>>*, std::vector<std::pair<std::string, std::string>>*);
     bool writeToDisk(int);
 
     Json::Value* fetch(std::string);
@@ -72,16 +73,30 @@ std::string IndexHandler::generateRelationKey(std::string entityL, std::string e
 /**
  * Handles forming the json for field vectors in the index
  */
-void IndexHandler::buildFieldJSON(Json::Value& value,
+void IndexHandler::buildFieldJSONDefinition(Json::Value& value,
                                           std::vector<std::pair<ColumnBase*, std::string>>* fields,
                                           std::string prefix) {
     int counter = 0;
     for (std::vector<std::pair<ColumnBase*, std::string>>::iterator it = fields->begin() ; it != fields->end(); ++it) {
         value[prefix + "_type_" + std::to_string(counter)] = (*it).first->getType();
-        value[prefix + "_value_" + std::to_string(counter)] = (*it).second;
+        value[prefix + "_attr_" + std::to_string(counter)] = (*it).second;
         counter++;
     }
     value[prefix + "_count"] = std::to_string(counter);
+}
+
+/**
+ * Handles forming the json for field vectors in the index
+ */
+void IndexHandler::buildFieldJSONValue(Json::Value& value,
+                                          std::vector<std::pair<std::string, std::string>>* fields,
+                                          std::string prefix) {
+    int counter = 0;
+    for (std::vector<std::pair<std::string, std::string>>::iterator it = fields->begin() ; it != fields->end(); ++it) {
+        value[prefix + "_attr_" + std::to_string(counter)] = (*it).first;
+        value[prefix + "_value_" + std::to_string(counter)] = (*it).second;
+        counter++;
+    }
 }
 
 /**
@@ -92,7 +107,7 @@ void IndexHandler::buildFieldJSON(Json::Value& value,
 bool IndexHandler::writeEntity(std::string entity, std::vector<std::pair<ColumnBase*, std::string>>* fields) {
     Json::Value jsonVal;
     jsonVal["entity"] = entity;
-    this->buildFieldJSON(jsonVal, fields, "fields");
+    this->buildFieldJSONDefinition(jsonVal, fields, "fields");
     this->redisHandler->connect();
     this->redisHandler->write(this->generateEntityKey(entity), jsonVal.toStyledString());
     return true;
@@ -106,13 +121,13 @@ bool IndexHandler::writeEntity(std::string entity, std::vector<std::pair<ColumnB
 bool IndexHandler::writeRelation(
                     std::string entityL,
                     std::string entityR,
-                    std::vector<std::pair<ColumnBase*, std::string>>* fieldsL,
-                    std::vector<std::pair<ColumnBase*, std::string>>* fieldsR) {
+                    std::vector<std::pair<std::string, std::string>>* fieldsL,
+                    std::vector<std::pair<std::string, std::string>>* fieldsR) {
     Json::Value jsonVal;
     jsonVal["entityL"] = entityL;
     jsonVal["entityR"] = entityR;
-    this->buildFieldJSON(jsonVal, fieldsL, "fieldsL");
-    this->buildFieldJSON(jsonVal, fieldsR, "fieldsR");
+    this->buildFieldJSONValue(jsonVal, fieldsL, "fieldsL");
+    this->buildFieldJSONValue(jsonVal, fieldsR, "fieldsR");
     this->redisHandler->connect();
     this->redisHandler->write(this->generateRelationKey(entityL, entityR), jsonVal.asString());
     return true;
