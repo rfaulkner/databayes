@@ -99,8 +99,8 @@ class Parser {
 
     // Define lists that store state of newly defined fields and values
     std::vector<std::pair<ColumnBase*, std::string>>* currFields;
-    std::vector<std::pair<ColumnBase*, std::string>>* currValues;
-    std::vector<std::pair<ColumnBase*, std::string>>* bufferValues;
+    std::vector<std::pair<std::string*, std::string>>* currValues;
+    std::vector<std::pair<std::string*, std::string>>* bufferValues;
 
     // Define internal state that stores entity handles
     std::string currEntity;
