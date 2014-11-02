@@ -244,11 +244,14 @@ void Parser::analyze(const std::string& s) {
                 this->state = STATE_ADD_P2;
                 this->bufferEntity = this->currEntity;
                 this->bufferValues = this->currValues;
+                this->currValues = new vector<std::pair<std::string, std::string>>;
                 this->fieldsProcessed = false;
                 this->entityProcessed = false;
 
-            } else if (this->state == STATE_ADD_P2)
+            } else if (this->state == STATE_ADD_P2) {
                 this->state = STATE_FINISH;
+            }
+
 
     } else if (this->state == STATE_GET_REL) {
 
