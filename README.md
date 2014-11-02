@@ -37,3 +37,18 @@ For execution (link hiredis):
 
     databayes$ g++ -std=c++0x src/client.cpp $(pkg-config --cflags --libs redis3m jsoncpp) -g -o dbcli /usr/lib/libhiredis.a
     databayes$ ./dbcli
+
+
+Parser
+------
+
+The general parser syntax has the following definition:
+
+ *      (1) ADD REL E1(x_1 [, x_2, ..]) E2(y_1 [, y_2, ..])
+ *      (2) GET REL E1[(x_1=v_1, x_2=v_2, ...)] [E2(y_1=u_1, y_2=u_2, ...)]
+ *      (3) GEN REL E1[(x_1=v_1, x_2=v_2, ...)] CONSTRAIN E2[, E3, ...]
+ *      (4) DEF E1[(x_1, x_2, ...)]
+ *      (5) LST REL [E1 [E2]]
+ *      (6) LST ENT [E1]*
+
+More details on how to use these to build entities, relations and how to use generative commands to sample.
