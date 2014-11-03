@@ -33,6 +33,7 @@
 #define BAD_INPUT "Bad input symbol"
 #define BAD_EOL "Bad end of line"
 #define ERR_ENT_EXISTS "ERR: Entity already exists."
+#define ERR_ENT_NOT_EXISTS "ERR: Entity not found."
 
 #define WILDCARD_CHAR '*'
 
@@ -237,6 +238,14 @@ void Parser::analyze(const std::string& s) {
             if (this->currValues != NULL) delete this->currValues;
             this->currValues = new vector<std::pair<std::string, std::string>>;
             this->parseEntitySymbol(sLower);
+
+            // Ensure that entities exist
+            if (!this->indexHandler->existsEntity(this->currEntity)) {
+                this->error = true;
+                this->errStr = ERR_ENT_NOT_EXISTS;
+                this->state = STATE_FINISH;
+                return;
+            }
         }
 
         // If all fields have been processed transition
