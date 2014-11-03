@@ -55,6 +55,9 @@ public:
     Json::Value* fetchEntity(std::string);
     Json::Value* fetchRelation(std::string, std::string);
 
+    bool existsEntity(std::string);
+    bool existsRelation(std::string, std::string);
+
     std::vector<Json::Value>* fetchPatternJson(std::string);
     std::vector<std::string>* fetchPatternKeys(std::string);
     bool fetchFromDisk(int);   // Loads disk
@@ -159,13 +162,29 @@ Json::Value* IndexHandler::fetch(std::string key) {
 /** Attempts to fetch an entity from index */
 Json::Value* IndexHandler::fetchEntity(std::string entity) {
     this->redisHandler->connect();
-    return this->fetch(this->redisHandler->read(this->generateEntityKey(entity)));
+    if (this->existsEntity(entity)))
+        return this->fetch(this->redisHandler->read(this->generateEntityKey(entity)));
+    else
+        return null;
 }
 
 /** Attempts to fetch a relation from index */
 Json::Value* IndexHandler::fetchRelation(std::string entityL, std::string entityR) {
     this->redisHandler->connect();
-    return this->fetch(this->redisHandler->read(this->generateRelationKey(entityL, entityR)));
+    if (this->existsRelation(this->generateEntityKey(entity)))
+        return this->fetch(this->redisHandler->read(this->generateRelationKey(entityL, entityR)));
+    else
+        return null;
+}
+
+/** Check to ensure entity exists */
+bool IndexHandler::existsEntity(std::string entity) {
+    return this->redisHandler->exists(this->generateEntityKey(entity));
+}
+
+/** Check to ensure relation exists */
+bool IndexHandler::existsRelation(std::string entityL, std::string entityR) {
+    return this->redisHandler->exists(this->generateRelationKey(entityL, entityR));
 }
 
 /**
