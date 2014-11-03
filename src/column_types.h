@@ -26,18 +26,15 @@ using namespace std;
 class ColumnBase {
     void* value;
 public:
-    ColumnBase() {
-        this->value = NULL;
-    }
-    void* getValue() {
-        return &(this->value);
-    }
-    void setValue(void* value) {
-        this->value = value;
-    }
-    virtual string getType() {
-        return COLTYPE_NAME_BASE;
-    }
+    ColumnBase() { this->value = NULL; }
+    void* getValue() { return &(this->value); }
+    void setValue(void* value) { this->value = value; }
+
+    /** Returns the object type */
+    virtual string getType() { return COLTYPE_NAME_BASE; }
+
+    /** Validates the string value as being of this type */
+    virtual bool validate(std::string value) { return true; }
 };
 
 
@@ -49,9 +46,8 @@ class IntegerColumn : public ColumnBase {
 public:
     IntegerColumn() { this->value = 0; }
     IntegerColumn(int value) { this->value = value; }
-    string getType() {
-        return COLTYPE_NAME_INT;
-    }
+    string getType() { return COLTYPE_NAME_INT; }
+    bool validate(std::string value) { return true; }
 
 };
 
@@ -64,9 +60,8 @@ class FloatColumn : public ColumnBase {
 public:
     FloatColumn() { this->value = 0.0; }
     FloatColumn(float value) { this->value = value; }
-    string getType() {
-        return COLTYPE_NAME_FLOAT;
-    }
+    string getType() { return COLTYPE_NAME_FLOAT; }
+    bool validate(std::string value) { return true; }
 };
 
 
@@ -78,10 +73,8 @@ class StringColumn : public ColumnBase {
 public:
     StringColumn() { this->value = ""; }
     StringColumn(string value) { this->value = value; }
-    string getType() {
-        return COLTYPE_NAME_STR;
-    }
-
+    string getType() { return COLTYPE_NAME_STR; }
+    bool validate(std::string value) { return true; }
 };
 
 
