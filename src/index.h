@@ -162,28 +162,30 @@ Json::Value* IndexHandler::composeJSON(std::string key) {
 /** Attempts to fetch an entity from index */
 Json::Value* IndexHandler::fetchEntity(std::string entity) {
     this->redisHandler->connect();
-    if (this->existsEntity(entity)))
+    if (this->existsEntity(entity))
         return this->composeJSON(this->redisHandler->read(this->generateEntityKey(entity)));
     else
-        return null;
+        return NULL;
 }
 
 /** Attempts to fetch a relation from index */
 Json::Value* IndexHandler::fetchRelation(std::string entityL, std::string entityR) {
     this->redisHandler->connect();
-    if (this->existsRelation(this->generateEntityKey(entity)))
+    if (this->existsRelation(entityL, entityR))
         return this->composeJSON(this->redisHandler->read(this->generateRelationKey(entityL, entityR)));
     else
-        return null;
+        return NULL;
 }
 
 /** Check to ensure entity exists */
 bool IndexHandler::existsEntity(std::string entity) {
+    this->redisHandler->connect();
     return this->redisHandler->exists(this->generateEntityKey(entity));
 }
 
 /** Check to ensure relation exists */
 bool IndexHandler::existsRelation(std::string entityL, std::string entityR) {
+    this->redisHandler->connect();
     return this->redisHandler->exists(this->generateRelationKey(entityL, entityR));
 }
 
