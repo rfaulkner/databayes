@@ -41,6 +41,7 @@ public:
     void connect();
     void write(std::string, std::string);
     void deleteKey(std::string);
+    bool exists(std::string);
     std::string read(std::string);
     std::vector<std::string>* keys(std::string);
 };
@@ -65,18 +66,16 @@ std::string RedisHandler::read(std::string key) {
 /** Read a value from redis given a key */
 void RedisHandler::deleteKey(std::string key) {
     std::string result;
-    redisReply *reply = (redisReply*)redisCommand(this->context, "DEL %s", key.c_str());
-    result = reply->str;
-    freeReplyObject(reply);
+    (redisReply*)redisCommand(this->context, "DEL %s", key.c_str());
 }
 
 /** Read a value from redis given a key */
 bool RedisHandler::exists(std::string key) {
-    std::string result;
+    int result;
     redisReply *reply = (redisReply*)redisCommand(this->context, "EXISTS %s", key.c_str());
-    result = reply->str;
+    result = reply->integer;
     freeReplyObject(reply);
-    return (int)result == 1;
+    return result == 1;
 }
 
 /** Read a value from redis given a key pattern */
