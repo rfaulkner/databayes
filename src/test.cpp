@@ -11,6 +11,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <assert.h>
 
 #include "redis.h"
 #include "md5.h"
@@ -49,6 +50,20 @@ void testRedisKeys() {
     cout << endl;
 }
 
+/** Test to ensure that redis keys are correctly returned */
+void testRedisIO() {
+    RedisHandler r;
+    std::vector<string>* vec;
+    std::string outTrue, outFalse = "";
+
+    r.connect();
+    r.write("test_key", "test value");
+    outTrue = r.read("test_key");
+    assert(std::strcmp(outTrue.c_str(), "test value") == 0);
+    r.deleteKey("test_key");
+    assert(!r.exists("test_key"));
+}
+
 /** Test to ensure that md5 hashing works */
 void md5Hashing() {
     cout << endl << "md5 of 'mykey': " << md5("mykey") << endl;
@@ -56,10 +71,11 @@ void md5Hashing() {
 
 int main() {
 
-    testRedisSet();
-    testRedisGet();
-    testRedisKeys();
-    md5Hashing();
+//    testRedisSet();
+//    testRedisGet();
+//    testRedisKeys();
+//    md5Hashing();
+    testRedisIO();
 
     cout << endl;
 
