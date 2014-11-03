@@ -51,7 +51,7 @@ public:
     bool writeRelation(std::string, std::string, std::vector<std::pair<std::string, std::string>>*, std::vector<std::pair<std::string, std::string>>*);
     bool writeToDisk(int);
 
-    Json::Value* fetch(std::string);
+    Json::Value* composeJSON(std::string);
     Json::Value* fetchEntity(std::string);
     Json::Value* fetchRelation(std::string, std::string);
 
@@ -148,7 +148,7 @@ bool IndexHandler::writeToDisk(int type) { return false; }
  *
  * @param string key    key string for the requested entry
  */
-Json::Value* IndexHandler::fetch(std::string key) {
+Json::Value* IndexHandler::composeJSON(std::string key) {
     Json::Value* inMem = new Json::Value();
     Json::Reader reader;
     bool parsedSuccess;
@@ -163,7 +163,7 @@ Json::Value* IndexHandler::fetch(std::string key) {
 Json::Value* IndexHandler::fetchEntity(std::string entity) {
     this->redisHandler->connect();
     if (this->existsEntity(entity)))
-        return this->fetch(this->redisHandler->read(this->generateEntityKey(entity)));
+        return this->composeJSON(this->redisHandler->read(this->generateEntityKey(entity)));
     else
         return null;
 }
@@ -172,7 +172,7 @@ Json::Value* IndexHandler::fetchEntity(std::string entity) {
 Json::Value* IndexHandler::fetchRelation(std::string entityL, std::string entityR) {
     this->redisHandler->connect();
     if (this->existsRelation(this->generateEntityKey(entity)))
-        return this->fetch(this->redisHandler->read(this->generateRelationKey(entityL, entityR)));
+        return this->composeJSON(this->redisHandler->read(this->generateRelationKey(entityL, entityR)));
     else
         return null;
 }
