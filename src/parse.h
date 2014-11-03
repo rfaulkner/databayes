@@ -32,6 +32,7 @@
 
 #define BAD_INPUT "Bad input symbol"
 #define BAD_EOL "Bad end of line"
+#define ERR_ENT_EXISTS "ERR: Entity already exists."
 
 #define WILDCARD_CHAR '*'
 
@@ -263,7 +264,13 @@ void Parser::analyze(const std::string& s) {
         this->state == STATE_DEF_PROC;
         this->parseEntitySymbol(sLower);
 
-        // TODO - Ensure this entity has not already been defined
+        // Ensure this entity has not already been defined
+        if (this->indexHandler->existsEntity(this->currEntity)) {
+            this->error = true;
+            this->errStr = ERR_ENT_EXISTS;
+            this->state = STATE_FINISH;
+            return;
+        }
 
         if (this->fieldsProcessed)
             this->state = STATE_FINISH;
