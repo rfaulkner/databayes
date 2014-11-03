@@ -61,6 +61,15 @@ std::string RedisHandler::read(std::string key) {
     return result;
 }
 
+/** Read a value from redis given a key */
+std::string RedisHandler::deleteKey(std::string key) {
+    std::string result;
+    redisReply *reply = (redisReply*)redisCommand(this->context, "DEL %s", key.c_str());
+    result = reply->str;
+    freeReplyObject(reply);
+    return result;
+}
+
 /** Read a value from redis given a key pattern */
 std::vector<std::string>* RedisHandler::keys(std::string pattern) {
     std::vector<string>* elems = new std::vector<string>();
