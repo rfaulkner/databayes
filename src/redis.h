@@ -40,6 +40,7 @@ public:
     
     void connect();
     void write(std::string, std::string);
+    void deleteKey(std::string);
     std::string read(std::string);
     std::vector<std::string>* keys(std::string);
 };
@@ -62,12 +63,20 @@ std::string RedisHandler::read(std::string key) {
 }
 
 /** Read a value from redis given a key */
-std::string RedisHandler::deleteKey(std::string key) {
+void RedisHandler::deleteKey(std::string key) {
     std::string result;
     redisReply *reply = (redisReply*)redisCommand(this->context, "DEL %s", key.c_str());
     result = reply->str;
     freeReplyObject(reply);
-    return result;
+}
+
+/** Read a value from redis given a key */
+bool RedisHandler::exists(std::string key) {
+    std::string result;
+    redisReply *reply = (redisReply*)redisCommand(this->context, "EXISTS %s", key.c_str());
+    result = reply->str;
+    freeReplyObject(reply);
+    return (int)result == 1;
 }
 
 /** Read a value from redis given a key pattern */
