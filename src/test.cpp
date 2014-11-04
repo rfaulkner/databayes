@@ -11,8 +11,10 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <regex>
 #include <assert.h>
 
+#include "column_types.h"
 #include "redis.h"
 #include "md5.h"
 
@@ -69,15 +71,28 @@ void md5Hashing() {
     cout << endl << "md5 of 'mykey': " << md5("mykey") << endl;
 }
 
+/** Test to ensure that md5 hashing works */
+void regexForTypes() {
+    IntegerColumn ic;
+    FloatColumn fc;
+    assert(ic.validate("1981"));
+    assert(fc.validate("5.2"));
+    cout << "Passed regex tests." << endl;
+}
+
+
 int main() {
+
+    cout << "-- TESTS BEGIN --" << endl << endl;
 
 //    testRedisSet();
 //    testRedisGet();
 //    testRedisKeys();
 //    md5Hashing();
-    testRedisIO();
+//    testRedisIO();
+    regexForTypes();
 
-    cout << endl;
+    cout << endl << "-- TESTS END --" << endl;
 
     return 0;
 }

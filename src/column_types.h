@@ -67,7 +67,7 @@ public:
     string getType() { return COLTYPE_NAME_FLOAT; }
 
     bool validate(std::string value) {
-        boost::regex e("^[-+]?[0-9]*\.?[0-9]+$");
+        boost::regex e("^[-+]?[0-9]*\\.?[0-9]+$");
         return boost::regex_match(value.c_str(), e);;
     }
 };
