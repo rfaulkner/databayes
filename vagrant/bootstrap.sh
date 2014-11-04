@@ -23,8 +23,7 @@ apt-get install -y curl
 
 #   C++ pacakges
 #   ------------
-apt-get install -y libmsgpack-dev libboost-thread-dev libboost-date-time-dev libboost-test-dev libboost-filesystem-dev libboost-system-dev libhiredis-dev cmake build-essential pkg-config
-
+apt-get install -y libmsgpack-dev libboost-thread-dev libboost-date-time-dev libboost-test-dev libboost-filesystem-dev libboost-system-dev libboost-regex-dev libhiredis-dev cmake build-essential pkg-config
 
 #   Python Packages
 #   ---------------
