@@ -11,6 +11,7 @@
 #define _column_types_h
 
 #include <string>
+#include <regex>
 
 #define COLTYPE_NAME_BASE "base"
 #define COLTYPE_NAME_INT "integer"
@@ -47,8 +48,11 @@ public:
     IntegerColumn() { this->value = 0; }
     IntegerColumn(int value) { this->value = value; }
     string getType() { return COLTYPE_NAME_INT; }
-    bool validate(std::string value) { return true; }
 
+    bool validate(std::string value) {
+        std::regex r4("[0-9]*", std::regex_constants::basic);
+        return std::regex_match (value.c_str(), r4));
+    }
 };
 
 
