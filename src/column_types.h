@@ -11,7 +11,7 @@
 #define _column_types_h
 
 #include <string>
-#include <regex>
+#include <boost/regex.hpp>
 
 #define COLTYPE_NAME_BASE "base"
 #define COLTYPE_NAME_INT "integer"
@@ -50,8 +50,8 @@ public:
     string getType() { return COLTYPE_NAME_INT; }
 
     bool validate(std::string value) {
-        std::regex r4("[0-9]*", std::regex_constants::basic);
-        return std::regex_match (value.c_str(), r4));
+        boost::regex e("^[0-9]+$");
+        return boost::regex_match(value.c_str(), e);;
     }
 };
 
@@ -65,7 +65,11 @@ public:
     FloatColumn() { this->value = 0.0; }
     FloatColumn(float value) { this->value = value; }
     string getType() { return COLTYPE_NAME_FLOAT; }
-    bool validate(std::string value) { return true; }
+
+    bool validate(std::string value) {
+        boost::regex e("^[-+]?[0-9]*\.?[0-9]+$");
+        return boost::regex_match(value.c_str(), e);;
+    }
 };
 
 
@@ -78,7 +82,12 @@ public:
     StringColumn() { this->value = ""; }
     StringColumn(string value) { this->value = value; }
     string getType() { return COLTYPE_NAME_STR; }
-    bool validate(std::string value) { return true; }
+
+    /** Match non whitespace (for now ...) */
+    bool validate(std::string value) {
+        boost::regex e("[^ ]+$");
+        return boost::regex_match(value.c_str(), e);;
+    }
 };
 
 
