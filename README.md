@@ -35,7 +35,7 @@ Use the following compiler flags including the redis3m and jsoncpp libraries:
 
 For execution (link hiredis):
 
-    databayes$ g++ -std=c++0x src/client.cpp $(pkg-config --cflags --libs redis3m jsoncpp) -g -o dbcli /usr/lib/libhiredis.a
+    databayes$ g++ -std=c++0x src/client.cpp $(pkg-config --cflags --libs redis3m jsoncpp) -g -o dbcli /usr/lib/libhiredis.a /usr/lib/libboost_regex.a
     databayes$ ./dbcli
 
 
