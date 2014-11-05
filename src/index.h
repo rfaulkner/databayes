@@ -78,30 +78,29 @@ std::string IndexHandler::generateRelationKey(std::string entityL, std::string e
 /**
  * Handles forming the json for field vectors in the index
  */
-void IndexHandler::buildFieldJSONDefinition(Json::Value& value,
-                                          std::vector<std::pair<ColumnBase*, std::string>>* fields,
-                                          std::string prefix) {
-    int counter = 0;
+void IndexHandler::buildFieldJSONDefinition(Json::Value& value, std::vector<std::pair<ColumnBase*, std::string>>* fields) {
+    Json::Value* fields = new Json::Value();
+    int count = 0;
     for (std::vector<std::pair<ColumnBase*, std::string>>::iterator it = fields->begin() ; it != fields->end(); ++it) {
-        value[prefix + "_type_" + std::to_string(counter)] = (*it).first->getType();
-        value[prefix + "_attr_" + std::to_string(counter)] = (*it).second;
-        counter++;
+        fields[(*it).second] = (*it).first->getType();
+        count++;
     }
-    value[prefix + "_count"] = std::to_string(counter);
+    value["fields"] = *fields;
+    value["count"] = std::to_string(count);
 }
 
 /**
  * Handles forming the json for field vectors in the index
  */
-void IndexHandler::buildFieldJSONValue(Json::Value& value,
-                                          std::vector<std::pair<std::string, std::string>>* fields,
-                                          std::string prefix) {
-    int counter = 0;
+void IndexHandler::buildFieldJSONValue(Json::Value& value, std::vector<std::pair<std::string, std::string>>* fields) {
+    Json::Value* fields = new Json::Value();
+    int count = 0;
     for (std::vector<std::pair<std::string, std::string>>::iterator it = fields->begin() ; it != fields->end(); ++it) {
-        value[prefix + "_attr_" + std::to_string(counter)] = (*it).first;
-        value[prefix + "_value_" + std::to_string(counter)] = (*it).second;
-        counter++;
+        fields[(*it).first] = (*it).second;
+        count++;
     }
+    value["fields"] = *fields;
+    value["count"] = std::to_string(count);
 }
 
 /**
@@ -112,7 +111,7 @@ void IndexHandler::buildFieldJSONValue(Json::Value& value,
 bool IndexHandler::writeEntity(std::string entity, std::vector<std::pair<ColumnBase*, std::string>>* fields) {
     Json::Value jsonVal;
     jsonVal["entity"] = entity;
-    this->buildFieldJSONDefinition(jsonVal, fields, "fields");
+    this->buildFieldJSONDefinition(jsonVal, fields);
     this->redisHandler->connect();
     this->redisHandler->write(this->generateEntityKey(entity), jsonVal.toStyledString());
     return true;
@@ -231,9 +230,10 @@ std::vector<string>* IndexHandler::fetchPatternKeys(std::string pattern) {
 }
 
 /** Ensure that the field type is valid */
-bool validateEntityFieldType(std::string entity, std::string field, std::string value) {
+bool IndexHandler::validateEntityFieldType(std::string entity, std::string field, std::string value) {
     // TODO - implement
-    // fetch field def from entity definition
+    Json::Value* jsonVal = this->fetchEntity(entity);
+
     // ensure field exists
     // obtain the field type
     // ensure the value is a valid instance of the type
