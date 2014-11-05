@@ -483,12 +483,29 @@ void Parser::parseEntityDefinitionField(std::string field) {
 void Parser::parseEntityAssignField(std::string field) {
     std::vector<string> fieldItems;
     fieldItems = this->tokenize(field, '=');
-    if (fieldItems.size() != 2) {
+    Json::Value* entityDef = this->indexHandler->fetchEntity(this->currEntity);
+
+    // Verify that the entity has been defined
+    if (entityDef == NULL) {
         this->error = true;
-        this->errStr = "Invalid Entity definition format";
+        this->errStr = "Can't find entity.";
         return;
     }
-    // TODO - fetch entity definition, verify it exists and that types match
+
+    // Verify that the assignment has been properly formatted
+    if (fieldItems.size() != 2) {
+        this->error = true;
+        this->errStr = "Invalid Entity assign format";
+        return;
+    }
+
+    // Validate Type
+    if (!this->indexHandler->validateEntityFieldType(this->currEntity, fieldItems[0], fieldItems[1])) {
+        this->error = true;
+        this->errStr = "Bad field type on instance.";
+        return;
+    }
+
     this->currValues->push_back(std::make_pair(fieldItems[0], fieldItems[1]));
 }
 

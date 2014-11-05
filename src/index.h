@@ -65,6 +65,8 @@ public:
     std::string generateEntityKey(std::string);
     std::string generateRelationKey(std::string, std::string);
 
+    bool validateEntityFieldType(std::string, std::string, std::string);
+
 };
 
 /** Generate a key for an entity entry in the index */
@@ -227,6 +229,17 @@ std::vector<string>* IndexHandler::fetchPatternKeys(std::string pattern) {
         elems->push_back((*it).substr(4, (*it).length()));
     return elems;
 }
+
+/** Ensure that the field type is valid */
+bool validateEntityFieldType(std::string entity, std::string field, std::string value) {
+    // TODO - implement
+    // fetch field def from entity definition
+    // ensure field exists
+    // obtain the field type
+    // ensure the value is a valid instance of the type
+    return true;
+}
+
 
 /**
  * Handles writes to in memory index
