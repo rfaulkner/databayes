@@ -465,13 +465,12 @@ void Parser::parseEntityDefinitionField(std::string field) {
     }
 
     fieldType = getColumnType(fieldItems[1]);
-    this->currFields->push_back(std::make_pair(fieldType, fieldItems[0]));
-
     if (fieldType == NULL) {
         this->error = true;
         this->errStr = "Invalid field type";
         return;
     }
+    this->currFields->push_back(std::make_pair(fieldType, fieldItems[0]));
 }
 
 

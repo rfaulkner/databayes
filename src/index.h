@@ -231,13 +231,12 @@ std::vector<string>* IndexHandler::fetchPatternKeys(std::string pattern) {
 
 /** Ensure that the field type is valid */
 bool IndexHandler::validateEntityFieldType(std::string entity, std::string field, std::string value) {
-    // TODO - implement
+    bool valid = true;
     Json::Value* jsonVal = this->fetchEntity(entity);
-
-    // ensure field exists
-    // obtain the field type
-    // ensure the value is a valid instance of the type
-    return true;
+    valid = valid && jsonVal != NULL;
+    if (valid) valid = valid && jsonVal["fields"]->isMember(field.c_str()); // ensure field exists
+    if (valid) valid = valid && getColumnType(jsonVal["fields"][field])->validate(value); // ensure the value is a valid instance of the type
+    return valid;
 }
 
 
