@@ -28,6 +28,15 @@
 #define IDX_TYPE_REL 1
 #define IDX_TYPE_FIELD 2
 
+// JSON Attribute Macros
+#define JSON_ATTR_ENT_ENT "entity"
+#define JSON_ATTR_ENT_FIELDS "fields"
+#define JSON_ATTR_FIELDS_COUNT "fields_count"
+#define JSON_ATTR_REL_ENTL "entity_left"
+#define JSON_ATTR_REL_ENTR "entity_right"
+#define JSON_ATTR_REL_FIELDSL "fields_left"
+#define JSON_ATTR_REL_FIELDSR "fields_right"
+
 
 using namespace std;
 
@@ -82,7 +91,7 @@ void IndexHandler::buildFieldJSONDefinition(Json::Value& value, std::vector<std:
         value[(*it).second] = (*it).first->getType();
         count++;
     }
-    value["fields_count"] = std::to_string(count);
+    value[JSON_ATTR_FIELDS_COUNT] = std::to_string(count);
 }
 
 /** Handles forming the json for field vectors in the index */
@@ -92,7 +101,7 @@ void IndexHandler::buildFieldJSONValue(Json::Value& value, std::vector<std::pair
         value[(*it).first] = (*it).second;
         count++;
     }
-    value["count"] = std::to_string(count);
+    value[JSON_ATTR_FIELDS_COUNT] = std::to_string(count);
 }
 
 /**
@@ -102,8 +111,8 @@ void IndexHandler::buildFieldJSONValue(Json::Value& value, std::vector<std::pair
  */
 bool IndexHandler::writeEntity(std::string entity, std::vector<std::pair<ColumnBase*, std::string>>* fields) {
     Json::Value jsonVal;
-    jsonVal["entity"] = entity;
-    jsonVal["fields"] = this->buildFieldJSONDefinition(jsonVal, fields);
+    jsonVal[JSON_ATTR_ENT_ENT] = entity;
+    jsonVal[JSON_ATTR_ENT_FIELDS] = this->buildFieldJSONDefinition(jsonVal, fields);
     this->redisHandler->connect();
     this->redisHandler->write(this->generateEntityKey(entity), jsonVal.toStyledString());
     return true;
@@ -123,14 +132,14 @@ bool IndexHandler::writeRelation(
     Json::Value jsonValFieldsLeft;
     Json::Value jsonValFieldsRight;
 
-    jsonVal["entity_left"] = entityL;
-    jsonVal["entity_right"] = entityR;
+    jsonVal[JSON_ATTR_REL_ENTL] = entityL;
+    jsonVal[JSON_ATTR_REL_ENTR] = entityR;
 
     this->buildFieldJSONValue(jsonValFieldsLeft, fieldsL);
     this->buildFieldJSONValue(jsonValFieldsRight, fieldsR);
 
-    jsonVal["fields_left"] = jsonValFieldsLeft;
-    jsonVal["fields_right"] = jsonValFieldsRight;
+    jsonVal[JSON_ATTR_REL_FIELDSL] = jsonValFieldsLeft;
+    jsonVal[JSON_ATTR_REL_FIELDSR] = jsonValFieldsRight;
 
     this->redisHandler->connect();
     this->redisHandler->write(this->generateRelationKey(entityL, entityR), jsonVal.toStyledString());

@@ -34,6 +34,12 @@
 #define BAD_EOL "Bad end of line"
 #define ERR_ENT_EXISTS "ERR: Entity already exists."
 #define ERR_ENT_NOT_EXISTS "ERR: Entity not found."
+#define ERR_ALL_FIELDS_PROC "All fields have already been processed."
+#define ERR_NO_SYM_AFTER "No symbols permitted after ')'"
+#define ERR_INVALID_FIELD_TYPE "Invalid field type"
+#define ERR_ENT_NOT_FOUND "Can't find entity."
+#define ERR_ENT_BAD_FORMAT "Invalid Entity assign format"
+#define ERR_BAD_FIELD_TYPE "Bad field type on instance."
 
 #define WILDCARD_CHAR '*'
 
@@ -414,7 +420,7 @@ void Parser::processFieldStatement(const string &fieldStr) {
         // Processing should be complete
         if (this->fieldsProcessed == true) {
             this->error = true;
-            this->errStr = "All fields have already been processed.";
+            this->errStr = ERR_ALL_FIELDS_PROC;
             return;
         }
 
@@ -428,7 +434,7 @@ void Parser::processFieldStatement(const string &fieldStr) {
 
         } else if (field.find(')') < field.length() - 1) { // no chars after '('
             this->error = true;
-            this->errStr = "No symbols permitted after ')'";
+            this->errStr = ERR_NO_SYM_AFTER;
             return;
         }
 
@@ -466,7 +472,7 @@ void Parser::parseEntityDefinitionField(std::string field) {
     fieldType = getColumnType(fieldItems[1]);
     if (fieldType == NULL) {
         this->error = true;
-        this->errStr = "Invalid field type";
+        this->errStr = ERR_INVALID_FIELD_TYPE;
         return;
     }
     this->currFields->push_back(std::make_pair(fieldType, fieldItems[0]));
@@ -486,21 +492,21 @@ void Parser::parseEntityAssignField(std::string field) {
     // Verify that the entity has been defined
     if (entityDef == NULL) {
         this->error = true;
-        this->errStr = "Can't find entity.";
+        this->errStr = ERR_ENT_NOT_FOUND;
         return;
     }
 
     // Verify that the assignment has been properly formatted
     if (fieldItems.size() != 2) {
         this->error = true;
-        this->errStr = "Invalid Entity assign format";
+        this->errStr = ERR_ENT_BAD_FORMAT;
         return;
     }
 
     // Validate Type
     if (!this->indexHandler->validateEntityFieldType(this->currEntity, fieldItems[0], fieldItems[1])) {
         this->error = true;
-        this->errStr = "Bad field type on instance.";
+        this->errStr = ERR_BAD_FIELD_TYPE;
         return;
     }
 
