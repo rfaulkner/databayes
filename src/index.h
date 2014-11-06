@@ -243,8 +243,8 @@ bool IndexHandler::validateEntityFieldType(std::string entity, std::string field
     bool valid = true;
     Json::Value* jsonVal = this->fetchEntity(entity);
     valid = valid && jsonVal != NULL;
-    if (valid) valid = valid && jsonVal["fields"]->isMember(field.c_str()); // ensure field exists
-    if (valid) valid = valid && getColumnType(jsonVal["fields"][field])->validate(value); // ensure the value is a valid instance of the type
+    if (valid) valid = valid && jsonVal[JSON_ATTR_ENT_FIELDS]->isMember(field.c_str()); // ensure field exists
+    if (valid) valid = valid && getColumnType(jsonVal[JSON_ATTR_ENT_FIELDS][field])->validate(value); // ensure the value is a valid instance of the type
     return valid;
 }
 
