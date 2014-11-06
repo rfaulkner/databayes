@@ -262,7 +262,6 @@ void Parser::analyze(const std::string& s) {
                 this->state = STATE_FINISH;
             }
 
-
     } else if (this->state == STATE_GET_REL) {
 
     } else if (this->state == STATE_GEN_REL) {

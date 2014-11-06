@@ -75,31 +75,23 @@ std::string IndexHandler::generateEntityKey(std::string entity) { return "ent_" 
 /** Generate a key for a relation entry in the index */
 std::string IndexHandler::generateRelationKey(std::string entityL, std::string entityR) { return "rel_" + entityL + "_" + entityR; }
 
-/**
- * Handles forming the json for field vectors in the index
- */
+/** Handles forming the json for field vectors in the index */
 void IndexHandler::buildFieldJSONDefinition(Json::Value& value, std::vector<std::pair<ColumnBase*, std::string>>* fields) {
-    Json::Value* fields = new Json::Value();
     int count = 0;
     for (std::vector<std::pair<ColumnBase*, std::string>>::iterator it = fields->begin() ; it != fields->end(); ++it) {
-        fields[(*it).second] = (*it).first->getType();
+        value[(*it).second] = (*it).first->getType();
         count++;
     }
-    value["fields"] = *fields;
-    value["count"] = std::to_string(count);
+    value["fields_count"] = std::to_string(count);
 }
 
-/**
- * Handles forming the json for field vectors in the index
- */
+/** Handles forming the json for field vectors in the index */
 void IndexHandler::buildFieldJSONValue(Json::Value& value, std::vector<std::pair<std::string, std::string>>* fields) {
-    Json::Value* fields = new Json::Value();
     int count = 0;
     for (std::vector<std::pair<std::string, std::string>>::iterator it = fields->begin() ; it != fields->end(); ++it) {
-        fields[(*it).first] = (*it).second;
+        value[(*it).first] = (*it).second;
         count++;
     }
-    value["fields"] = *fields;
     value["count"] = std::to_string(count);
 }
 
@@ -111,7 +103,7 @@ void IndexHandler::buildFieldJSONValue(Json::Value& value, std::vector<std::pair
 bool IndexHandler::writeEntity(std::string entity, std::vector<std::pair<ColumnBase*, std::string>>* fields) {
     Json::Value jsonVal;
     jsonVal["entity"] = entity;
-    this->buildFieldJSONDefinition(jsonVal, fields);
+    jsonVal["fields"] = this->buildFieldJSONDefinition(jsonVal, fields);
     this->redisHandler->connect();
     this->redisHandler->write(this->generateEntityKey(entity), jsonVal.toStyledString());
     return true;
@@ -128,10 +120,18 @@ bool IndexHandler::writeRelation(
                     std::vector<std::pair<std::string, std::string>>* fieldsL,
                     std::vector<std::pair<std::string, std::string>>* fieldsR) {
     Json::Value jsonVal;
-    jsonVal["entityL"] = entityL;
-    jsonVal["entityR"] = entityR;
-    this->buildFieldJSONValue(jsonVal, fieldsL, "fieldsL");
-    this->buildFieldJSONValue(jsonVal, fieldsR, "fieldsR");
+    Json::Value jsonValFieldsLeft;
+    Json::Value jsonValFieldsRight;
+
+    jsonVal["entity_left"] = entityL;
+    jsonVal["entity_right"] = entityR;
+
+    this->buildFieldJSONValue(jsonValFieldsLeft, fieldsL);
+    this->buildFieldJSONValue(jsonValFieldsRight, fieldsR);
+
+    jsonVal["fields_left"] = jsonValFieldsLeft;
+    jsonVal["fields_right"] = jsonValFieldsRight;
+
     this->redisHandler->connect();
     this->redisHandler->write(this->generateRelationKey(entityL, entityR), jsonVal.toStyledString());
     return true;
