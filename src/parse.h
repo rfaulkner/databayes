@@ -239,7 +239,7 @@ void Parser::analyze(const std::string& s) {
 
         // Determine if entity or fields need to be processed
         if (this->entityProcessed) {
-            this->processFieldStatement(sLower);
+            this->parseEntitySymbol(sLower);
         } else {
             if (this->currValues != NULL) delete this->currValues;
             this->currValues = new vector<std::pair<std::string, std::string>>;
@@ -384,15 +384,18 @@ void Parser::parseEntitySymbol(std::string s) {
     bool noFields = true;
 
     // If the input contains
-    if (s.find("(")) {
+    if (s.find("(") && !s.find("()")) {
         noFields = false;
         elems = this->tokenize(s, '(');
         this->currEntity = *elems.begin();
     } else
         this->currEntity = s;
 
-    if (this->debug)
+    if (this->debug) {
         cout << "DEBUG -- Reading entity: " << this->currEntity << endl; // DEBUG
+        if (noFields)
+            cout << "DEBUG -- Entity has no fields" << endl; // DEBUG
+    }
     this->fieldsProcessed = false;
     this->entityProcessed = true;
 
