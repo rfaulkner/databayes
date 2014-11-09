@@ -13,8 +13,6 @@
 #include <redis3m/connection.h>
 #include "parse.h"
 
-#define BAD_CMD "Bad command."
-
 using namespace std;
 
 bool handleUserInput(string input) {

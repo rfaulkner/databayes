@@ -46,8 +46,8 @@ class IndexHandler {
 
     RedisHandler* redisHandler;
 
-    void buildFieldJSONDefinition(Json::Value&, std::vector<std::pair<ColumnBase*, std::string>>*, std::string);
-    void buildFieldJSONValue(Json::Value&, std::vector<std::pair<std::string, std::string>>*, std::string);
+    void buildFieldJSONDefinition(Json::Value&, std::vector<std::pair<ColumnBase*, std::string>>*);
+    void buildFieldJSONValue(Json::Value&, std::vector<std::pair<std::string, std::string>>*);
 
 public:
     /**
@@ -112,7 +112,8 @@ void IndexHandler::buildFieldJSONValue(Json::Value& value, std::vector<std::pair
 bool IndexHandler::writeEntity(std::string entity, std::vector<std::pair<ColumnBase*, std::string>>* fields) {
     Json::Value jsonVal;
     jsonVal[JSON_ATTR_ENT_ENT] = entity;
-    jsonVal[JSON_ATTR_ENT_FIELDS] = this->buildFieldJSONDefinition(jsonVal, fields);
+    this->buildFieldJSONDefinition(jsonVal, fields);
+    jsonVal[JSON_ATTR_ENT_FIELDS] = jsonVal;
     this->redisHandler->connect();
     this->redisHandler->write(this->generateEntityKey(entity), jsonVal.toStyledString());
     return true;
@@ -243,8 +244,8 @@ bool IndexHandler::validateEntityFieldType(std::string entity, std::string field
     bool valid = true;
     Json::Value* jsonVal = this->fetchEntity(entity);
     valid = valid && jsonVal != NULL;
-    if (valid) valid = valid && jsonVal[JSON_ATTR_ENT_FIELDS]->isMember(field.c_str()); // ensure field exists
-    if (valid) valid = valid && getColumnType(jsonVal[JSON_ATTR_ENT_FIELDS][field])->validate(value); // ensure the value is a valid instance of the type
+    if (valid) valid = valid && ((*jsonVal)[JSON_ATTR_ENT_FIELDS].isMember(field.c_str())); // ensure field exists
+    if (valid) valid = valid && getColumnType((*jsonVal)[JSON_ATTR_ENT_FIELDS][field].asCString())->validate(value); // ensure the value is a valid instance of the type
     return valid;
 }
 
