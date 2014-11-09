@@ -30,10 +30,7 @@ int main() {
     while (1) {
         cout << "databayes> ";
         getline (cin, line);
-        if (!parser->parse(line)) {
-            cout << BAD_CMD << endl;
-        }
-
+        parser->parse(line);
     }
     return 0;
 }
