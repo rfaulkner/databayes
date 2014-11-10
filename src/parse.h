@@ -236,37 +236,7 @@ void Parser::analyze(const std::string& s) {
         }
 
     } else if (this->state == STATE_ADD_P1 || this->state == STATE_ADD_P2) {
-
-        // Determine if entity or fields need to be processed
-        if (this->entityProcessed) {
-            this->parseEntitySymbol(sLower);
-        } else {
-            if (this->currValues != NULL) delete this->currValues;
-            this->currValues = new vector<std::pair<std::string, std::string>>;
-            this->parseEntitySymbol(sLower);
-
-            // Ensure that entities exist
-            if (!this->indexHandler->existsEntity(this->currEntity)) {
-                this->error = true;
-                this->errStr = ERR_ENT_NOT_EXISTS;
-                this->state = STATE_FINISH;
-                return;
-            }
-        }
-
-        // If all fields have been processed transition
-        if (this->fieldsProcessed)
-            if (this->state == STATE_ADD_P1) {
-                this->state = STATE_ADD_P2;
-                this->bufferEntity = this->currEntity;
-                this->bufferValues = this->currValues;
-                this->currValues = new vector<std::pair<std::string, std::string>>;
-                this->fieldsProcessed = false;
-                this->entityProcessed = false;
-
-            } else if (this->state == STATE_ADD_P2) {
-                this->state = STATE_FINISH;
-            }
+        this->parseRelationPair();
 
     } else if (this->state == STATE_GET_REL) {
 
@@ -514,6 +484,43 @@ void Parser::parseEntityAssignField(std::string field) {
     }
 
     this->currValues->push_back(std::make_pair(fieldItems[0], fieldItems[1]));
+}
+
+
+/**
+ *  Stateless method for parsing a pair of entity descriptors defining a relation
+ */
+void Parser::parseRelationPair() {
+    // Determine if entity or fields need to be processed
+    if (this->entityProcessed) {
+        this->parseEntitySymbol(sLower);
+    } else {
+        if (this->currValues != NULL) delete this->currValues;
+        this->currValues = new vector<std::pair<std::string, std::string>>;
+        this->parseEntitySymbol(sLower);
+
+        // Ensure that entities exist
+        if (!this->indexHandler->existsEntity(this->currEntity)) {
+            this->error = true;
+            this->errStr = ERR_ENT_NOT_EXISTS;
+            this->state = STATE_FINISH;
+            return;
+        }
+    }
+
+    // If all fields have been processed transition
+    if (this->fieldsProcessed)
+        if (this->state == STATE_ADD_P1) {
+            this->state = STATE_ADD_P2;
+            this->bufferEntity = this->currEntity;
+            this->bufferValues = this->currValues;
+            this->currValues = new vector<std::pair<std::string, std::string>>;
+            this->fieldsProcessed = false;
+            this->entityProcessed = false;
+
+        } else if (this->state == STATE_ADD_P2) {
+            this->state = STATE_FINISH;
+        }
 }
 
 #endif
