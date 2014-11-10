@@ -49,8 +49,8 @@
 #define STATE_START 0       // Start state
 
 #define STATE_ADD 10        // Add a new relation
-#define STATE_ADD_P1 12
-#define STATE_ADD_P2 14
+#define STATE_P1 12
+#define STATE_P2 14
 
 #define STATE_GET 20        // Get relation between two entities with optional conditions
 #define STATE_GET_REL 21
@@ -220,7 +220,7 @@ void Parser::analyze(const std::string& s) {
         if (sLower.compare(STR_CMD_REL) == 0)
             switch (this->state) {
             case STATE_ADD:
-                this->state = STATE_ADD_P1;
+                this->state = STATE_P1;
                 break;
             case STATE_GET:
                 this->state = STATE_GET_REL;
@@ -235,7 +235,7 @@ void Parser::analyze(const std::string& s) {
             return;
         }
 
-    } else if (this->state == STATE_ADD_P1 || this->state == STATE_ADD_P2) {
+    } else if (this->state == STATE_P1 || this->state == STATE_P2) {
         this->parseRelationPair();
 
     } else if (this->state == STATE_GET_REL) {
@@ -510,15 +510,15 @@ void Parser::parseRelationPair() {
 
     // If all fields have been processed transition
     if (this->fieldsProcessed)
-        if (this->state == STATE_ADD_P1) {
-            this->state = STATE_ADD_P2;
+        if (this->state == STATE_P1) {
+            this->state = STATE_P2;
             this->bufferEntity = this->currEntity;
             this->bufferValues = this->currValues;
             this->currValues = new vector<std::pair<std::string, std::string>>;
             this->fieldsProcessed = false;
             this->entityProcessed = false;
 
-        } else if (this->state == STATE_ADD_P2) {
+        } else if (this->state == STATE_P2) {
             this->state = STATE_FINISH;
         }
 }
