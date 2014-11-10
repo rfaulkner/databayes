@@ -235,12 +235,14 @@ void Parser::analyze(const std::string& s) {
             return;
         }
 
-    } else if (this->state == STATE_P1 || this->state == STATE_P2) {
+    } else if (this->macroState = STATE_ADD && (this->state == STATE_P1 || this->state == STATE_P2)) {
         this->parseRelationPair();
 
-    } else if (this->state == STATE_GET_REL) {
+    } else if (this->state == STATE_GET_REL && (this->state == STATE_P1 || this->state == STATE_P2)) {
+        this->parseRelationPair();
 
-    } else if (this->state == STATE_GEN_REL) {
+    } else if (this->state == STATE_GEN_REL && (this->state == STATE_P1 || this->state == STATE_P2)) {
+        this->parseRelationPair();
 
     } else if (this->state == STATE_DEF) {  // DEFINING new entities
 
@@ -310,6 +312,10 @@ void Parser::analyze(const std::string& s) {
             this->indexHandler->writeEntity(this->currEntity, this->currFields);
         } else if (this->macroState == STATE_ADD) {
             this->indexHandler->writeRelation(this->bufferEntity, this->currEntity, this->bufferValues, this->currValues);
+        } else if (this->macroState == STATE_GET_REL) {
+            // TODO - Add logic to fetch all relevant relations
+        } else if (this->macroState == STATE_GEN_REL) {
+            // TODO - Add logic to sample relation
         }
 
         // Cleanup
