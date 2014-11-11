@@ -17,6 +17,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <set>
 #include <json/json.h>
 
 #include "redis.h"
@@ -75,6 +76,7 @@ public:
     std::string generateRelationKey(std::string, std::string);
 
     bool validateEntityFieldType(std::string, std::string, std::string);
+    std::string orderPairAlphaNumeric(std::string, std::string);
 
 };
 
@@ -249,6 +251,15 @@ bool IndexHandler::validateEntityFieldType(std::string entity, std::string field
     return valid;
 }
 
+/** Orders parameters alphanumerically then combines into one string */
+std::string IndexHandler::orderPairAlphaNumeric(std::string s1, std::string s2) {
+    std::set<std::string> sortedItems;
+    std::set<std::string>::iterator it;
+    sortedItems.insert(s1);
+    sortedItems.insert(s2);
+    it = sortedItems.begin();
+    return *it + "_" + *(++it);
+}
 
 /**
  * Handles writes to in memory index
