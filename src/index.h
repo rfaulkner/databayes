@@ -255,10 +255,11 @@ bool IndexHandler::validateEntityFieldType(std::string entity, std::string field
 std::string IndexHandler::orderPairAlphaNumeric(std::string s1, std::string s2) {
     std::set<std::string> sortedItems;
     std::set<std::string>::iterator it;
+    std::string ret = "";
     sortedItems.insert(s1);
     sortedItems.insert(s2);
-    it = sortedItems.begin();
-    return *it + "_" + *(++it);
+    it = sortedItems.begin(); ret = *it + "_"; it++; ret += *it;
+    return ret;
 }
 
 /**
