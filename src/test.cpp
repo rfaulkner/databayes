@@ -17,6 +17,7 @@
 #include "column_types.h"
 #include "redis.h"
 #include "md5.h"
+#include "index.h"
 
 #define REDISHOST "127.0.0.1"
 #define REDISPORT 6379
@@ -67,12 +68,12 @@ void testRedisIO() {
 }
 
 /** Test to ensure that md5 hashing works */
-void md5Hashing() {
+void testMd5Hashing() {
     cout << endl << "md5 of 'mykey': " << md5("mykey") << endl;
 }
 
 /** Test to ensure that md5 hashing works */
-void regexForTypes() {
+void testRegexForTypes() {
     IntegerColumn ic;
     FloatColumn fc;
     assert(ic.validate("1981"));
@@ -81,8 +82,14 @@ void regexForTypes() {
 }
 
 
-int main() {
+/** Test to ensure that md5 hashing works */
+void testOrderPairAlphaNumeric() {
+    IndexHandler ih;
+    assert(std::strcmp(ih.orderPairAlphaNumeric("b", "a").c_str(), "a_b") == 0);
+    cout << "Passed orderPairAlphaNumeric tests." << endl;
+}
 
+int main() {
     cout << "-- TESTS BEGIN --" << endl << endl;
 
 //    testRedisSet();
@@ -90,7 +97,8 @@ int main() {
 //    testRedisKeys();
 //    md5Hashing();
 //    testRedisIO();
-    regexForTypes();
+    testRegexForTypes();
+    testOrderPairAlphaNumeric();
 
     cout << endl << "-- TESTS END --" << endl;
 
