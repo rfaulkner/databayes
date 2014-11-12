@@ -84,7 +84,7 @@ public:
 std::string IndexHandler::generateEntityKey(std::string entity) { return "ent_" + entity; }
 
 /** Generate a key for a relation entry in the index */
-std::string IndexHandler::generateRelationKey(std::string entityL, std::string entityR) { return "rel_" + entityL + "_" + entityR; }
+std::string IndexHandler::generateRelationKey(std::string entityL, std::string entityR) { return "rel_" + this->orderPairAlphaNumeric(entityL, entityR); }
 
 /** Handles forming the json for field vectors in the index */
 void IndexHandler::buildFieldJSONDefinition(Json::Value& value, std::vector<std::pair<ColumnBase*, std::string>>* fields) {
