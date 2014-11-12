@@ -21,6 +21,7 @@
 #include <json/json.h>
 
 #include "redis.h"
+#include "md5.h"
 
 #define IDX_SIZE 100000
 
@@ -84,7 +85,9 @@ public:
 std::string IndexHandler::generateEntityKey(std::string entity) { return "ent_" + entity; }
 
 /** Generate a key for a relation entry in the index */
-std::string IndexHandler::generateRelationKey(std::string entityL, std::string entityR) { return "rel_" + this->orderPairAlphaNumeric(entityL, entityR); }
+std::string IndexHandler::generateRelationKey(std::string entityL, std::string entityR, std::string hash) {
+    return "rel_" + this->orderPairAlphaNumeric(entityL, entityR) + "_" + hash;
+}
 
 /** Handles forming the json for field vectors in the index */
 void IndexHandler::buildFieldJSONDefinition(Json::Value& value, std::vector<std::pair<ColumnBase*, std::string>>* fields) {
@@ -145,7 +148,7 @@ bool IndexHandler::writeRelation(
     jsonVal[JSON_ATTR_REL_FIELDSR] = jsonValFieldsRight;
 
     this->redisHandler->connect();
-    this->redisHandler->write(this->generateRelationKey(entityL, entityR), jsonVal.toStyledString());
+    this->redisHandler->write(this->generateRelationKey(entityL, entityR, md5(jsonVal.asCString())), jsonVal.toStyledString());
     return true;
 }
 
@@ -185,7 +188,7 @@ Json::Value* IndexHandler::fetchEntity(std::string entity) {
 Json::Value* IndexHandler::fetchRelation(std::string entityL, std::string entityR) {
     this->redisHandler->connect();
     if (this->existsRelation(entityL, entityR))
-        return this->composeJSON(this->redisHandler->read(this->generateRelationKey(entityL, entityR)));
+        return this->composeJSON(this->redisHandler->read(this->generateRelationKey(entityL, entityR, "*")));
     else
         return NULL;
 }
@@ -199,7 +202,7 @@ bool IndexHandler::existsEntity(std::string entity) {
 /** Check to ensure relation exists */
 bool IndexHandler::existsRelation(std::string entityL, std::string entityR) {
     this->redisHandler->connect();
-    return this->redisHandler->exists(this->generateRelationKey(entityL, entityR));
+    return this->redisHandler->exists(this->generateRelationKey(entityL, entityR, "*"));
 }
 
 /**
