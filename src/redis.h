@@ -54,15 +54,29 @@ void RedisHandler::write(std::string key, std::string value) {
     redisCommand(this->context, "SET %s %s", key.c_str(), value.c_str());
 }
 
-/** Writes a key value to redis */
+/** Writes a value to redis hash map */
 void RedisHandler::writeHashMap(std::string key, std::string hash, std::string value) {
     redisCommand(this->context, "HSET %s %s %s", key.c_str(), hash.c_str(), value.c_str());
+}
+
+/** Writes a value to redis hash map */
+void RedisHandler::incrementHashMap(std::string key, std::string hash, int value) {
+    redisCommand(this->context, "HINCRBY %s %s %s", key.c_str(), hash.c_str(), std::to_string(value).c_str());
 }
 
 /** Read a value from redis given a key */
 std::string RedisHandler::read(std::string key) {
     std::string result;
     redisReply *reply = (redisReply*)redisCommand(this->context, "GET %s", key.c_str());
+    result = reply->str;
+    freeReplyObject(reply);
+    return result;
+}
+
+/** Read a value from redis given a key */
+std::string RedisHandler::readHashMap(std::string key, std::string hash) {
+    std::string result;
+    redisReply *reply = (redisReply*)redisCommand(this->context, "HGET %s %s", key.c_str(), hash.c_str());
     result = reply->str;
     freeReplyObject(reply);
     return result;
