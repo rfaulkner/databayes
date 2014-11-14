@@ -185,17 +185,13 @@ Json::Value* IndexHandler::fetchEntity(std::string entity) {
         return NULL;
 }
 
-/** Attempts to fetch a relation from index */
+/** Fetch a set of relations matching the entities */
 Json::Value IndexHandler::fetchRelation(std::string entityL, std::string entityR) {
-    std::vector<std::string>* keys;
-    std::vector<Json::Value>* keys;
-    keys = this->redisHandler->keys(this->generateRelationKey(entityL, entityR, "*"));
-    val = new Json::Value [keys.size()];
-    for (std::vector<string>::iterator it = keys.begin() ; it != keys.end(); ++it) {
-        this->composeJSON(this->redisHandler->read(*it));
-        counter++;
-    }
-    return NULL;
+    std::vector<std::string> keys = this->redisHandler->keys(this->generateRelationKey(entityL, entityR, "*"));
+    std::vector<Json::Value> relations;
+    for (std::vector<string>::iterator it = keys.begin() ; it != keys.end(); ++it)
+        relations.push_back(this->composeJSON(this->redisHandler->read(*it)));
+    return relations;
 }
 
 /** Check to ensure entity exists */
