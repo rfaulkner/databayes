@@ -98,14 +98,14 @@ bool RedisHandler::exists(std::string key) {
 }
 
 /** Read a value from redis given a key pattern */
-std::vector<std::string>* RedisHandler::keys(std::string pattern) {
-    std::vector<string>* elems = new std::vector<string>();
+std::vector<std::string> RedisHandler::keys(std::string pattern) {
+    std::vector<string> elems;
     redisReply *reply = (redisReply*)redisCommand(this->context, "KEYS %s", pattern.c_str());
 
     // Determine if the reply is an array and iterate through elems if so
     if (reply->type == REDIS_REPLY_ARRAY) {
         for (int j = 0; j < reply->elements; j++) {
-            elems->push_back(reply->element[j]->str);
+            elems.push_back(reply->element[j]->str);
         }
     }
 

@@ -149,6 +149,7 @@ bool IndexHandler::writeRelation(
 
     this->redisHandler->connect();
     this->redisHandler->write(this->generateRelationKey(entityL, entityR, md5(jsonVal.asCString())), jsonVal.asCString());
+
     return true;
 }
 
@@ -185,12 +186,16 @@ Json::Value* IndexHandler::fetchEntity(std::string entity) {
 }
 
 /** Attempts to fetch a relation from index */
-Json::Value* IndexHandler::fetchRelation(std::string entityL, std::string entityR) {
-    this->redisHandler->connect();
-    if (this->existsRelation(entityL, entityR))
-        return this->composeJSON(this->redisHandler->read(this->generateRelationKey(entityL, entityR, "*")));
-    else
-        return NULL;
+Json::Value IndexHandler::fetchRelation(std::string entityL, std::string entityR) {
+    std::vector<std::string>* keys;
+    std::vector<Json::Value>* keys;
+    keys = this->redisHandler->keys(this->generateRelationKey(entityL, entityR, "*"));
+    val = new Json::Value [keys.size()];
+    for (std::vector<string>::iterator it = keys.begin() ; it != keys.end(); ++it) {
+        this->composeJSON(this->redisHandler->read(*it));
+        counter++;
+    }
+    return NULL;
 }
 
 /** Check to ensure entity exists */
@@ -215,13 +220,13 @@ std::vector<Json::Value>* IndexHandler::fetchPatternJson(std::string pattern) {
     Json::Value inMem;
     Json::Reader reader;
     bool parsedSuccess;
-    std::vector<string>* vec;
+    std::vector<string> vec;
 
     this->redisHandler->connect();
     vec = this->redisHandler->keys(pattern);
 
     // Iterate over all entries returned from redis
-    for (std::vector<std::string>::iterator it = vec->begin() ; it != vec->end(); ++it) {
+    for (std::vector<std::string>::iterator it = vec.begin() ; it != vec.end(); ++it) {
         parsedSuccess = reader.parse(this->redisHandler->read(*it), inMem, false);
         if (parsedSuccess)
             elems->push_back(inMem);
@@ -236,10 +241,10 @@ std::vector<Json::Value>* IndexHandler::fetchPatternJson(std::string pattern) {
  */
 std::vector<string>* IndexHandler::fetchPatternKeys(std::string pattern) {
     std::vector<std::string>* elems = new std::vector<std::string>();
-    std::vector<string>* vec;
+    std::vector<string> vec;
     this->redisHandler->connect();
     vec = this->redisHandler->keys(pattern);
-    for (std::vector<std::string>::iterator it = vec->begin() ; it != vec->end(); ++it)
+    for (std::vector<std::string>::iterator it = vec.begin() ; it != vec.end(); ++it)
         elems->push_back((*it).substr(4, (*it).length()));
     return elems;
 }
