@@ -314,6 +314,11 @@ void Parser::analyze(const std::string& s) {
             this->indexHandler->writeRelation(this->bufferEntity, this->currEntity, this->bufferValues, this->currValues);
         } else if (this->macroState == STATE_GET_REL) {
             // TODO - Add logic to fetch all relevant relations
+            Json::Value* ret;
+            ret = this->indexHandler->fetchRelation(this->bufferEntity, this->currEntity);
+
+            // TODO - iterate through matched keys
+
         } else if (this->macroState == STATE_GEN_REL) {
             // TODO - Add logic to sample relation
         }
