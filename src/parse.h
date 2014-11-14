@@ -118,6 +118,7 @@ class Parser {
     IndexHandler* indexHandler;
 
     // Parse methods
+    void parseRelationPair(std::string);
     void parseEntitySymbol(std::string);
     void processFieldStatement(const string &source);
     void parseEntityDefinitionField(std::string);
@@ -236,13 +237,13 @@ void Parser::analyze(const std::string& s) {
         }
 
     } else if (this->macroState = STATE_ADD && (this->state == STATE_P1 || this->state == STATE_P2)) {
-        this->parseRelationPair();
+        this->parseRelationPair(sLower);
 
     } else if (this->state == STATE_GET_REL && (this->state == STATE_P1 || this->state == STATE_P2)) {
-        this->parseRelationPair();
+        this->parseRelationPair(sLower);
 
     } else if (this->state == STATE_GEN_REL && (this->state == STATE_P1 || this->state == STATE_P2)) {
-        this->parseRelationPair();
+        this->parseRelationPair(sLower);
 
     } else if (this->state == STATE_DEF) {  // DEFINING new entities
 
@@ -503,14 +504,14 @@ void Parser::parseEntityAssignField(std::string field) {
 /**
  *  Stateless method for parsing a pair of entity descriptors defining a relation
  */
-void Parser::parseRelationPair() {
+void Parser::parseRelationPair(std::string symbol) {
     // Determine if entity or fields need to be processed
     if (this->entityProcessed) {
-        this->parseEntitySymbol(sLower);
+        this->parseEntitySymbol(symbol);
     } else {
         if (this->currValues != NULL) delete this->currValues;
         this->currValues = new vector<std::pair<std::string, std::string>>;
-        this->parseEntitySymbol(sLower);
+        this->parseEntitySymbol(symbol);
 
         // Ensure that entities exist
         if (!this->indexHandler->existsEntity(this->currEntity)) {

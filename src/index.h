@@ -65,7 +65,7 @@ public:
     Json::Value* composeJSON(std::string);
     Json::Value* fetchRaw(std::string);
     Json::Value* fetchEntity(std::string);
-    Json::Value* fetchRelationPrefix(std::string, std::string);
+    std::vector<Json::Value> fetchRelationPrefix(std::string, std::string);
 
     bool existsEntity(std::string);
     bool existsRelation(std::string, std::string);
@@ -75,7 +75,7 @@ public:
     bool fetchFromDisk(int);   // Loads disk
 
     std::string generateEntityKey(std::string);
-    std::string generateRelationKey(std::string, std::string);
+    std::string generateRelationKey(std::string, std::string, std::string);
 
     bool validateEntityFieldType(std::string, std::string, std::string);
     std::string orderPairAlphaNumeric(std::string, std::string);
@@ -187,10 +187,10 @@ Json::Value* IndexHandler::fetchEntity(std::string entity) {
 }
 
 /** Attempts to fetch an entity from index */
-Json::Value* IndexHandler::fetchRaw(std::string entity) {
+Json::Value* IndexHandler::fetchRaw(std::string key) {
     this->redisHandler->connect();
-    if (this->existsEntity(entity))
-        return this->composeJSON(this->redisHandler->read(entity));
+    if (this->existsEntity(key))
+        return this->composeJSON(this->redisHandler->read(key));
     else
         return NULL;
 }

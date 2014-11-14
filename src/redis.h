@@ -39,11 +39,18 @@ public:
     RedisHandler(std::string, int) { this->host = host; this->port = port; }
     
     void connect();
+
     void write(std::string, std::string);
+    void writeHashMap(std::string, std::string, std::string);
+    void incrementHashMap(std::string, std::string, int);
+
     void deleteKey(std::string);
+
     bool exists(std::string);
+
     std::string read(std::string);
-    std::vector<std::string>* keys(std::string);
+    std::string readHashMap(std::string, std::string);
+    std::vector<std::string> keys(std::string);
 };
 
 /** Establishes a connection to a redis instance */
@@ -108,7 +115,6 @@ std::vector<std::string> RedisHandler::keys(std::string pattern) {
             elems.push_back(reply->element[j]->str);
         }
     }
-
     freeReplyObject(reply);
     return elems;
 }
