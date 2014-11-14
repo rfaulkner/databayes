@@ -63,8 +63,9 @@ public:
     bool writeToDisk(int);
 
     Json::Value* composeJSON(std::string);
+    Json::Value* fetchRaw(std::string);
     Json::Value* fetchEntity(std::string);
-    Json::Value* fetchRelation(std::string, std::string);
+    Json::Value* fetchRelationPrefix(std::string, std::string);
 
     bool existsEntity(std::string);
     bool existsRelation(std::string, std::string);
@@ -185,11 +186,20 @@ Json::Value* IndexHandler::fetchEntity(std::string entity) {
         return NULL;
 }
 
+/** Attempts to fetch an entity from index */
+Json::Value* IndexHandler::fetchRaw(std::string entity) {
+    this->redisHandler->connect();
+    if (this->existsEntity(entity))
+        return this->composeJSON(this->redisHandler->read(entity));
+    else
+        return NULL;
+}
+
 /** Fetch a set of relations matching the entities */
-Json::Value IndexHandler::fetchRelation(std::string entityL, std::string entityR) {
+std::vector<Json::Value> IndexHandler::fetchRelationPrefix(std::string entityL, std::string entityR) {
     std::vector<std::string> keys = this->redisHandler->keys(this->generateRelationKey(entityL, entityR, "*"));
     std::vector<Json::Value> relations;
-    for (std::vector<string>::iterator it = keys.begin() ; it != keys.end(); ++it)
+    for (std::vector<string>::iterator it = keys.begin(); it != keys.end(); ++it)
         relations.push_back(this->composeJSON(this->redisHandler->read(*it)));
     return relations;
 }
