@@ -368,7 +368,7 @@ void Parser::parseEntitySymbol(std::string s) {
     bool noFields = true;
 
     // If the input contains
-    if (s.find("(") && !s.find("()")) {
+    if (s.find("(") && strstr(s.c_str(), "()") == NULL) {
         noFields = false;
         elems = this->tokenize(s, '(');
         this->currEntity = *elems.begin();
