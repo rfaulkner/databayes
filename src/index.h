@@ -121,7 +121,7 @@ bool IndexHandler::writeEntity(std::string entity, std::vector<std::pair<ColumnB
     this->buildFieldJSONDefinition(jsonVal, fields);
     jsonVal[JSON_ATTR_ENT_FIELDS] = jsonVal;
     this->redisHandler->connect();
-    this->redisHandler->write(this->generateEntityKey(entity), jsonVal.asCString());
+    this->redisHandler->write(this->generateEntityKey(entity), jsonVal.toStyledString());
     return true;
 }
 
@@ -149,7 +149,7 @@ bool IndexHandler::writeRelation(
     jsonVal[JSON_ATTR_REL_FIELDSR] = jsonValFieldsRight;
 
     this->redisHandler->connect();
-    this->redisHandler->write(this->generateRelationKey(entityL, entityR, md5(jsonVal.asCString())), jsonVal.asCString());
+    this->redisHandler->write(this->generateRelationKey(entityL, entityR, md5(jsonVal.ToStyledString())), jsonVal.ToStyledString());
 
     return true;
 }
