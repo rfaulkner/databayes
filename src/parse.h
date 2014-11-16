@@ -30,16 +30,18 @@
 #define STR_CMD_LST "lst"
 #define STR_CMD_ENT "ent"
 
-#define BAD_INPUT "Bad input symbol"
-#define BAD_EOL "Bad end of line"
+#define BAD_INPUT "ERR: Bad input symbol"
+#define BAD_EOL "ERR: Bad end of line"
 #define ERR_ENT_EXISTS "ERR: Entity already exists."
 #define ERR_ENT_NOT_EXISTS "ERR: Entity not found."
-#define ERR_ALL_FIELDS_PROC "All fields have already been processed."
-#define ERR_NO_SYM_AFTER "No symbols permitted after ')'"
-#define ERR_INVALID_FIELD_TYPE "Invalid field type"
-#define ERR_ENT_NOT_FOUND "Can't find entity."
-#define ERR_ENT_BAD_FORMAT "Invalid Entity assign format"
-#define ERR_BAD_FIELD_TYPE "Bad field type on instance."
+#define ERR_ALL_FIELDS_PROC "ERR: All fields have already been processed."
+#define ERR_NO_SYM_AFTER "ERR: No symbols permitted after ')'"
+#define ERR_INVALID_FIELD_TYPE "ERR: Invalid field type"
+#define ERR_ENT_NOT_FOUND "ERR: Can't find entity."
+#define ERR_ENT_BAD_FORMAT "ERR: Invalid Entity assign format"
+#define ERR_BAD_FIELD_TYPE "ERR: Bad field type on instance"
+#define ERR_INVALID_DEF_FMT "ERR: Invalid Entity definition format"
+
 
 #define WILDCARD_CHAR '*'
 
@@ -465,12 +467,12 @@ void Parser::parseEntityDefinitionField(std::string field) {
 
     if (fieldItems.size() != 2) {
         this->error = true;
-        this->errStr = "Invalid Entity definition format";
+        this->errStr = ERR_INVALID_DEF_FMT;
         return;
     }
 
     fieldType = getColumnType(fieldItems[1]);
-    if (fieldType == NULL) {
+    if (!fieldType) {
         this->error = true;
         this->errStr = ERR_INVALID_FIELD_TYPE;
         return;
