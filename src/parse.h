@@ -217,6 +217,8 @@ void Parser::analyze(const std::string& s) {
             this->macroState = STATE_LST;
         }
 
+        cout << "DEBUG -- Setting Macro state: " << this->macroState << endl;
+
     } else if (this->state == STATE_ADD || this->state == STATE_GET || this->state == STATE_GEN) {
         if (sLower.compare(STR_CMD_REL) == 0)
             switch (this->state) {
@@ -236,7 +238,7 @@ void Parser::analyze(const std::string& s) {
             return;
         }
 
-    } else if (this->macroState = STATE_ADD && (this->state == STATE_P1 || this->state == STATE_P2)) {
+    } else if (this->macroState == STATE_ADD && (this->state == STATE_P1 || this->state == STATE_P2)) {
         this->parseRelationPair(sLower);
 
     } else if (this->state == STATE_GET_REL && (this->state == STATE_P1 || this->state == STATE_P2)) {
@@ -309,8 +311,19 @@ void Parser::analyze(const std::string& s) {
 
     // Post processing if command complete
     if (this->state == STATE_FINISH) {
+
+        if (this->debug) {
+            cout << "DEBUG -- Finishing statement processing." << endl;
+            cout << "DEBUG -- Macro state: " << this->macroState << endl;
+            cout << "DEBUG -- Error state: " << this->error << endl;
+        }
+
         if (this->macroState == STATE_DEF && !this->error) { // Add this entity to the index
             this->indexHandler->writeEntity(this->currEntity, this->currFields);
+
+            if (this->debug)
+                cout << "DEBUG -- Writing definition of entity." << endl;
+
         } else if (this->macroState == STATE_ADD) {
             this->indexHandler->writeRelation(this->bufferEntity, this->currEntity, this->bufferValues, this->currValues);
         } else if (this->macroState == STATE_GET_REL) {
