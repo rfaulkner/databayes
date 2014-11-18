@@ -328,6 +328,9 @@ void Parser::analyze(const std::string& s) {
 
         } else if (this->macroState == STATE_ADD) {
             this->indexHandler->writeRelation(this->bufferEntity, this->currEntity, this->bufferValues, this->currValues);
+            if (this->debug)
+                cout << "DEBUG -- Adding relation." << endl;
+
         } else if (this->macroState == STATE_GET_REL) {
             std::vector<Json::Value> ret = this->indexHandler->fetchRelationPrefix(this->bufferEntity, this->currEntity);
 
