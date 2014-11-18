@@ -89,6 +89,27 @@ void testOrderPairAlphaNumeric() {
     cout << "Passed orderPairAlphaNumeric tests." << endl;
 }
 
+/**
+ * Test to ensure that relation entities are encoded properly
+ */
+void testRelationJSONEntityEncoding() {
+    // Create entities
+    // Create relation in redis
+    // Fetch the entity representation
+    // assert
+}
+
+
+/**
+ * Test to ensure that relation fields are encoded properly
+ */
+void testRelationJSONRelationEncoding() {
+    // Create entities
+    // Create relation in redis
+    // Fetch the field representation
+    // assert
+}
+
 int main() {
     cout << "-- TESTS BEGIN --" << endl << endl;
 
