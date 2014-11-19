@@ -64,6 +64,9 @@ public:
     bool writeRelation(std::string, std::string, std::vector<std::pair<std::string, std::string>>*, std::vector<std::pair<std::string, std::string>>*);
     bool writeToDisk(int);
 
+    void removeEntity(std::string);
+    void removeRelation(std::string, std::string, std::vector<std::pair<std::string, std::string>>*, std::vector<std::pair<std::string, std::string>>*);
+
     Json::Value* composeJSON(std::string);
     Json::Value* fetchRaw(std::string);
     Json::Value* fetchEntity(std::string);
@@ -125,6 +128,36 @@ bool IndexHandler::writeEntity(std::string entity, std::vector<std::pair<ColumnB
     this->redisHandler->connect();
     this->redisHandler->write(this->generateEntityKey(entity), jsonVal.toStyledString());
     return true;
+}
+
+/** Remove entity key from redis */
+void IndexHandler::removeEntity(std::string entity) {
+    this->redisHandler->connect();
+    this->redisHandler->deleteKey(this->generateEntityKey(entity))
+
+    // TODO - ensure that relations are consistent
+}
+
+/** Remove relation from redis */
+void IndexHandler::removeRelation(
+    std::string entityL,
+    std::string entityR,
+    std::vector<std::pair<std::string, std::string>>*,
+    std::vector<std::pair<std::string, std::string>>*) {
+
+    Json::Value jsonVal;
+    Json::Value jsonValFieldsLeft;
+    Json::Value jsonValFieldsRight;
+
+    jsonVal[JSON_ATTR_REL_ENTL] = entityL;
+    jsonVal[JSON_ATTR_REL_ENTR] = entityR;
+    this->buildFieldJSONValue(jsonValFieldsLeft, fieldsL);
+    this->buildFieldJSONValue(jsonValFieldsRight, fieldsR);
+    jsonVal[JSON_ATTR_REL_FIELDSL] = jsonValFieldsLeft;
+    jsonVal[JSON_ATTR_REL_FIELDSR] = jsonValFieldsRight;
+
+    this->redisHandler->connect();
+    this->redisHandler->write(this->generateRelationKey(entityL, entityR, md5(jsonVal.toStyledString())));
 }
 
 /**
