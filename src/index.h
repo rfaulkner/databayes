@@ -30,6 +30,8 @@
 #define IDX_TYPE_REL 1
 #define IDX_TYPE_FIELD 2
 
+#define KEY_DELIMETER "+"
+
 // JSON Attribute Macros
 #define JSON_ATTR_ENT_ENT "entity"
 #define JSON_ATTR_ENT_FIELDS "fields"
@@ -83,11 +85,11 @@ public:
 };
 
 /** Generate a key for an entity entry in the index */
-std::string IndexHandler::generateEntityKey(std::string entity) { return "ent_" + entity; }
+std::string IndexHandler::generateEntityKey(std::string entity) { return "ent" + KEY_DELIMETER + entity; }
 
 /** Generate a key for a relation entry in the index */
 std::string IndexHandler::generateRelationKey(std::string entityL, std::string entityR, std::string hash) {
-    return "rel_" + this->orderPairAlphaNumeric(entityL, entityR) + "_" + hash;
+    return "rel" + KEY_DELIMETER + this->orderPairAlphaNumeric(entityL, entityR) + KEY_DELIMETER + hash;
 }
 
 /** Handles forming the json for field vectors in the index */
@@ -272,7 +274,7 @@ std::string IndexHandler::orderPairAlphaNumeric(std::string s1, std::string s2) 
     std::string ret = "";
     sortedItems.insert(s1);
     sortedItems.insert(s2);
-    it = sortedItems.begin(); ret = *it + "_"; it++; ret += *it;
+    it = sortedItems.begin(); ret = *it + KEY_DELIMETER; it++; ret += *it;
     return ret;
 }
 
