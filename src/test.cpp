@@ -110,27 +110,31 @@ void testJSONEntityEncoding() {
 /**
  * Test to ensure that relation fields are encoded properly
  */
-void testRelationJSONRelationEncoding() {
-//    IndexHandler ih;
-//    std::vector<std::pair<ColumnBase*, std::string>>* fields_ent_1 = new vector<std::pair<ColumnBase*, std::string>>;
-//    std::vector<std::pair<ColumnBase*, std::string>>* fields_ent_2 = new vector<std::pair<ColumnBase*, std::string>>;
-//    std::vector<std::pair<std::string, std::string>>* fields_rel_1 = new vector<std::pair<ColumnBase*, std::string>>;
-//    std::vector<std::pair<std::string, std::string>>* fields_rel_2 = new vector<std::pair<ColumnBase*, std::string>>;
-//
-//    // Popualate fields
-//    fields_ent_1->push_back(std::make_pair(getColumnType("integer"), "a"));
-//    fields_ent_2->push_back(std::make_pair(getColumnType("string"), "b"));
-//    fields_rel_1->push_back(std::make_pair("a", "1"));
-//    fields_rel_2->push_back(std::make_pair("b", "hello"));
-//
-//    // Create entities
-//    ih.writeEntity("test_1", fields_ent_1);
-//    ih.writeEntity("test_2", fields_ent_1);
-//
-//    // Create relation in redis
-//    ih.writeRelation("test_1", "test_2", fields_rel_1, fields_rel_2)
+void testJSONRelationEncoding() {
+    IndexHandler ih;
+    std::vector<Json::Value> ret;
+    std::vector<std::pair<ColumnBase*, std::string>>* fields_ent_1 = new vector<std::pair<ColumnBase*, std::string>>;
+    std::vector<std::pair<ColumnBase*, std::string>>* fields_ent_2 = new vector<std::pair<ColumnBase*, std::string>>;
+    std::vector<std::pair<std::string, std::string>>* fields_rel_1 = new vector<std::pair<std::string, std::string>>;
+    std::vector<std::pair<std::string, std::string>>* fields_rel_2 = new vector<std::pair<std::string, std::string>>;
+
+    // Popualate fields
+    fields_ent_1->push_back(std::make_pair(getColumnType("integer"), "a"));
+    fields_ent_2->push_back(std::make_pair(getColumnType("string"), "b"));
+    fields_rel_1->push_back(std::make_pair("a", "1"));
+    fields_rel_2->push_back(std::make_pair("b", "hello"));
+
+    // Create entities
+    ih.writeEntity("test_1", fields_ent_1);
+    ih.writeEntity("test_2", fields_ent_1);
+
+    // Create relation in redis
+    ih.writeRelation("test_1", "test_2", fields_rel_1, fields_rel_2);
 
     // Fetch the entity representation
+    ret = ih.fetchRelationPrefix("test_1", "test_2");
+    for (std::vector<Json::Value>::iterator it = ret.begin(); it != ret.end(); ++it)
+        cout << (*it).toStyledString() << endl;
 
     // assert
 }
