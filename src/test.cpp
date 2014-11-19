@@ -42,12 +42,12 @@ void testRedisGet() {
 /** Test to ensure that redis keys are correctly returned */
 void testRedisKeys() {
     RedisHandler r;
-    std::vector<string>* vec;
+    std::vector<std::string> vec;
 
     r.connect();
     vec = r.keys("*");
     cout << "KEY LIST FOR *" << endl;
-    for (std::vector<std::string>::iterator it = vec->begin() ; it != vec->end(); ++it) {
+    for (std::vector<std::string>::iterator it = vec.begin() ; it != vec.end(); ++it) {
         cout << *it << endl;
     }
     cout << endl;
@@ -92,11 +92,18 @@ void testOrderPairAlphaNumeric() {
 /**
  * Test to ensure that relation entities are encoded properly
  */
-void testRelationJSONEntityEncoding() {
-    // Create entities
-    // Create relation in redis
+void testJSONEntityEncoding() {
+    IndexHandler ih;
+    Json::Value* ret;
+    std::vector<std::pair<ColumnBase*, std::string>>* fields_ent = new vector<std::pair<ColumnBase*, std::string>>;
+    fields_ent->push_back(std::make_pair(getColumnType("integer"), "a"));
+    ih.writeEntity("test", fields_ent);
     // Fetch the entity representation
-    // assert
+    ret = ih.fetchEntity("test");
+    cout << ret->toStyledString() << endl;
+
+    // TODO - assert
+    // TODO - remove entity
 }
 
 
@@ -104,9 +111,27 @@ void testRelationJSONEntityEncoding() {
  * Test to ensure that relation fields are encoded properly
  */
 void testRelationJSONRelationEncoding() {
-    // Create entities
-    // Create relation in redis
-    // Fetch the field representation
+//    IndexHandler ih;
+//    std::vector<std::pair<ColumnBase*, std::string>>* fields_ent_1 = new vector<std::pair<ColumnBase*, std::string>>;
+//    std::vector<std::pair<ColumnBase*, std::string>>* fields_ent_2 = new vector<std::pair<ColumnBase*, std::string>>;
+//    std::vector<std::pair<std::string, std::string>>* fields_rel_1 = new vector<std::pair<ColumnBase*, std::string>>;
+//    std::vector<std::pair<std::string, std::string>>* fields_rel_2 = new vector<std::pair<ColumnBase*, std::string>>;
+//
+//    // Popualate fields
+//    fields_ent_1->push_back(std::make_pair(getColumnType("integer"), "a"));
+//    fields_ent_2->push_back(std::make_pair(getColumnType("string"), "b"));
+//    fields_rel_1->push_back(std::make_pair("a", "1"));
+//    fields_rel_2->push_back(std::make_pair("b", "hello"));
+//
+//    // Create entities
+//    ih.writeEntity("test_1", fields_ent_1);
+//    ih.writeEntity("test_2", fields_ent_1);
+//
+//    // Create relation in redis
+//    ih.writeRelation("test_1", "test_2", fields_rel_1, fields_rel_2)
+
+    // Fetch the entity representation
+
     // assert
 }
 
@@ -118,8 +143,9 @@ int main() {
 //    testRedisKeys();
 //    md5Hashing();
 //    testRedisIO();
-    testRegexForTypes();
-    testOrderPairAlphaNumeric();
+//    testRegexForTypes();
+//    testOrderPairAlphaNumeric();
+    testJSONEntityEncoding();
 
     cout << endl << "-- TESTS END --" << endl;
 
