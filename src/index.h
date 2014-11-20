@@ -67,9 +67,9 @@ public:
     void removeEntity(std::string);
     void removeRelation(std::string, std::string, std::vector<std::pair<std::string, std::string>>*, std::vector<std::pair<std::string, std::string>>*);
 
-    Json::Value* composeJSON(std::string);
-    Json::Value* fetchRaw(std::string);
-    Json::Value* fetchEntity(std::string);
+    Json::Value composeJSON(std::string);
+    Json::Value fetchRaw(std::string);
+    Json::Value fetchEntity(std::string);
     std::vector<Json::Value> fetchRelationPrefix(std::string, std::string);
 
     bool existsEntity(std::string);
@@ -207,11 +207,11 @@ bool IndexHandler::writeToDisk(int type) { return false; }
  *
  * @param string key    key string for the requested entry
  */
-Json::Value* IndexHandler::composeJSON(std::string key) {
-    Json::Value* inMem = new Json::Value();
+Json::Value IndexHandler::composeJSON(std::string key) {
+    Json::Value inMem;
     Json::Reader reader;
     bool parsedSuccess;
-    parsedSuccess = reader.parse(key, *inMem, false);
+    parsedSuccess = reader.parse(key, inMem, false);
     if (parsedSuccess)
         return inMem;
     else
@@ -219,7 +219,7 @@ Json::Value* IndexHandler::composeJSON(std::string key) {
 }
 
 /** Attempts to fetch an entity from index */
-Json::Value* IndexHandler::fetchEntity(std::string entity) {
+Json::Value IndexHandler::fetchEntity(std::string entity) {
     this->redisHandler->connect();
     if (this->existsEntity(entity))
         return this->composeJSON(this->redisHandler->read(this->generateEntityKey(entity)));
@@ -228,7 +228,7 @@ Json::Value* IndexHandler::fetchEntity(std::string entity) {
 }
 
 /** Attempts to fetch an entity from index */
-Json::Value* IndexHandler::fetchRaw(std::string key) {
+Json::Value IndexHandler::fetchRaw(std::string key) {
     this->redisHandler->connect();
     if (this->existsEntity(key))
         return this->composeJSON(this->redisHandler->read(key));
