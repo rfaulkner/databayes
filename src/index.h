@@ -171,6 +171,7 @@ bool IndexHandler::writeRelation(
                     std::vector<std::pair<std::string, std::string>>* fieldsL,
                     std::vector<std::pair<std::string, std::string>>* fieldsR) {
     Json::Value jsonVal;
+    std::string key;
     Json::Value jsonValFieldsLeft;
     Json::Value jsonValFieldsRight;
 
@@ -184,8 +185,13 @@ bool IndexHandler::writeRelation(
     jsonVal[JSON_ATTR_REL_FIELDSR] = jsonValFieldsRight;
 
     this->redisHandler->connect();
-    this->redisHandler->write(this->generateRelationKey(entityL, entityR, md5(jsonVal.toStyledString())), jsonVal.toStyledString());
+    key = this->generateRelationKey(entityL, entityR, md5(jsonVal.toStyledString()));
 
+    if (this->redisHandler->exists(key)) {
+        jsonVal = this->fetchRaw(key);
+        jsonVal[JSON_ATTR_FIELDS_COUNT] = (int)jsonVal[JSON_ATTR_FIELDS_COUNT] + 1;
+    }
+    this->redisHandler->write(key, jsonVal.toStyledString());
     return true;
 }
 
