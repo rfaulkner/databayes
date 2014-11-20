@@ -88,11 +88,17 @@ public:
 };
 
 /** Generate a key for an entity entry in the index */
-std::string IndexHandler::generateEntityKey(std::string entity) { return "ent" + KEY_DELIMETER + entity; }
+std::string IndexHandler::generateEntityKey(std::string entity) {
+    std::string ent("ent");
+    std::string delim(KEY_DELIMETER);
+    return ent + delim + entity;
+}
 
 /** Generate a key for a relation entry in the index */
 std::string IndexHandler::generateRelationKey(std::string entityL, std::string entityR, std::string hash) {
-    return "rel" + KEY_DELIMETER + this->orderPairAlphaNumeric(entityL, entityR) + KEY_DELIMETER + hash;
+    std::string rel("rel");
+    std::string delim(KEY_DELIMETER);
+    return rel + delim + this->orderPairAlphaNumeric(entityL, entityR) + delim + hash;
 }
 
 /** Handles forming the json for field vectors in the index */
