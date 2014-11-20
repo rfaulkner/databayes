@@ -67,9 +67,9 @@ public:
     void removeEntity(std::string);
     void removeRelation(std::string, std::string, std::vector<std::pair<std::string, std::string>>*, std::vector<std::pair<std::string, std::string>>*);
 
-    Json::Value composeJSON(std::string, Json::Value&);
-    Json::Value fetchRaw(std::string, Json::Value&);
-    Json::Value fetchEntity(std::string, Json::Value&);
+    bool composeJSON(std::string, Json::Value&);
+    bool fetchRaw(std::string, Json::Value&);
+    bool fetchEntity(std::string, Json::Value&);
     std::vector<Json::Value> fetchRelationPrefix(std::string, std::string);
 
     bool existsEntity(std::string);
@@ -208,7 +208,7 @@ bool IndexHandler::writeToDisk(int type) { return false; }
  *
  * @param string key    key string for the requested entry
  */
-Json::Value IndexHandler::composeJSON(std::string key, Json::Value& json) {
+bool IndexHandler::composeJSON(std::string key, Json::Value& json) {
     Json::Reader reader;
     bool parsedSuccess;
     parsedSuccess = reader.parse(key, json, false);
@@ -231,14 +231,14 @@ bool IndexHandler::fetchEntity(std::string entity, Json::Value& json) {
 }
 
 /** Attempts to fetch an entity from index */
-Json::Value IndexHandler::fetchRaw(std::string key, Json::Value& json) {
+bool IndexHandler::fetchRaw(std::string key, Json::Value& json) {
     this->redisHandler->connect();
-    if (this->existsEntity(key))
-        if (this->composeJSON(this->redisHandler->read(key), json);, json))
+    if (this->existsEntity(key)) {
+        if (this->composeJSON(this->redisHandler->read(key), json))
             return true;
         else
             return false;
-    else
+    } else
         return false;
 }
 
@@ -311,8 +311,8 @@ bool IndexHandler::validateEntityFieldType(std::string entity, std::string field
     bool valid = true;
     Json::Value json;
     valid = valid && this->fetchEntity(entity, json);
-    if (valid) valid = valid && ((*jsonVal)[JSON_ATTR_ENT_FIELDS].isMember(field.c_str())); // ensure field exists
-    if (valid) valid = valid && getColumnType((*jsonVal)[JSON_ATTR_ENT_FIELDS][field].asCString())->validate(value); // ensure the value is a valid instance of the type
+    if (valid) valid = valid && (json[JSON_ATTR_ENT_FIELDS].isMember(field.c_str())); // ensure field exists
+    if (valid) valid = valid && getColumnType(json[JSON_ATTR_ENT_FIELDS][field].asCString())->validate(value); // ensure the value is a valid instance of the type
     return valid;
 }
 
