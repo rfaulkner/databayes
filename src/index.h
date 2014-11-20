@@ -102,7 +102,7 @@ void IndexHandler::buildFieldJSONDefinition(Json::Value& value, std::vector<std:
         value[(*it).second] = (*it).first->getType();
         count++;
     }
-    value[JSON_ATTR_FIELDS_COUNT] = std::to_string(count);
+    value[JSON_ATTR_FIELDS_COUNT] = count;
 }
 
 /** Handles forming the json for field vectors in the index */
@@ -112,7 +112,7 @@ void IndexHandler::buildFieldJSONValue(Json::Value& value, std::vector<std::pair
         value[(*it).first] = (*it).second;
         count++;
     }
-    value[JSON_ATTR_FIELDS_COUNT] = std::to_string(count);
+    value[JSON_ATTR_FIELDS_COUNT] = count;
 }
 
 /**
