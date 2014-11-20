@@ -94,13 +94,13 @@ void testOrderPairAlphaNumeric() {
  */
 void testJSONEntityEncoding() {
     IndexHandler ih;
-    Json::Value* ret;
+    Json::Value json;
     std::vector<std::pair<ColumnBase*, std::string>>* fields_ent = new vector<std::pair<ColumnBase*, std::string>>;
     fields_ent->push_back(std::make_pair(getColumnType("integer"), "a"));
     ih.writeEntity("test", fields_ent);
     // Fetch the entity representation
-    ret = ih.fetchEntity("test");
-    cout << ret->toStyledString() << endl;
+    ih.fetchEntity("test", json);
+    cout << json->toStyledString() << endl;
 
     // TODO - assert
     // TODO - remove entity
@@ -149,7 +149,7 @@ int main() {
 //    testRedisIO();
 //    testRegexForTypes();
 //    testOrderPairAlphaNumeric();
-    testJSONEntityEncoding();
+    testJSONRelationEncoding();
 
     cout << endl << "-- TESTS END --" << endl;
 

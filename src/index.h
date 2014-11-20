@@ -67,9 +67,9 @@ public:
     void removeEntity(std::string);
     void removeRelation(std::string, std::string, std::vector<std::pair<std::string, std::string>>*, std::vector<std::pair<std::string, std::string>>*);
 
-    Json::Value composeJSON(std::string);
-    Json::Value fetchRaw(std::string);
-    Json::Value fetchEntity(std::string);
+    Json::Value composeJSON(std::string, Json::Value&);
+    Json::Value fetchRaw(std::string, Json::Value&);
+    Json::Value fetchEntity(std::string, Json::Value&);
     std::vector<Json::Value> fetchRelationPrefix(std::string, std::string);
 
     bool existsEntity(std::string);
@@ -133,8 +133,7 @@ bool IndexHandler::writeEntity(std::string entity, std::vector<std::pair<ColumnB
 /** Remove entity key from redis */
 void IndexHandler::removeEntity(std::string entity) {
     this->redisHandler->connect();
-    this->redisHandler->deleteKey(this->generateEntityKey(entity))
-
+    this->redisHandler->deleteKey(this->generateEntityKey(entity));
     // TODO - ensure that relations are consistent
 }
 
@@ -142,8 +141,8 @@ void IndexHandler::removeEntity(std::string entity) {
 void IndexHandler::removeRelation(
     std::string entityL,
     std::string entityR,
-    std::vector<std::pair<std::string, std::string>>*,
-    std::vector<std::pair<std::string, std::string>>*) {
+    std::vector<std::pair<std::string, std::string>>* fieldsL,
+    std::vector<std::pair<std::string, std::string>>* fieldsR) {
 
     Json::Value jsonVal;
     Json::Value jsonValFieldsLeft;
@@ -157,7 +156,7 @@ void IndexHandler::removeRelation(
     jsonVal[JSON_ATTR_REL_FIELDSR] = jsonValFieldsRight;
 
     this->redisHandler->connect();
-    this->redisHandler->write(this->generateRelationKey(entityL, entityR, md5(jsonVal.toStyledString())));
+    this->redisHandler->deleteKey(this->generateRelationKey(entityL, entityR, md5(jsonVal.toStyledString())));
 }
 
 /**
@@ -188,8 +187,10 @@ bool IndexHandler::writeRelation(
     key = this->generateRelationKey(entityL, entityR, md5(jsonVal.toStyledString()));
 
     if (this->redisHandler->exists(key)) {
-        jsonVal = this->fetchRaw(key);
-        jsonVal[JSON_ATTR_FIELDS_COUNT] = (int)jsonVal[JSON_ATTR_FIELDS_COUNT] + 1;
+        if (this->fetchRaw(key, jsonVal)) {
+            jsonVal[JSON_ATTR_FIELDS_COUNT] = jsonVal[JSON_ATTR_FIELDS_COUNT].asInt() + 1;
+        } else
+            return false;
     }
     this->redisHandler->write(key, jsonVal.toStyledString());
     return true;
@@ -207,41 +208,50 @@ bool IndexHandler::writeToDisk(int type) { return false; }
  *
  * @param string key    key string for the requested entry
  */
-Json::Value IndexHandler::composeJSON(std::string key) {
-    Json::Value inMem;
+Json::Value IndexHandler::composeJSON(std::string key, Json::Value& json) {
     Json::Reader reader;
     bool parsedSuccess;
-    parsedSuccess = reader.parse(key, inMem, false);
+    parsedSuccess = reader.parse(key, json, false);
     if (parsedSuccess)
-        return inMem;
+        return true;
     else
-        return NULL;
+        return false;
 }
 
 /** Attempts to fetch an entity from index */
-Json::Value IndexHandler::fetchEntity(std::string entity) {
+bool IndexHandler::fetchEntity(std::string entity, Json::Value& json) {
     this->redisHandler->connect();
-    if (this->existsEntity(entity))
-        return this->composeJSON(this->redisHandler->read(this->generateEntityKey(entity)));
-    else
-        return NULL;
+    if (this->existsEntity(entity)) {
+        if (this->composeJSON(this->redisHandler->read(this->generateEntityKey(entity)), json))
+            return true;
+        else
+            return false;
+    } else
+        return false;
 }
 
 /** Attempts to fetch an entity from index */
-Json::Value IndexHandler::fetchRaw(std::string key) {
+Json::Value IndexHandler::fetchRaw(std::string key, Json::Value& json) {
     this->redisHandler->connect();
     if (this->existsEntity(key))
-        return this->composeJSON(this->redisHandler->read(key));
+        if (this->composeJSON(this->redisHandler->read(key), json);, json))
+            return true;
+        else
+            return false;
     else
-        return NULL;
+        return false;
 }
 
 /** Fetch a set of relations matching the entities */
 std::vector<Json::Value> IndexHandler::fetchRelationPrefix(std::string entityL, std::string entityR) {
     std::vector<std::string> keys = this->redisHandler->keys(this->generateRelationKey(entityL, entityR, "*"));
     std::vector<Json::Value> relations;
-    for (std::vector<string>::iterator it = keys.begin(); it != keys.end(); ++it)
-        relations.push_back(this->composeJSON(this->redisHandler->read(*it)));
+    Json::Value* json;
+    for (std::vector<string>::iterator it = keys.begin(); it != keys.end(); ++it) {
+        json = new Json::Value();
+        this->composeJSON(this->redisHandler->read(*it), *json);
+        relations.push_back(json);
+    }
     return relations;
 }
 
@@ -299,8 +309,8 @@ std::vector<string>* IndexHandler::fetchPatternKeys(std::string pattern) {
 /** Ensure that the field type is valid */
 bool IndexHandler::validateEntityFieldType(std::string entity, std::string field, std::string value) {
     bool valid = true;
-    Json::Value* jsonVal = this->fetchEntity(entity);
-    valid = valid && jsonVal != NULL;
+    Json::Value json;
+    valid = valid && this->fetchEntity(entity, json);
     if (valid) valid = valid && ((*jsonVal)[JSON_ATTR_ENT_FIELDS].isMember(field.c_str())); // ensure field exists
     if (valid) valid = valid && getColumnType((*jsonVal)[JSON_ATTR_ENT_FIELDS][field].asCString())->validate(value); // ensure the value is a valid instance of the type
     return valid;
