@@ -128,9 +128,10 @@ void IndexHandler::buildFieldJSONValue(Json::Value& value, std::vector<std::pair
  */
 bool IndexHandler::writeEntity(std::string entity, std::vector<std::pair<ColumnBase*, std::string>>* fields) {
     Json::Value jsonVal;
+    Json::Value jsonValFields;
     jsonVal[JSON_ATTR_ENT_ENT] = entity;
-    this->buildFieldJSONDefinition(jsonVal, fields);
-    jsonVal[JSON_ATTR_ENT_FIELDS] = jsonVal;
+    this->buildFieldJSONDefinition(jsonValFields, fields);
+    jsonVal[JSON_ATTR_ENT_FIELDS] = jsonValFields;
     this->redisHandler->connect();
     this->redisHandler->write(this->generateEntityKey(entity), jsonVal.toStyledString());
     return true;
