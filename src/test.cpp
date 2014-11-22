@@ -100,7 +100,7 @@ void testJSONEntityEncoding() {
     ih.writeEntity("test", fields_ent);
     // Fetch the entity representation
     ih.fetchEntity("test", json);
-    cout << json->toStyledString() << endl;
+    cout << json.toStyledString() << endl;
 
     // TODO - assert
     // TODO - remove entity
@@ -149,7 +149,7 @@ int main() {
 //    testRedisIO();
 //    testRegexForTypes();
 //    testOrderPairAlphaNumeric();
-    testJSONRelationEncoding();
+    testJSONEntityEncoding();
 
     cout << endl << "-- TESTS END --" << endl;
 
