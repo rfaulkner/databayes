@@ -492,10 +492,9 @@ void Parser::parseEntityDefinitionField(std::string field) {
 void Parser::parseEntityAssignField(std::string field) {
     std::vector<string> fieldItems;
     fieldItems = this->tokenize(field, '=');
-    Json::Value entityDef;
 
     // Verify that the entity has been defined
-    if (this->indexHandler->fetchEntity(this->currEntity, entityDef)) {
+    if (this->indexHandler->existsEntity(this->currEntity)) {
         this->error = true;
         this->errStr = ERR_ENT_NOT_FOUND;
         return;
