@@ -93,17 +93,22 @@ void testOrderPairAlphaNumeric() {
  * Test to ensure that relation entities are encoded properly
  */
 void testJSONEntityEncoding() {
+
     IndexHandler ih;
     Json::Value json;
     std::vector<std::pair<ColumnBase*, std::string>>* fields_ent = new vector<std::pair<ColumnBase*, std::string>>;
-    fields_ent->push_back(std::make_pair(getColumnType("integer"), "a"));
-    ih.writeEntity("test", fields_ent);
-    // Fetch the entity representation
-    ih.fetchEntity("test", json);
-    cout << json.toStyledString() << endl;
 
-    // TODO - assert
-    // TODO - remove entity
+    fields_ent->push_back(std::make_pair(getColumnType("integer"), "a"));   // Create fields
+    ih.writeEntity("test", fields_ent);     // Create the entity
+    ih.fetchEntity("test", json);           // Fetch the entity representation
+    cout << "TEST ENTITY:" << endl << endl << json.toStyledString() << endl;
+
+    // Assert that entity as read matches definition
+    assert(std::strcmp(json["entity"].asCString(), "test") == 0 &&
+            std::strcmp(json["fields"]["a"].asCString(), "integer") == 0 &&
+            json["fields"]["fields_count"].asInt() == 1
+    );
+    ih.removeEntity("test");                // Remove the entity
 }
 
 
