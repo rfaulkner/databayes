@@ -257,7 +257,7 @@ std::vector<Json::Value> IndexHandler::fetchRelationPrefix(std::string entityL, 
     for (std::vector<string>::iterator it = keys.begin(); it != keys.end(); ++it) {
         json = new Json::Value();
         this->composeJSON(this->redisHandler->read(*it), *json);
-        relations.push_back(json);
+        relations.push_back(*json);
     }
     return relations;
 }
