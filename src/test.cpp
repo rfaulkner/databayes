@@ -138,10 +138,20 @@ void testJSONRelationEncoding() {
 
     // Fetch the entity representation
     ret = ih.fetchRelationPrefix("test_1", "test_2");
-    for (std::vector<Json::Value>::iterator it = ret.begin(); it != ret.end(); ++it)
-        cout << (*it).toStyledString() << endl;
+    cout << "TEST RELATION:" << endl << endl << ret[0].toStyledString() << endl;
 
-    // assert
+    // Assert that entity as read matches definition
+    assert(
+        std::strcmp(ret[0]["entity_left"].asCString(), "test_1") == 0 &&
+        std::strcmp(ret[0]["entity_right"].asCString(), "test_2") == 0 &&
+        std::strcmp(ret[0]["fields_left"]["a"].asCString(), "1") == 0 &&
+        std::strcmp(ret[0]["fields_right"]["b"].asCString(), "hello") == 0 &&
+        ret[0]["fields_left"]["fields_count"].asInt() == 1 &&
+        ret[0]["fields_right"]["fields_count"].asInt() == 1
+    );
+    ih.removeEntity("test_1");                // Remove the entity
+    ih.removeEntity("test_2");                // Remove the entity
+    ih.removeRelation("test_1", "test_2", fields_rel_1, fields_rel_2);    // Remove the relation
 }
 
 int main() {
@@ -154,7 +164,9 @@ int main() {
 //    testRedisIO();
 //    testRegexForTypes();
 //    testOrderPairAlphaNumeric();
+
     testJSONEntityEncoding();
+    testJSONRelationEncoding();
 
     cout << endl << "-- TESTS END --" << endl;
 
