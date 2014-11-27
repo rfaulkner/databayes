@@ -126,6 +126,7 @@ class Parser {
     void processFieldStatement(const string &source);
     void parseEntityDefinitionField(std::string);
     void parseEntityAssignField(std::string);
+    void cleanup();
 
 public:
     Parser();
@@ -346,10 +347,18 @@ void Parser::analyze(const std::string& s) {
         }
 
         // Cleanup
-        if (this->currFields != NULL) delete this->currFields;
-        if (this->currValues != NULL) delete this->currValues;
-        if (this->bufferValues != NULL) delete this->bufferValues;
+        this->cleanup();
     }
+}
+
+
+/**
+ * Performs cleanup of state containers after statement processing
+ */
+void Parser::cleanup() {
+    if (this->currFields != NULL) { delete this->currFields; this->currFields = NULL; }
+    if (this->currValues != NULL) { delete this->currValues; this->currValues = NULL; }
+    if (this->bufferValues != NULL) { delete this->bufferValues; this->bufferValues = NULL; }
 }
 
 /**
