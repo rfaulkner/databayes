@@ -251,9 +251,6 @@ void Parser::analyze(const std::string& s) {
     } else if (this->macroState == STATE_ADD && (this->state == STATE_P1 || this->state == STATE_P2)) {
         this->parseRelationPair(sLower);
 
-    } else if (this->state == STATE_GET_REL && (this->state == STATE_P1 || this->state == STATE_P2)) {
-        this->parseRelationPair(sLower);
-
     } else if (this->state == STATE_GEN_REL && (this->state == STATE_P1 || this->state == STATE_P2)) {
         this->parseRelationPair(sLower);
 
@@ -281,7 +278,7 @@ void Parser::analyze(const std::string& s) {
 
     } else if (this->state == STATE_LST) {
         if (sLower.compare(STR_CMD_REL) == 0)
-            this->state = STATE_LST_REL;
+            this->state = STATE_P1;
         else if (sLower.compare(STR_CMD_ENT) == 0)
             this->state = STATE_LST_ENT;
 
@@ -291,13 +288,10 @@ void Parser::analyze(const std::string& s) {
         this->parseEntitySymbol(sLower);
         this->state = STATE_FINISH;
 
-    } else if (this->state == STATE_LST_REL) {
+    } else if (this->state == STATE_LST_REL && (this->state == STATE_P1 || this->state == STATE_P2)) {
 
         this->macroState = STATE_LST_REL;
-        // WRITE RELATIONS
-
-        // if the symbol is empty move to the complete state
-        // TODO - actually condition on this
+        this->parseRelationPair(sLower);
         this->state = STATE_FINISH;
 
     } else if (this->state == STATE_FINISH) {  // Ensure processing is complete - no symbols should be left at this point
@@ -349,8 +343,8 @@ void Parser::analyze(const std::string& s) {
             else
                 cout << "not found." << endl;
 
-         } else if (this->macroState == STATE_LST_ENT) {
-
+         } else if (this->macroState == STATE_LST_REL) {
+            // TODO - logic to extract matching entities
          }
 
         // Cleanup
