@@ -387,19 +387,23 @@ void Parser::parseEntitySymbol(std::string s) {
     bool noFields = true;
 
     // If the input contains
+    this->fieldsProcessed = false;
     if (s.find("(") != std::string::npos && strstr(s.c_str(), "()") == NULL) {
         noFields = false;
         elems = this->tokenize(s, '(');
         this->currEntity = *elems.begin();
-    } else
+
+    } else {
         this->currEntity = s;
+        this->fieldsProcessed = true;
+    }
 
     if (this->debug) {
         cout << "DEBUG -- Reading entity: " << this->currEntity << endl; // DEBUG
         if (noFields)
             cout << "DEBUG -- Entity has no fields" << endl; // DEBUG
     }
-    this->fieldsProcessed = false;
+
     this->entityProcessed = true;
 
     // Process any fields
