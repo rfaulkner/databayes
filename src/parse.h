@@ -200,6 +200,8 @@ void Parser::analyze(const std::string& s) {
     string sLower = s;
     std::transform(sLower.begin(), sLower.end(), sLower.begin(), ::tolower);
 
+    cout << "DEBUG -- Current state: " << this->state << endl;
+
     if (this->state == STATE_START) {
 
         if (sLower.compare(STR_CMD_ADD) == 0) {
@@ -282,10 +284,10 @@ void Parser::analyze(const std::string& s) {
         std::vector<Json::Value>* entities;
         this->parseEntitySymbol(sLower);    // Parse the entity
         cout << "Current Matched Entities for \"" << this->currEntity << "\""<< endl;
-        entities = this->indexHandler->fetchPatternJson(this->indexHandler()->generateEntityKey(this->currEntity));
+        entities = this->indexHandler->fetchPatternJson(this->indexHandler->generateEntityKey(this->currEntity));
         if (entities != NULL)
             for (std::vector<Json::Value>::iterator it = entities->begin() ; it != entities->end(); ++it)
-                cout << it.toStyledString() << endl << endl;
+                cout << (*it).toStyledString() << endl << endl;
         else
             cout << "not found." << endl;
         this->state = STATE_FINISH;
