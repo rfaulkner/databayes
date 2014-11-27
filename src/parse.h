@@ -41,6 +41,7 @@
 #define ERR_ENT_BAD_FORMAT "ERR: Invalid Entity assign format"
 #define ERR_BAD_FIELD_TYPE "ERR: Bad field type on instance"
 #define ERR_INVALID_DEF_FMT "ERR: Invalid Entity definition format"
+#define ERR_UNKNOWN_CMD "ERR: Unkown Command"
 
 
 #define WILDCARD_CHAR '*'
@@ -177,15 +178,19 @@ bool Parser::parse(const string& s) {
         if (this->debug)
             cout << "DEBUG -- Processing input token: " << *it << endl; // DEBUG
         this->analyze(*it);
+
+        // Handle Errors detected during statement parse
         if (this->error) {
             cout << this->errStr << endl;
             return false;
         }
     }
 
-    // Emit the interpreted command
-    if (this->debug)
-        1; // TODO - output translated input
+    // If the input was not interpreted to any meaningful command
+    if (this->state != STATE_FINISH) {
+        cout << ERR_UNKNOWN_CMD << endl;
+        return false;
+    }
 
     return true;
 }
@@ -337,6 +342,7 @@ void Parser::analyze(const std::string& s) {
 
         } else if (this->macroState == STATE_GEN_REL) {
             // TODO - Add logic to sample relation
+
         }
 
         // Cleanup
