@@ -96,9 +96,9 @@ void testJSONEntityEncoding() {
 
     IndexHandler ih;
     Json::Value json;
-    std::vector<std::pair<ColumnBase*, std::string>>* fields_ent = new vector<std::pair<ColumnBase*, std::string>>;
+    std::vector<std::pair<ColumnBase*, std::string>> fields_ent;
 
-    fields_ent->push_back(std::make_pair(getColumnType("integer"), "a"));   // Create fields
+    fields_ent.push_back(std::make_pair(getColumnType("integer"), "a"));   // Create fields
     ih.writeEntity("test", fields_ent);     // Create the entity
     ih.fetchEntity("test", json);           // Fetch the entity representation
     cout << "TEST ENTITY:" << endl << endl << json.toStyledString() << endl;
@@ -106,7 +106,7 @@ void testJSONEntityEncoding() {
     // Assert that entity as read matches definition
     assert(std::strcmp(json["entity"].asCString(), "test") == 0 &&
             std::strcmp(json["fields"]["a"].asCString(), "integer") == 0 &&
-            json["fields"]["fields_count"].asInt() == 1
+            json["fields"]["_itemcount"].asInt() == 1
     );
     ih.removeEntity("test");                // Remove the entity
 }
@@ -118,16 +118,16 @@ void testJSONEntityEncoding() {
 void testJSONRelationEncoding() {
     IndexHandler ih;
     std::vector<Json::Value> ret;
-    std::vector<std::pair<ColumnBase*, std::string>>* fields_ent_1 = new vector<std::pair<ColumnBase*, std::string>>;
-    std::vector<std::pair<ColumnBase*, std::string>>* fields_ent_2 = new vector<std::pair<ColumnBase*, std::string>>;
-    std::vector<std::pair<std::string, std::string>>* fields_rel_1 = new vector<std::pair<std::string, std::string>>;
-    std::vector<std::pair<std::string, std::string>>* fields_rel_2 = new vector<std::pair<std::string, std::string>>;
+    std::vector<std::pair<ColumnBase*, std::string>> fields_ent_1;
+    std::vector<std::pair<ColumnBase*, std::string>> fields_ent_2;
+    std::vector<std::pair<std::string, std::string>> fields_rel_1;
+    std::vector<std::pair<std::string, std::string>> fields_rel_2;
 
     // Popualate fields
-    fields_ent_1->push_back(std::make_pair(getColumnType("integer"), "a"));
-    fields_ent_2->push_back(std::make_pair(getColumnType("string"), "b"));
-    fields_rel_1->push_back(std::make_pair("a", "1"));
-    fields_rel_2->push_back(std::make_pair("b", "hello"));
+    fields_ent_1.push_back(std::make_pair(getColumnType("integer"), "a"));
+    fields_ent_2.push_back(std::make_pair(getColumnType("string"), "b"));
+    fields_rel_1.push_back(std::make_pair("a", "1"));
+    fields_rel_2.push_back(std::make_pair("b", "hello"));
 
     // Create entities
     ih.writeEntity("test_1", fields_ent_1);
@@ -146,8 +146,8 @@ void testJSONRelationEncoding() {
         std::strcmp(ret[0]["entity_right"].asCString(), "test_2") == 0 &&
         std::strcmp(ret[0]["fields_left"]["a"].asCString(), "1") == 0 &&
         std::strcmp(ret[0]["fields_right"]["b"].asCString(), "hello") == 0 &&
-        ret[0]["fields_left"]["fields_count"].asInt() == 1 &&
-        ret[0]["fields_right"]["fields_count"].asInt() == 1
+        ret[0]["fields_left"]["_itemcount"].asInt() == 1 &&
+        ret[0]["fields_right"]["_itemcount"].asInt() == 1
     );
     ih.removeEntity("test_1");                // Remove the entity
     ih.removeEntity("test_2");                // Remove the entity
@@ -159,21 +159,52 @@ void testJSONRelationEncoding() {
  *  Tests that parseEntityAssignField correctly flags invalid assignments to integer fields
  */
 void testFieldAssignTypeMismatchInteger() {
-    // TODO - implement
+    IndexHandler ih;
+    Json::Value json;
+    std::vector<std::pair<ColumnBase*, std::string>> fields_ent;
+    fields_ent.push_back(std::make_pair(getColumnType("integer"), "a"));   // Create fields
+    ih.writeEntity("test", fields_ent);     // Create the entity
+    assert(
+        ih.validateEntityFieldType("test", "a", "1") &&
+        ih.validateEntityFieldType("test", "a", "12345") &&
+        !ih.validateEntityFieldType("test", "a", "1.0") &&
+        !ih.validateEntityFieldType("test", "a", "string")
+    );
+    ih.removeEntity("test");
 }
 
 /**
  *  Tests that parseEntityAssignField correctly flags invalid assignments to float fields
  */
 void testFieldAssignTypeMismatchFloat() {
-    // TODO - implement
+    IndexHandler ih;
+    Json::Value json;
+    std::vector<std::pair<ColumnBase*, std::string>> fields_ent;
+    fields_ent.push_back(std::make_pair(getColumnType("float"), "a"));   // Create fields
+    ih.writeEntity("test", fields_ent);     // Create the entity
+    assert(
+        ih.validateEntityFieldType("test", "a", "1.2") &&
+        ih.validateEntityFieldType("test", "a", "12.5") &&
+        !ih.validateEntityFieldType("test", "a", "string")
+    );
+    ih.removeEntity("test");
 }
 
 /**
  *  Tests that parseEntityAssignField correctly flags invalid assignments to string fields
  */
 void testFieldAssignTypeMismatchString() {
-    // TODO - implement
+    IndexHandler ih;
+    Json::Value json;
+    std::vector<std::pair<ColumnBase*, std::string>> fields_ent;
+    fields_ent.push_back(std::make_pair(getColumnType("string"), "a"));   // Create fields
+    ih.writeEntity("test", fields_ent);     // Create the entity
+    assert(
+        ih.validateEntityFieldType("test", "a", "1") &&
+        ih.validateEntityFieldType("test", "a", "12345") &&
+        ih.validateEntityFieldType("test", "a", "string")
+    );
+    ih.removeEntity("test");
 }
 
 /**
@@ -197,6 +228,9 @@ int main() {
 
     testJSONEntityEncoding();
     testJSONRelationEncoding();
+    testFieldAssignTypeMismatchInteger();
+    testFieldAssignTypeMismatchFloat();
+    testFieldAssignTypeMismatchString();
 
     cout << endl << "-- TESTS END --" << endl;
 
