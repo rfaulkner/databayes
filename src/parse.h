@@ -313,6 +313,9 @@ void Parser::analyze(const std::string& s) {
             cout << "DEBUG -- Error state: " << this->error << endl;
         }
 
+        // If there's an error cleanup and bail
+        if (this->error) { this->cleanup(); return; }
+
         if (this->macroState == STATE_DEF && !this->error) { // Add this entity to the index
             this->indexHandler->writeEntity(this->currEntity, *(this->currFields));
 
