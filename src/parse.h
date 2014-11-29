@@ -529,7 +529,7 @@ void Parser::parseEntityAssignField(std::string field) {
     }
 
     // Verify that the entity contains this attribute
-    if (!this->indexHandler->existsEntity(this->currEntity, fieldItems[0])) {
+    if (!this->indexHandler->existsEntityField(this->currEntity, fieldItems[0])) {
         this->error = true;
         this->errStr = ERR_ENT_FIELD_NOT_EXIST;
         return;
@@ -562,7 +562,6 @@ void Parser::parseRelationPair(std::string symbol) {
         if (!this->indexHandler->existsEntity(this->currEntity)) {
             this->error = true;
             this->errStr = ERR_ENT_NOT_EXISTS;
-            this->state = STATE_FINISH;
             return;
         }
     }
