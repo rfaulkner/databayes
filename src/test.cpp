@@ -154,6 +154,29 @@ void testJSONRelationEncoding() {
     ih.removeRelation("test_1", "test_2", fields_rel_1, fields_rel_2);    // Remove the relation
 }
 
+
+/**
+ *  Tests that parseEntityAssignField correctly flags invalid assignments to integer fields
+ */
+void testFieldAssignTypeMismatchInteger() {
+    // TODO - implement
+}
+
+/**
+ *  Tests that parseEntityAssignField correctly flags invalid assignments to float fields
+ */
+void testFieldAssignTypeMismatchFloat() {
+    // TODO - implement
+}
+
+/**
+ *  Tests that parseEntityAssignField correctly flags invalid assignments to string fields
+ */
+void testFieldAssignTypeMismatchString() {
+    // TODO - implement
+}
+
+
 int main() {
     cout << "-- TESTS BEGIN --" << endl << endl;
 
