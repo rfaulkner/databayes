@@ -35,7 +35,8 @@
 // JSON Attribute Macros
 #define JSON_ATTR_ENT_ENT "entity"
 #define JSON_ATTR_ENT_FIELDS "fields"
-#define JSON_ATTR_FIELDS_COUNT "fields_count"
+#define JSON_ATTR_FIELDS_COUNT "_itemcount"
+#define JSON_ATTR_REL_COUNT "instance_count"
 #define JSON_ATTR_REL_ENTL "entity_left"
 #define JSON_ATTR_REL_ENTR "entity_right"
 #define JSON_ATTR_REL_FIELDSL "fields_left"
@@ -195,10 +196,12 @@ bool IndexHandler::writeRelation(
 
     if (this->redisHandler->exists(key)) {
         if (this->fetchRaw(key, jsonVal)) {
-            jsonVal[JSON_ATTR_FIELDS_COUNT] = jsonVal[JSON_ATTR_FIELDS_COUNT].asInt() + 1;
+            jsonVal[JSON_ATTR_REL_COUNT] = jsonVal[JSON_ATTR_REL_COUNT].asInt() + 1;
         } else
             return false;
-    }
+    } else {jsonVal[JSON_ATTR_REL_COUNT] = 1;}
+
+
     this->redisHandler->write(key, jsonVal.toStyledString());
     return true;
 }
@@ -237,10 +240,10 @@ bool IndexHandler::fetchEntity(std::string entity, Json::Value& json) {
         return false;
 }
 
-/** Attempts to fetch an entity from index */
+/** Attempts to fetch a key from index */
 bool IndexHandler::fetchRaw(std::string key, Json::Value& json) {
     this->redisHandler->connect();
-    if (this->existsEntity(key)) {
+    if (this->redisHandler->exists(key)) {
         if (this->composeJSON(this->redisHandler->read(key), json))
             return true;
         else
