@@ -324,11 +324,8 @@ void Parser::analyze(const std::string& s) {
             std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(this->bufferEntity, this->currEntity);
 
             // for each relation determine if they match the condition criteria
-            if (entities != NULL)
-                for (std::vector<Json::Value>::iterator it = relations.begin() ; it != relations.end(); ++it)
-                    cout << (*it).toStyledString() << endl << endl;
-            else
-                cout << "not found." << endl;
+            for (std::vector<Json::Value>::iterator it = relations.begin() ; it != relations.end(); ++it)
+                cout << (*it).toStyledString() << endl << endl;
 
             // print out results
 
