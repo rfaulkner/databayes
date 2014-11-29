@@ -124,6 +124,7 @@ public:
     Parser();
 
     void setDebug(bool);
+    void resetState();
 
     bool parse(const string&);
     void analyze(const string&);
@@ -137,13 +138,9 @@ public:
  *  Constructor - initialize state and empty symbol table
  */
 Parser::Parser() {
-    this->state = STATE_START;
-    this->error = false;
     this->debug = false;
     this->indexHandler = new IndexHandler();
-    this->errStr = "";
-    this->currFields = NULL;
-    this->currValues = NULL;
+    this->resetState();
 }
 
 
@@ -154,6 +151,21 @@ void Parser::setDebug(bool debugVal) {
     this->debug = debugVal;
 }
 
+/**
+ * Resets the parser state
+ */
+void Parser::resetState() {
+    this->state = STATE_START;
+    this->error = false;
+    this->errStr = "";
+    this->currFields = NULL;
+    this->currValues = NULL;
+    this->bufferValues = NULL;
+    this->fieldsProcessed = false;
+    this->entityProcessed = false;
+    this->currEntity = "";
+    this->bufferEntity = "";
+}
 
 /**
  *  Parse loop, calls analyzer

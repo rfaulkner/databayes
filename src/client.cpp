@@ -29,6 +29,7 @@ int main() {
         cout << "databayes> ";
         getline (cin, line);
         parser->parse(line);
+        parser->resetState();
     }
     return 0;
 }
