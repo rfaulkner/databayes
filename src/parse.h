@@ -271,9 +271,10 @@ void Parser::analyze(const std::string& s) {
             this->state = STATE_FINISH;
 
     } else if (this->state == STATE_LST) {
-        if (sLower.compare(STR_CMD_REL) == 0)
+        if (sLower.compare(STR_CMD_REL) == 0) {
+            this->macroState = STATE_LST_REL;
             this->state = STATE_P1;
-        else if (sLower.compare(STR_CMD_ENT) == 0)
+        } else if (sLower.compare(STR_CMD_ENT) == 0)
             this->state = STATE_LST_ENT;
 
     } else if (this->state == STATE_LST_ENT) {
@@ -282,11 +283,8 @@ void Parser::analyze(const std::string& s) {
         this->parseEntitySymbol(sLower);
         this->state = STATE_FINISH;
 
-    } else if (this->state == STATE_LST_REL && (this->state == STATE_P1 || this->state == STATE_P2)) {
-
-        this->macroState = STATE_LST_REL;
+    } else if (this->macroState == STATE_LST_REL && (this->state == STATE_P1 || this->state == STATE_P2)) {
         this->parseRelationPair(sLower);
-        this->state = STATE_FINISH;
 
     } else if (this->state == STATE_FINISH) {  // Ensure processing is complete - no symbols should be left at this point
         this->error = true;
@@ -535,7 +533,7 @@ void Parser::parseEntityAssignField(std::string field) {
 void Parser::parseRelationPair(std::string symbol) {
     // Determine if entity or fields need to be processed
     if (this->entityProcessed) {
-        this->parseEntitySymbol(symbol);
+        this->processFieldStatement(symbol);
     } else {
         if (this->currValues != NULL) delete this->currValues;
         this->currValues = new vector<std::pair<std::string, std::string>>;
