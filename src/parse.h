@@ -314,13 +314,13 @@ void Parser::analyze(const std::string& s) {
         }
 
         if (this->macroState == STATE_DEF && !this->error) { // Add this entity to the index
-            this->indexHandler->writeEntity(this->currEntity, this->currFields);
+            this->indexHandler->writeEntity(this->currEntity, *(this->currFields));
 
             if (this->debug)
                 cout << "DEBUG -- Writing definition of entity." << endl;
 
         } else if (this->macroState == STATE_ADD) {
-            this->indexHandler->writeRelation(this->bufferEntity, this->currEntity, this->bufferValues, this->currValues);
+            this->indexHandler->writeRelation(this->bufferEntity, this->currEntity, *(this->bufferValues), *(this->currValues));
             if (this->debug)
                 cout << "DEBUG -- Adding relation." << endl;
 

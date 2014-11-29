@@ -51,8 +51,8 @@ class IndexHandler {
 
     RedisHandler* redisHandler;
 
-    void buildFieldJSONDefinition(Json::Value&, std::vector<std::pair<ColumnBase*, std::string>>*);
-    void buildFieldJSONValue(Json::Value&, std::vector<std::pair<std::string, std::string>>*);
+    void buildFieldJSONDefinition(Json::Value&, std::vector<std::pair<ColumnBase*, std::string>>&);
+    void buildFieldJSONValue(Json::Value&, std::vector<std::pair<std::string, std::string>>&);
 
 public:
     /**
@@ -61,12 +61,12 @@ public:
     IndexHandler() { this->redisHandler = new RedisHandler(REDISHOST, REDISPORT); }
     ~IndexHandler() { delete redisHandler; }
 
-    bool writeEntity(std::string, vector<std::pair<ColumnBase*, std::string>>*);
-    bool writeRelation(std::string, std::string, std::vector<std::pair<std::string, std::string>>*, std::vector<std::pair<std::string, std::string>>*);
+    bool writeEntity(std::string, vector<std::pair<ColumnBase*, std::string>>&);
+    bool writeRelation(std::string, std::string, std::vector<std::pair<std::string, std::string>>&, std::vector<std::pair<std::string, std::string>>&);
     bool writeToDisk(int);
 
     void removeEntity(std::string);
-    void removeRelation(std::string, std::string, std::vector<std::pair<std::string, std::string>>*, std::vector<std::pair<std::string, std::string>>*);
+    void removeRelation(std::string, std::string, std::vector<std::pair<std::string, std::string>>&, std::vector<std::pair<std::string, std::string>>&);
 
     bool composeJSON(std::string, Json::Value&);
     bool fetchRaw(std::string, Json::Value&);
@@ -104,9 +104,9 @@ std::string IndexHandler::generateRelationKey(std::string entityL, std::string e
 }
 
 /** Handles forming the json for field vectors in the index */
-void IndexHandler::buildFieldJSONDefinition(Json::Value& value, std::vector<std::pair<ColumnBase*, std::string>>* fields) {
+void IndexHandler::buildFieldJSONDefinition(Json::Value& value, std::vector<std::pair<ColumnBase*, std::string>>& fields) {
     int count = 0;
-    for (std::vector<std::pair<ColumnBase*, std::string>>::iterator it = fields->begin() ; it != fields->end(); ++it) {
+    for (std::vector<std::pair<ColumnBase*, std::string>>::iterator it = fields.begin() ; it != fields.end(); ++it) {
         value[(*it).second] = (*it).first->getType();
         count++;
     }
@@ -114,9 +114,9 @@ void IndexHandler::buildFieldJSONDefinition(Json::Value& value, std::vector<std:
 }
 
 /** Handles forming the json for field vectors in the index */
-void IndexHandler::buildFieldJSONValue(Json::Value& value, std::vector<std::pair<std::string, std::string>>* fields) {
+void IndexHandler::buildFieldJSONValue(Json::Value& value, std::vector<std::pair<std::string, std::string>>& fields) {
     int count = 0;
-    for (std::vector<std::pair<std::string, std::string>>::iterator it = fields->begin() ; it != fields->end(); ++it) {
+    for (std::vector<std::pair<std::string, std::string>>::iterator it = fields.begin() ; it != fields.end(); ++it) {
         value[(*it).first] = (*it).second;
         count++;
     }
@@ -128,7 +128,7 @@ void IndexHandler::buildFieldJSONValue(Json::Value& value, std::vector<std::pair
  *
  *  e.g. {"entity": <string:entname>, "fields": <string_array:[<f1,f2,...>]>}
  */
-bool IndexHandler::writeEntity(std::string entity, std::vector<std::pair<ColumnBase*, std::string>>* fields) {
+bool IndexHandler::writeEntity(std::string entity, std::vector<std::pair<ColumnBase*, std::string>>& fields) {
     Json::Value jsonVal;
     Json::Value jsonValFields;
     jsonVal[JSON_ATTR_ENT_ENT] = entity;
@@ -150,8 +150,8 @@ void IndexHandler::removeEntity(std::string entity) {
 void IndexHandler::removeRelation(
     std::string entityL,
     std::string entityR,
-    std::vector<std::pair<std::string, std::string>>* fieldsL,
-    std::vector<std::pair<std::string, std::string>>* fieldsR) {
+    std::vector<std::pair<std::string, std::string>>& fieldsL,
+    std::vector<std::pair<std::string, std::string>>& fieldsR) {
 
     Json::Value jsonVal;
     Json::Value jsonValFieldsLeft;
@@ -176,8 +176,8 @@ void IndexHandler::removeRelation(
 bool IndexHandler::writeRelation(
                     std::string entityL,
                     std::string entityR,
-                    std::vector<std::pair<std::string, std::string>>* fieldsL,
-                    std::vector<std::pair<std::string, std::string>>* fieldsR) {
+                    std::vector<std::pair<std::string, std::string>>& fieldsL,
+                    std::vector<std::pair<std::string, std::string>>& fieldsR) {
     Json::Value jsonVal;
     std::string key;
     Json::Value jsonValFieldsLeft;
