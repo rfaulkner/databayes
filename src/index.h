@@ -276,7 +276,7 @@ bool IndexHandler::existsEntity(std::string entity) {
 bool IndexHandler::existsEntityField(std::string entity, std::string field) {
     Json::Value json;
     this->fetchEntity(entity, json);
-    return json.isMember(field);
+    return json[JSON_ATTR_ENT_FIELDS].isMember(field);
 }
 
 /** Check to ensure relation exists */
