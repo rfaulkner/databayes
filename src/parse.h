@@ -22,7 +22,6 @@
 #include "index.h"
 
 #define STR_CMD_ADD "add"
-#define STR_CMD_GET "get"
 #define STR_CMD_GEN "gen"
 #define STR_CMD_CON "constrain"
 #define STR_CMD_REL "rel"
@@ -55,9 +54,6 @@
 #define STATE_P1 12
 #define STATE_P2 14
 
-#define STATE_GET 20        // Get relation between two entities with optional conditions
-#define STATE_GET_REL 21
-
 #define STATE_GEN 30        // Generate an entity given others
 #define STATE_GEN_REL 31
 
@@ -77,24 +73,16 @@ using namespace std;
  *  Implements an SLR parser. Valid Statements:
  *
  *      (1) ADD REL E1(x_1 [, x_2, ..]) E2(y_1 [, y_2, ..])
- *      (2) GET REL E1[(x_1=v_1, x_2=v_2, ...)] [E2(y_1=u_1, y_2=u_2, ...)]
- *      (3) GEN REL E1[(x_1=v_1, x_2=v_2, ...)] CONSTRAIN E2[, E3, ...]
- *      (4) DEF E1[(x_1, x_2, ...)]
- *      (5) LST REL [E1 [E2]]
- *      (6) LST ENT [E1]*
+ *      (2) GEN REL E1[(x_1=v_1, x_2=v_2, ...)] CONSTRAIN E2[, E3, ...]
+ *      (3) DEF E1[(x_1, x_2, ...)]
+ *      (4) LST REL [E1 [E2]]
+ *      (5) LST ENT [E1]*
  *
  *  (1) provides a facility for insertion into the system
- *
- *  (2) get a specific relation if it exists
- *
- *  (3) generate a sample conditional on an entity
- *
- *  (4) define a new entity
- *
- *  (5) list relations optionally dependent relational entities
- *
- *  (6) list entities.  Either specify them or simply list all.
- *
+ *  (2) generate a sample conditional on an entity
+ *  (3) define a new entity
+ *  (4) list relations optionally dependent relational entities
+ *  (5) list entities.  Either specify them or simply list all.
  */
 class Parser {
 
@@ -213,9 +201,6 @@ void Parser::analyze(const std::string& s) {
         if (sLower.compare(STR_CMD_ADD) == 0) {
             this->state = STATE_ADD;
             this->macroState = STATE_ADD;
-        } else if (sLower.compare(STR_CMD_GET) == 0) {
-            this->state = STATE_GET;
-            this->macroState = STATE_GET;
         } else if (sLower.compare(STR_CMD_GEN) == 0) {
             this->state = STATE_GEN;
             this->macroState = STATE_GEN;
@@ -229,14 +214,11 @@ void Parser::analyze(const std::string& s) {
 
         cout << "DEBUG -- Setting Macro state: " << this->macroState << endl;
 
-    } else if (this->state == STATE_ADD || this->state == STATE_GET || this->state == STATE_GEN) {
+    } else if (this->state == STATE_ADD || this->state == STATE_GEN) {
         if (sLower.compare(STR_CMD_REL) == 0)
             switch (this->state) {
             case STATE_ADD:
                 this->state = STATE_P1;
-                break;
-            case STATE_GET:
-                this->state = STATE_GET_REL;
                 break;
             case STATE_GEN:
                 this->state = STATE_GEN_REL;
@@ -320,15 +302,6 @@ void Parser::analyze(const std::string& s) {
             if (this->debug)
                 cout << "DEBUG -- Adding relation." << endl;
 
-        } else if (this->macroState == STATE_GET_REL) {
-            std::vector<Json::Value> ret = this->indexHandler->fetchRelationPrefix(this->bufferEntity, this->currEntity);
-
-            // Iterate through matched keys
-            cout << endl << "Relations found:" << endl << endl;
-            for (std::vector<Json::Value>::iterator it = ret.begin() ; it != ret.end(); ++it)
-                cout << (*it).asCString() << endl;
-            cout << endl;
-
         } else if (this->macroState == STATE_GEN_REL) {
             // TODO - Add logic to sample relation
 
@@ -343,9 +316,23 @@ void Parser::analyze(const std::string& s) {
             else
                 cout << "not found." << endl;
 
-         } else if (this->macroState == STATE_LST_REL) {
+        } else if (this->macroState == STATE_LST_REL) {
             // TODO - logic to extract matching entities
-         }
+
+            // Get all relations on given entities
+            cout << "Current Matched Relations for \"" << this->bufferEntity << "\" and \"" << this->currEntity << "\"" << endl;
+            std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(this->bufferEntity, this->currEntity);
+
+            // for each relation determine if they match the condition criteria
+            if (entities != NULL)
+                for (std::vector<Json::Value>::iterator it = relations.begin() ; it != relations.end(); ++it)
+                    cout << (*it).toStyledString() << endl << endl;
+            else
+                cout << "not found." << endl;
+
+            // print out results
+
+        }
 
         // Cleanup
         this->cleanup();
