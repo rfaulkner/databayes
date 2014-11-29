@@ -56,8 +56,7 @@ More details on how to use these to build entities, relations and how to use gen
 Examples
 --------
 
-Defining an entity:
-~~~~~~~~~~~~~~~~~~~
+### Defining an entity:
 
 When defining an entity then entity-name and attributes with their types.  Entity-names must be unique (ie. not already exist)
 and all attrbute types must be valid:
@@ -67,8 +66,7 @@ and all attrbute types must be valid:
     databayes > def nofields
 
 
-Creating a Relation:
-~~~~~~~~~~~~~~~~~~~~
+### Creating a Relation:
 
 When creating a relation you specify entities and optionally any number of entity attributes constrained by value.  Entities
 and specified attributes must exist however value constraints are optional:
@@ -77,8 +75,7 @@ and specified attributes must exist however value constraints are optional:
     databayes > add rel x(a_integer, b_float) y(c_integer, d_float)
 
 
-Listing Entities:
-~~~~~~~~~~~~~~~~~
+### Listing Entities:
 
 When listing entities (and in general) a wildcard ("*") for one or more characters may be used:
 
@@ -86,8 +83,7 @@ When listing entities (and in general) a wildcard ("*") for one or more characte
     lst ent a*  // List all entities beginning with 'a'
 
 
-Listing Relations:
-~~~~~~~~~~~~~~~~~~
+### Listing Relations:
 
 When listing relations conditions on attributes may be specified where desired.  Attributes and entities must exist.
 
