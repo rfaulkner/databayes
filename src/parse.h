@@ -28,6 +28,7 @@
 #define STR_CMD_DEF "def"
 #define STR_CMD_LST "lst"
 #define STR_CMD_ENT "ent"
+#define STR_CMD_EXIT "exit"
 
 #define BAD_INPUT "ERR: Bad input symbol"
 #define BAD_EOL "ERR: Bad end of line"
@@ -41,6 +42,7 @@
 #define ERR_BAD_FIELD_TYPE "ERR: Bad field type on instance"
 #define ERR_INVALID_DEF_FMT "ERR: Invalid Entity definition format"
 #define ERR_UNKNOWN_CMD "ERR: Unkown Command"
+#define ERR_MALFORMED_CMD "ERR: Malformed Command"
 
 
 #define WILDCARD_CHAR '*'
@@ -65,6 +67,8 @@
 #define STATE_LST_REL 52        // Lists relations
 
 #define STATE_FINISH 99     // Successful end state
+
+#define STATE_EXIT 100       // Terminate program
 
 using namespace std;
 
@@ -175,9 +179,15 @@ bool Parser::parse(const string& s) {
         }
     }
 
+    if (this->state == STATE_EXIT)
+        exit(0);
+
     // If the input was not interpreted to any meaningful command
-    if (this->state != STATE_FINISH) {
+    if (this->state == STATE_START && tokens.size() > 0) {
         cout << ERR_UNKNOWN_CMD << endl;
+        return false;
+    } else if (this->state != STATE_FINISH && tokens.size() > 0) {
+        cout << ERR_MALFORMED_CMD << endl;
         return false;
     }
 
@@ -210,6 +220,8 @@ void Parser::analyze(const std::string& s) {
         } else if (sLower.compare(STR_CMD_LST) == 0) {
             this->state = STATE_LST;
             this->macroState = STATE_LST;
+        } else if (sLower.compare(STR_CMD_EXIT) == 0) {
+            this->state = STATE_EXIT;
         }
 
         cout << "DEBUG -- Setting Macro state: " << this->macroState << endl;
