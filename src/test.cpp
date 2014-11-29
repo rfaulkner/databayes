@@ -176,6 +176,13 @@ void testFieldAssignTypeMismatchString() {
     // TODO - implement
 }
 
+/**
+ *  Tests that existsEntityField correctly flags when entity does not contain a field
+ */
+void testEntityDoesNotContainField() {
+    // TODO - implement
+}
+
 
 int main() {
     cout << "-- TESTS BEGIN --" << endl << endl;

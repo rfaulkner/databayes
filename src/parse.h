@@ -38,6 +38,7 @@
 #define ERR_NO_SYM_AFTER "ERR: No symbols permitted after ')'"
 #define ERR_INVALID_FIELD_TYPE "ERR: Invalid field type"
 #define ERR_ENT_BAD_FORMAT "ERR: Invalid Entity assign format"
+#define ERR_ENT_FIELD_NOT_EXIST "ERR: Entity does not contain attribute"
 #define ERR_BAD_FIELD_TYPE "ERR: Bad field type on instance"
 #define ERR_INVALID_DEF_FMT "ERR: Invalid Entity definition format"
 #define ERR_UNKNOWN_CMD "ERR: Unkown Command"
@@ -510,13 +511,12 @@ void Parser::parseEntityDefinitionField(std::string field) {
  *  @param string& field
  */
 void Parser::parseEntityAssignField(std::string field) {
-    std::vector<string> fieldItems;
+    std::vector<std::string> fieldItems;
     fieldItems = this->tokenize(field, '=');
 
     // Verify that the entity has been defined
     if (!this->indexHandler->existsEntity(this->currEntity)) {
         this->error = true;
-        cout << this->currEntity << endl;
         this->errStr = ERR_ENT_NOT_EXISTS;
         return;
     }
@@ -525,6 +525,13 @@ void Parser::parseEntityAssignField(std::string field) {
     if (fieldItems.size() != 2) {
         this->error = true;
         this->errStr = ERR_ENT_BAD_FORMAT;
+        return;
+    }
+
+    // Verify that the entity contains this attribute
+    if (!this->indexHandler->existsEntity(this->currEntity, fieldItems[0])) {
+        this->error = true;
+        this->errStr = ERR_ENT_FIELD_NOT_EXIST;
         return;
     }
 

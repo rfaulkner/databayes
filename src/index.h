@@ -74,6 +74,7 @@ public:
     std::vector<Json::Value> fetchRelationPrefix(std::string, std::string);
 
     bool existsEntity(std::string);
+    bool existsEntityField(std::string, std::string);
     bool existsRelation(std::string, std::string);
 
     std::vector<Json::Value>* fetchPatternJson(std::string);
@@ -269,6 +270,13 @@ std::vector<Json::Value> IndexHandler::fetchRelationPrefix(std::string entityL, 
 bool IndexHandler::existsEntity(std::string entity) {
     this->redisHandler->connect();
     return this->redisHandler->exists(this->generateEntityKey(entity));
+}
+
+/** Check to ensure entity exists */
+bool IndexHandler::existsEntityField(std::string entity, std::string field) {
+    Json::Value json;
+    this->fetchEntity(entity, json);
+    return json.isMember(field);
 }
 
 /** Check to ensure relation exists */
