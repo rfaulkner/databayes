@@ -37,7 +37,6 @@
 #define ERR_ALL_FIELDS_PROC "ERR: All fields have already been processed."
 #define ERR_NO_SYM_AFTER "ERR: No symbols permitted after ')'"
 #define ERR_INVALID_FIELD_TYPE "ERR: Invalid field type"
-#define ERR_ENT_NOT_FOUND "ERR: Can't find entity."
 #define ERR_ENT_BAD_FORMAT "ERR: Invalid Entity assign format"
 #define ERR_BAD_FIELD_TYPE "ERR: Bad field type on instance"
 #define ERR_INVALID_DEF_FMT "ERR: Invalid Entity definition format"
@@ -515,9 +514,10 @@ void Parser::parseEntityAssignField(std::string field) {
     fieldItems = this->tokenize(field, '=');
 
     // Verify that the entity has been defined
-    if (this->indexHandler->existsEntity(this->currEntity)) {
+    if (!this->indexHandler->existsEntity(this->currEntity)) {
         this->error = true;
-        this->errStr = ERR_ENT_NOT_FOUND;
+        cout << this->currEntity << endl;
+        this->errStr = ERR_ENT_NOT_EXISTS;
         return;
     }
 
