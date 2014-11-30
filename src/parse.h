@@ -34,6 +34,7 @@
 #define BAD_EOL "ERR: Bad end of line"
 #define ERR_ENT_EXISTS "ERR: Entity already exists."
 #define ERR_ENT_NOT_EXISTS "ERR: Entity not found."
+#define ERR_ENT_NOT_ALPHA "ERR: Entity handles must be alpha-numeric."
 #define ERR_ALL_FIELDS_PROC "ERR: All fields have already been processed."
 #define ERR_NO_SYM_AFTER "ERR: No symbols permitted after ')'"
 #define ERR_INVALID_FIELD_TYPE "ERR: Invalid field type"
@@ -266,11 +267,18 @@ void Parser::analyze(const std::string& s) {
         this->state == STATE_DEF_PROC;
         this->parseEntitySymbol(sLower);
 
+        // Validate that entity is alpha-numeric
+        boost::regex e("^[a-zA-Z0-9]*$");
+        if (!boost::regex_match(this->currEntity.c_str(), e)) {
+            this->error = true;
+            this->errStr = ERR_ENT_EXISTS;
+            return;
+        }
+
         // Ensure this entity has not already been defined
         if (this->indexHandler->existsEntity(this->currEntity)) {
             this->error = true;
             this->errStr = ERR_ENT_EXISTS;
-            this->state = STATE_FINISH;
             return;
         }
 
