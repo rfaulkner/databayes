@@ -342,20 +342,16 @@ void Parser::analyze(const std::string& s) {
                 cout << "not found." << endl;
 
         } else if (this->macroState == STATE_LST_REL) {
-            // TODO - logic to extract matching entities
-
             // Get all relations on given entities
             cout << "Current Matched Relations for \"" << this->bufferEntity << "\" and \"" << this->currEntity << "\"" << endl;
             std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(this->bufferEntity, this->currEntity);
 
             // for each relation determine if they match the condition criteria
+            // TODO - filter on atribute criteria
             for (std::vector<Json::Value>::iterator it = relations.begin() ; it != relations.end(); ++it)
                 cout << (*it).toStyledString() << endl << endl;
 
-            // print out results
-
         }
-
         // Cleanup
         this->cleanup();
     }
@@ -561,12 +557,13 @@ void Parser::parseRelationPair(std::string symbol) {
         this->currValues = new vector<std::pair<std::string, std::string>>;
         this->parseEntitySymbol(symbol);
 
-        // Ensure that entities exist
-        if (!this->indexHandler->existsEntity(this->currEntity)) {
-            this->error = true;
-            this->errStr = ERR_ENT_NOT_EXISTS;
-            return;
-        }
+        // Ensure that entities exist if we are adding a new relation
+        if (this->macroState == STATE_ADD)
+            if (!this->indexHandler->existsEntity(this->currEntity)) {
+                this->error = true;
+                this->errStr = ERR_ENT_NOT_EXISTS;
+                return;
+            }
     }
 
     // If all fields have been processed transition
