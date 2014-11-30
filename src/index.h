@@ -19,6 +19,7 @@
 #include <string>
 #include <set>
 #include <json/json.h>
+#include <boost/regex.hpp>
 
 #include "redis.h"
 #include "md5.h"
@@ -255,6 +256,7 @@ bool IndexHandler::fetchRaw(std::string key, Json::Value& json) {
 
 /** Fetch a set of relations matching the entities */
 std::vector<Json::Value> IndexHandler::fetchRelationPrefix(std::string entityL, std::string entityR) {
+    this->redisHandler->connect();
     std::vector<std::string> keys = this->redisHandler->keys(this->generateRelationKey(entityL, entityR, "*"));
     std::vector<Json::Value> relations;
     Json::Value* json;
@@ -338,6 +340,11 @@ bool IndexHandler::validateEntityFieldType(std::string entity, std::string field
 std::string IndexHandler::orderPairAlphaNumeric(std::string s1, std::string s2) {
     std::set<std::string> sortedItems;
     std::set<std::string>::iterator it;
+
+    // Validate that strings are indeed alpha-numeric otherwise return on order supplied
+    boost::regex e("^[a-zA-Z0-9]*$");
+    if (!boost::regex_match(s1.c_str(), e) || !boost::regex_match(s1.c_str(), e)) return s1 + KEY_DELIMETER + s2;
+
     std::string ret = "";
     sortedItems.insert(s1);
     sortedItems.insert(s2);

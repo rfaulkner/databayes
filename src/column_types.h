@@ -68,7 +68,7 @@ public:
 
     bool validate(std::string value) {
         boost::regex e("^[-+]?[0-9]*\\.?[0-9]+$");
-        return boost::regex_match(value.c_str(), e);;
+        return boost::regex_match(value.c_str(), e);
     }
 };
 
