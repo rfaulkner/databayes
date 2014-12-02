@@ -18,6 +18,7 @@
 #include "redis.h"
 #include "md5.h"
 #include "index.h"
+#include "bayes.h"
 
 #define REDISHOST "127.0.0.1"
 #define REDISPORT 6379
@@ -215,6 +216,38 @@ void testEntityDoesNotContainField() {
 }
 
 
+/**
+ *  Tests Bayes::computeMarginal function - ensure the marginal likelihood is correct
+ */
+void testComputeMarginal() {
+
+    Bayes bayes;
+    IndexHandler ih;
+    std::vector<Json::Value> ret;
+    std::vector<std::pair<ColumnBase*, std::string>> fields_ent;
+    std::vector<std::pair<std::string, std::string>> fields_rel;
+
+    // declare three entities
+    ih.writeEntity("_w", fields_ent);
+    ih.writeEntity("_x", fields_ent);
+    ih.writeEntity("_y", fields_ent);
+    ih.writeEntity("_z", fields_ent);
+
+    // construct a number of relations
+    ih.writeRelation("_x", "_y", fields_rel, fields_rel);
+    ih.writeRelation("_x", "_y", fields_rel, fields_rel);
+    ih.writeRelation("_x", "_z", fields_rel, fields_rel);
+    ih.writeRelation("_x", "_z", fields_rel, fields_rel);
+    ih.writeRelation("_w", "_y", fields_rel, fields_rel);
+
+    // Ensure marginal likelihood reflects the number of relations that contain each entity
+    assert(bayes.computeMarginal("_x", fields_ent) == 4.0 / 5.0);
+    assert(bayes.computeMarginal("_y", fields_ent) == 3.0 / 5.0);
+    assert(bayes.computeMarginal("_z", fields_ent) == 2.0 / 5.0);
+    assert(bayes.computeMarginal("_w", fields_ent) == 1.0 / 5.0);
+}
+
+
 int main() {
     cout << "-- TESTS BEGIN --" << endl << endl;
 
@@ -231,6 +264,7 @@ int main() {
     testFieldAssignTypeMismatchInteger();
     testFieldAssignTypeMismatchFloat();
     testFieldAssignTypeMismatchString();
+    testComputeMarginal();
 
     cout << endl << "-- TESTS END --" << endl;
 
