@@ -23,17 +23,25 @@ using namespace std;
 class Bayes {
     IndexHandler* indexHandler;
 
+    long countEntityInRelations(std::string, std::vector<std::string, std::string>&);
+
 public:
     Bayes() { this->indexHandler = new IndexHandler(); }
 
-    float computeMarginal(std::string, &std::vector<std::string, std::string>);
-    float computeConditional(std::string, std::string, &std::vector<std::string, std::string>, &std::vector<std::string, std::string>);
-    float computePairwise(std::string, std::string, &std::vector<std::string, std::string>, &std::vector<std::string, std::string>);
+    float computeMarginal(std::string, std::vector<std::string, std::string>&);
+    float computeConditional(std::string, std::string, std::vector<std::string, std::string>&, std::vector<std::string, std::string>&);
+    float computePairwise(std::string, std::string, std::vector<std::string, std::string>&, std::vector<std::string, std::string>&);
 
-    Json::Value sampleMarginal(std::string, &std::vector<std::string, std::string>);
-    Json::Value sampleConditional(std::string, std::string, &std::vector<std::string, std::string>, &std::vector<std::string, std::string>);
-    Json::Value samplePairwise(std::string, std::string, &std::vector<std::string, std::string>, &std::vector<std::string, std::string>);
+    Json::Value sampleMarginal(std::string, std::vector<std::string, std::string>&);
+    Json::Value sampleConditional(std::string, std::string, std::vector<std::string, std::string>&, std::vector<std::string, std::string>&);
+    Json::Value samplePairwise(std::string, std::string, std::vector<std::string, std::string>&, std::vector<std::string, std::string>&);
 
 };
+
+/** Count the occurrences of an entity among relevant relations */
+long Bayes::countEntityInRelations(std::string entity, std::vector<std::string, std::string>& fields) {
+    return this->indexHandler->filterRelationsByAttribute(this->indexHandler->generateRelationKey(entity, "*"), fields).size() +
+            this->indexHandler->filterRelationsByAttribute(this->indexHandler->generateRelationKey("*", entity), fields).size();
+}
 
 #endif
