@@ -70,17 +70,19 @@ public:
     void removeRelation(std::string, std::string, std::vector<std::pair<std::string, std::string>>&, std::vector<std::pair<std::string, std::string>>&);
 
     bool composeJSON(std::string, Json::Value&);
-    bool fetchRaw(std::string, Json::Value&);
-    bool fetchEntity(std::string, Json::Value&);
-    std::vector<Json::Value> fetchRelationPrefix(std::string, std::string);
 
     bool existsEntity(std::string);
     bool existsEntityField(std::string, std::string);
     bool existsRelation(std::string, std::string);
 
+    bool fetchRaw(std::string, Json::Value&);
+    bool fetchEntity(std::string, Json::Value&);
+    std::vector<Json::Value> fetchRelationPrefix(std::string, std::string);
     std::vector<Json::Value>* fetchPatternJson(std::string);
     std::vector<std::string>* fetchPatternKeys(std::string);
     bool fetchFromDisk(int);   // Loads disk
+
+    std::vector<Json::Value>& filterRelationsByAttribute(std::vector<Json::Value>&, std::vector<std::pair<std::string, std::string>>&);
 
     std::string generateEntityKey(std::string);
     std::string generateRelationKey(std::string, std::string, std::string);
@@ -350,6 +352,14 @@ std::string IndexHandler::orderPairAlphaNumeric(std::string s1, std::string s2) 
     sortedItems.insert(s2);
     it = sortedItems.begin(); ret = *it + KEY_DELIMETER; it++; ret += *it;
     return ret;
+}
+
+/**
+ *  Filter matching relations based on contents attrs
+ */
+std::vector<Json::Value>& filterRelationsByAttribute(std::vector<Json::Value>& relations, std::vector<std::pair<std::string, std::string>>& attrs) {
+    // TODO - implement filtering
+    return relations;
 }
 
 /**
