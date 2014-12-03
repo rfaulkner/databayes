@@ -46,7 +46,21 @@
 
 using namespace std;
 
-// TODO - implement heap UDT to handle
+
+// DEFINE STRUCTURES
+
+struct entity {
+  std::string name;
+  std::vector<std::pair<ColumnBase*, std::string>> attrs;
+};
+
+struct relation {
+  std::string name_left;
+  std::string name_right;
+  std::vector<std::pair<std::string, std::string>> attrs_left;
+  std::vector<std::pair<std::string, std::string>> attrs_right;
+} ;
+
 
 class IndexHandler {
 
@@ -359,6 +373,7 @@ std::string IndexHandler::orderPairAlphaNumeric(std::string s1, std::string s2) 
  */
 std::vector<Json::Value>& filterRelationsByAttribute(std::vector<Json::Value>& relations, std::vector<std::pair<std::string, std::string>>& attrs) {
     // TODO - implement filtering
+    for (std::vector<Json::Value>::iterator it = rel_set_1.begin(); it != rel_set_1.end(); ++it)
     return relations;
 }
 
