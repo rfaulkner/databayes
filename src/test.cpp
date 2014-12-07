@@ -100,7 +100,8 @@ void testJSONEntityEncoding() {
     std::vector<std::pair<ColumnBase*, std::string>> fields_ent;
 
     fields_ent.push_back(std::make_pair(getColumnType("integer"), "a"));   // Create fields
-    ih.writeEntity("test", fields_ent);     // Create the entity
+    Entity e("test", fields_ent);
+    ih.writeEntity(e);     // Create the entity
     ih.fetchEntity("test", json);           // Fetch the entity representation
     cout << "TEST ENTITY:" << endl << endl << json.toStyledString() << endl;
 
@@ -131,11 +132,13 @@ void testJSONRelationEncoding() {
     fields_rel_2.push_back(std::make_pair("b", "hello"));
 
     // Create entities
-    ih.writeEntity("test_1", fields_ent_1);
-    ih.writeEntity("test_2", fields_ent_1);
+    Entity e1("test_1", fields_ent_1), e2("test_2", fields_ent_2);
+    ih.writeEntity(e1);
+    ih.writeEntity(e2);
 
     // Create relation in redis
-    ih.writeRelation("test_1", "test_2", fields_rel_1, fields_rel_2);
+    Relation r("test_1", "test_2", fields_rel_1, fields_rel_2);
+    ih.writeRelation(r);
 
     // Fetch the entity representation
     ret = ih.fetchRelationPrefix("test_1", "test_2");
@@ -152,7 +155,7 @@ void testJSONRelationEncoding() {
     );
     ih.removeEntity("test_1");                // Remove the entity
     ih.removeEntity("test_2");                // Remove the entity
-    ih.removeRelation("test_1", "test_2", fields_rel_1, fields_rel_2);    // Remove the relation
+    ih.removeRelation(r);    // Remove the relation
 }
 
 
@@ -199,7 +202,8 @@ void testFieldAssignTypeMismatchString() {
     Json::Value json;
     std::vector<std::pair<ColumnBase*, std::string>> fields_ent;
     fields_ent.push_back(std::make_pair(getColumnType("string"), "a"));   // Create fields
-    ih.writeEntity("test", fields_ent);     // Create the entity
+    Entity e("test", fields_ent);
+    ih.writeEntity(e);     // Create the entity
     assert(
         ih.validateEntityFieldType("test", "a", "1") &&
         ih.validateEntityFieldType("test", "a", "12345") &&
@@ -228,23 +232,31 @@ void testComputeMarginal() {
     std::vector<std::pair<std::string, std::string>> fields_rel;
 
     // declare three entities
-    ih.writeEntity("_w", fields_ent);
-    ih.writeEntity("_x", fields_ent);
-    ih.writeEntity("_y", fields_ent);
-    ih.writeEntity("_z", fields_ent);
+    Entity e1("_w", fields_ent), e2("_x", fields_ent), e3("_y", fields_ent), e4("_z", fields_ent);
+
+    ih.writeEntity(e1);
+    ih.writeEntity(e2);
+    ih.writeEntity(e3);
+    ih.writeEntity(e4);
 
     // construct a number of relations
-    ih.writeRelation("_x", "_y", fields_rel, fields_rel);
-    ih.writeRelation("_x", "_y", fields_rel, fields_rel);
-    ih.writeRelation("_x", "_z", fields_rel, fields_rel);
-    ih.writeRelation("_x", "_z", fields_rel, fields_rel);
-    ih.writeRelation("_w", "_y", fields_rel, fields_rel);
+    Relation r1("_x", "_y", fields_rel, fields_rel);
+    Relation r2("_x", "_y", fields_rel, fields_rel);
+    Relation r3("_x", "_z", fields_rel, fields_rel);
+    Relation r4("_x", "_z", fields_rel, fields_rel);
+    Relation r5("_w", "_y", fields_rel, fields_rel);
+
+    ih.writeRelation(r1);
+    ih.writeRelation(r2);
+    ih.writeRelation(r3);
+    ih.writeRelation(r4);
+    ih.writeRelation(r5);
 
     // Ensure marginal likelihood reflects the number of relations that contain each entity
-    assert(bayes.computeMarginal("_x", fields_ent) == 4.0 / 5.0);
-    assert(bayes.computeMarginal("_y", fields_ent) == 3.0 / 5.0);
-    assert(bayes.computeMarginal("_z", fields_ent) == 2.0 / 5.0);
-    assert(bayes.computeMarginal("_w", fields_ent) == 1.0 / 5.0);
+    assert(bayes.computeMarginal(e1) == 4.0 / 5.0);
+    assert(bayes.computeMarginal(e2) == 3.0 / 5.0);
+    assert(bayes.computeMarginal(e3) == 2.0 / 5.0);
+    assert(bayes.computeMarginal(e4) == 1.0 / 5.0);
 }
 
 

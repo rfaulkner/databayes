@@ -332,7 +332,8 @@ void Parser::analyze(const std::string& s) {
                 cout << "DEBUG -- Writing definition of entity." << endl;
 
         } else if (this->macroState == STATE_ADD) {
-            this->indexHandler->writeRelation(this->bufferEntity, this->currEntity, *(this->bufferValues), *(this->currValues));
+            Relation r(this->bufferEntity, this->currEntity, *(this->bufferValues), *(this->currValues));
+            this->indexHandler->writeRelation(r);
             if (this->debug)
                 cout << "DEBUG -- Adding relation." << endl;
 

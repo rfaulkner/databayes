@@ -39,9 +39,9 @@ public:
 };
 
 /** Count the occurrences of an entity among relevant relations */
-long Bayes::countEntityInRelations(std::string entity, std::vector<std::string, std::string>& fields) {
-    return this->indexHandler->filterRelationsByAttribute(this->indexHandler->generateRelationKey(entity, "*"), fields).size() +
-            this->indexHandler->filterRelationsByAttribute(this->indexHandler->generateRelationKey("*", entity), fields).size();
+long Bayes::countEntityInRelations(Entity e) {
+    return this->indexHandler->filterRelationsByAttribute(this->indexHandler->generateRelationKey(e.name, "*"), e.attrs).size() +
+            this->indexHandler->filterRelationsByAttribute(this->indexHandler->generateRelationKey("*", e.name), e.attrs).size();
 }
 
 #endif

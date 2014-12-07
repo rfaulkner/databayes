@@ -99,11 +99,11 @@ public:
     ~IndexHandler() { delete redisHandler; }
 
     bool writeEntity(Entity&);
-    bool writeRelation(std::string, std::string, std::vector<std::pair<std::string, std::string>>&, std::vector<std::pair<std::string, std::string>>&);
+    bool writeRelation(Relation&);
     bool writeToDisk(int);
 
     void removeEntity(std::string);
-    void removeRelation(std::string, std::string, std::vector<std::pair<std::string, std::string>>&, std::vector<std::pair<std::string, std::string>>&);
+    void removeRelation(Relation&);
 
     bool composeJSON(std::string, Json::Value&);
 
@@ -186,25 +186,21 @@ void IndexHandler::removeEntity(std::string entity) {
 }
 
 /** Remove relation from redis */
-void IndexHandler::removeRelation(
-    std::string entityL,
-    std::string entityR,
-    std::vector<std::pair<std::string, std::string>>& fieldsL,
-    std::vector<std::pair<std::string, std::string>>& fieldsR) {
+void IndexHandler::removeRelation(Relation& rel) {
 
     Json::Value jsonVal;
     Json::Value jsonValFieldsLeft;
     Json::Value jsonValFieldsRight;
 
-    jsonVal[JSON_ATTR_REL_ENTL] = entityL;
-    jsonVal[JSON_ATTR_REL_ENTR] = entityR;
-    this->buildFieldJSONValue(jsonValFieldsLeft, fieldsL);
-    this->buildFieldJSONValue(jsonValFieldsRight, fieldsR);
+    jsonVal[JSON_ATTR_REL_ENTL] = rel.name_left;
+    jsonVal[JSON_ATTR_REL_ENTR] = rel.name_right;
+    this->buildFieldJSONValue(jsonValFieldsLeft, rel.attrs_left);
+    this->buildFieldJSONValue(jsonValFieldsRight, rel.attrs_right);
     jsonVal[JSON_ATTR_REL_FIELDSL] = jsonValFieldsLeft;
     jsonVal[JSON_ATTR_REL_FIELDSR] = jsonValFieldsRight;
 
     this->redisHandler->connect();
-    this->redisHandler->deleteKey(this->generateRelationKey(entityL, entityR, md5(jsonVal.toStyledString())));
+    this->redisHandler->deleteKey(this->generateRelationKey(rel.name_left, rel.name_right, md5(jsonVal.toStyledString())));
 }
 
 /**
@@ -212,27 +208,23 @@ void IndexHandler::removeRelation(
  *
  *  e.g. {"entity": <string:entname>, "fields": <string_array:[<f1,f2,...>]>}
  */
-bool IndexHandler::writeRelation(
-                    std::string entityL,
-                    std::string entityR,
-                    std::vector<std::pair<std::string, std::string>>& fieldsL,
-                    std::vector<std::pair<std::string, std::string>>& fieldsR) {
+bool IndexHandler::writeRelation(Relation& rel) {
     Json::Value jsonVal;
     std::string key;
     Json::Value jsonValFieldsLeft;
     Json::Value jsonValFieldsRight;
 
-    jsonVal[JSON_ATTR_REL_ENTL] = entityL;
-    jsonVal[JSON_ATTR_REL_ENTR] = entityR;
+    jsonVal[JSON_ATTR_REL_ENTL] = rel.name_left;
+    jsonVal[JSON_ATTR_REL_ENTR] = rel.name_right;
 
-    this->buildFieldJSONValue(jsonValFieldsLeft, fieldsL);
-    this->buildFieldJSONValue(jsonValFieldsRight, fieldsR);
+    this->buildFieldJSONValue(jsonValFieldsLeft, rel.attrs_left);
+    this->buildFieldJSONValue(jsonValFieldsRight, rel.attrs_right);
 
     jsonVal[JSON_ATTR_REL_FIELDSL] = jsonValFieldsLeft;
     jsonVal[JSON_ATTR_REL_FIELDSR] = jsonValFieldsRight;
 
     this->redisHandler->connect();
-    key = this->generateRelationKey(entityL, entityR, md5(jsonVal.toStyledString()));
+    key = this->generateRelationKey(rel.name_left, rel.name_right, md5(jsonVal.toStyledString()));
 
     if (this->redisHandler->exists(key)) {
         if (this->fetchRaw(key, jsonVal)) {
