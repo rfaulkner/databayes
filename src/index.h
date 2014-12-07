@@ -53,9 +53,9 @@ class Entity {
 public:
 
     /** Constructor/Builder for relations  */
-    Relation(std::string name, std::vector<std::pair<ColumnBase*, std::string>>& attrs) {
-        r.name = name;
-        r.attrs = attrs;
+    Entity(std::string name, std::vector<std::pair<ColumnBase*, std::string>>& attrs) {
+        this->name = name;
+        this->attrs = attrs;
     }
 
     std::string name;
@@ -71,10 +71,10 @@ public:
             std::string right,
             std::vector<std::pair<std::string, std::string>>& attrs_left,
             std::vector<std::pair<std::string, std::string>>& attrs_right) {
-        r.name_left = left;
-        r.name_right = right;
-        r.attrs_left = attrs_left;
-        r.attrs_right = attrs_right;
+        this->name_left = left;
+        this->name_right = right;
+        this->attrs_left = attrs_left;
+        this->attrs_right = attrs_right;
     }
 
     std::string name_left;
@@ -83,37 +83,6 @@ public:
     std::vector<std::pair<std::string, std::string>> attrs_right;
 };
 
-/**
- *  Builder for
- */
-Relation buildRelation(
-    std::string left,
-    std::string right,
-    std::vector<std::pair<std::string, std::string>>& attrs_left,
-    std::vector<std::pair<std::string, std::string>>& attrs_right) {
-
-    Relation* r = new Relation;
-    r.name_left = left;
-    r.name_right = right;
-    r.attrs_left = attrs_left;
-    r.attrs_right = attrs_right;
-    return r;
-}
-
-
-Relation buildRelation(
-    std::string left,
-    std::string right,
-    std::vector<std::pair<std::string, std::string>>& attrs_left,
-    std::vector<std::pair<std::string, std::string>>& attrs_right) {
-
-    Relation r;
-    r.name_left = left;
-    r.name_right = right;
-    r.attrs_left = attrs_left;
-    r.attrs_right = attrs_right;
-    return r;
-}
 
 class IndexHandler {
 

@@ -325,7 +325,8 @@ void Parser::analyze(const std::string& s) {
         if (this->error) { this->cleanup(); return; }
 
         if (this->macroState == STATE_DEF && !this->error) { // Add this entity to the index
-            this->indexHandler->writeEntity(this->currEntity, *(this->currFields));
+            Entity e(this->currEntity, *(this->currFields));
+            this->indexHandler->writeEntity(e);
 
             if (this->debug)
                 cout << "DEBUG -- Writing definition of entity." << endl;
