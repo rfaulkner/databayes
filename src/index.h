@@ -373,7 +373,7 @@ std::string IndexHandler::orderPairAlphaNumeric(std::string s1, std::string s2) 
  */
 std::vector<Json::Value>& filterRelationsByAttribute(std::vector<Json::Value>& relations, std::vector<std::pair<std::string, std::string>>& attrs) {
     // TODO - implement filtering
-    for (std::vector<Json::Value>::iterator it = rel_set_1.begin(); it != rel_set_1.end(); ++it)
+    for (std::vector<Json::Value>::iterator it = relations.begin(); it != relations.end(); ++it);
     return relations;
 }
 
