@@ -47,20 +47,73 @@
 using namespace std;
 
 
-// DEFINE STRUCTURES
+// Define entity and relation builder classes
 
-struct entity {
-  std::string name;
-  std::vector<std::pair<ColumnBase*, std::string>> attrs;
+class Entity {
+public:
+
+    /** Constructor/Builder for relations  */
+    Relation(std::string name, std::vector<std::pair<ColumnBase*, std::string>>& attrs) {
+        r.name = name;
+        r.attrs = attrs;
+    }
+
+    std::string name;
+    std::vector<std::pair<ColumnBase*, std::string>> attrs;
 };
 
-struct relation {
-  std::string name_left;
-  std::string name_right;
-  std::vector<std::pair<std::string, std::string>> attrs_left;
-  std::vector<std::pair<std::string, std::string>> attrs_right;
-} ;
+class Relation {
+public:
 
+    /** Constructor/Builder for relations  */
+    Relation(
+            std::string left,
+            std::string right,
+            std::vector<std::pair<std::string, std::string>>& attrs_left,
+            std::vector<std::pair<std::string, std::string>>& attrs_right) {
+        r.name_left = left;
+        r.name_right = right;
+        r.attrs_left = attrs_left;
+        r.attrs_right = attrs_right;
+    }
+
+    std::string name_left;
+    std::string name_right;
+    std::vector<std::pair<std::string, std::string>> attrs_left;
+    std::vector<std::pair<std::string, std::string>> attrs_right;
+};
+
+/**
+ *  Builder for
+ */
+Relation buildRelation(
+    std::string left,
+    std::string right,
+    std::vector<std::pair<std::string, std::string>>& attrs_left,
+    std::vector<std::pair<std::string, std::string>>& attrs_right) {
+
+    Relation* r = new Relation;
+    r.name_left = left;
+    r.name_right = right;
+    r.attrs_left = attrs_left;
+    r.attrs_right = attrs_right;
+    return r;
+}
+
+
+Relation buildRelation(
+    std::string left,
+    std::string right,
+    std::vector<std::pair<std::string, std::string>>& attrs_left,
+    std::vector<std::pair<std::string, std::string>>& attrs_right) {
+
+    Relation r;
+    r.name_left = left;
+    r.name_right = right;
+    r.attrs_left = attrs_left;
+    r.attrs_right = attrs_right;
+    return r;
+}
 
 class IndexHandler {
 
@@ -76,7 +129,7 @@ public:
     IndexHandler() { this->redisHandler = new RedisHandler(REDISHOST, REDISPORT); }
     ~IndexHandler() { delete redisHandler; }
 
-    bool writeEntity(std::string, vector<std::pair<ColumnBase*, std::string>>&);
+    bool writeEntity(Entity&);
     bool writeRelation(std::string, std::string, std::vector<std::pair<std::string, std::string>>&, std::vector<std::pair<std::string, std::string>>&);
     bool writeToDisk(int);
 
@@ -145,14 +198,14 @@ void IndexHandler::buildFieldJSONValue(Json::Value& value, std::vector<std::pair
  *
  *  e.g. {"entity": <string:entname>, "fields": <string_array:[<f1,f2,...>]>}
  */
-bool IndexHandler::writeEntity(std::string entity, std::vector<std::pair<ColumnBase*, std::string>>& fields) {
+bool IndexHandler::writeEntity(Entity& e) {
     Json::Value jsonVal;
     Json::Value jsonValFields;
-    jsonVal[JSON_ATTR_ENT_ENT] = entity;
-    this->buildFieldJSONDefinition(jsonValFields, fields);
+    jsonVal[JSON_ATTR_ENT_ENT] = e.name;
+    this->buildFieldJSONDefinition(jsonValFields, e.attrs);
     jsonVal[JSON_ATTR_ENT_FIELDS] = jsonValFields;
     this->redisHandler->connect();
-    this->redisHandler->write(this->generateEntityKey(entity), jsonVal.toStyledString());
+    this->redisHandler->write(this->generateEntityKey(e.name), jsonVal.toStyledString());
     return true;
 }
 
