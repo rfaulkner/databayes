@@ -399,10 +399,13 @@ std::vector<Json::Value> filterRelationsByAttribute(std::vector<Json::Value>& re
             // Ensure that attribute key is in relation and that the value matches
             if ((*it).isMember(std::get<0>(*it_inner))) {
                 if (!(*it)[std::get<0>(*it_inner)].compare(std::get<1>(*it_inner))) {
+                    cout << "DEBUG -- Filtering relation, no match on attr" << endl;
                     matching = false;
                     break;
                 }
+                // Filter passed
             } else {
+                cout << "DEBUG -- Filtering relation, attr not found" << endl;
                 matching = false;
                 break;
             }
