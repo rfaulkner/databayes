@@ -32,6 +32,7 @@
 #define IDX_TYPE_FIELD 2
 
 #define KEY_DELIMETER "+"
+#define KEY_TOTAL_RELATIONS "total_relations"
 
 // JSON Attribute Macros
 #define JSON_ATTR_ENT_ENT "entity"
@@ -201,7 +202,11 @@ void IndexHandler::removeRelation(Relation& rel) {
     jsonVal[JSON_ATTR_REL_FIELDSR] = jsonValFieldsRight;
 
     this->redisHandler->connect();
-    this->redisHandler->deleteKey(this->generateRelationKey(rel.name_left, rel.name_right, md5(jsonVal.toStyledString())));
+    std::string key = this->generateRelationKey(rel.name_left, rel.name_right, md5(jsonVal.toStyledString()));
+    Json::Value jsonValReal;
+    this->fetchRaw(key, jsonValReal);   // Fetch the actual entry being removed
+    this->redisHandler->decrementKey(KEY_TOTAL_RELATIONS, jsonValReal[JSON_ATTR_REL_COUNT].asInt());    // decrement the global relation count
+    this->redisHandler->deleteKey(key);
 }
 
 /**
@@ -234,7 +239,7 @@ bool IndexHandler::writeRelation(Relation& rel) {
             return false;
     } else {jsonVal[JSON_ATTR_REL_COUNT] = 1;}
 
-
+    this->redisHandler->incrementKey(KEY_TOTAL_RELATIONS, 1);
     this->redisHandler->write(key, jsonVal.toStyledString());
     return true;
 }
@@ -408,8 +413,8 @@ std::vector<Json::Value> filterRelationsByAttribute(std::vector<Json::Value>& re
     return filtered_relations;
 }
 
-
-long Bayes::getRelationCountTotal() { return 1; }
+/** Fetch the number of relations existing */
+long Bayes::getRelationCountTotal() { return atol(this->redisHandler->read(KEY_TOTAL_RELATIONS).c_str()); }
 
 
 /**
