@@ -126,6 +126,7 @@ public:
     bool validateEntityFieldType(std::string, std::string, std::string);
     std::string orderPairAlphaNumeric(std::string, std::string);
 
+    long getRelationCountTotal();
 };
 
 /** Generate a key for an entity entry in the index */
@@ -406,6 +407,10 @@ std::vector<Json::Value> filterRelationsByAttribute(std::vector<Json::Value>& re
     }
     return filtered_relations;
 }
+
+
+long Bayes::getRelationCountTotal() { return 1; }
+
 
 /**
  * Handles writes to in memory index
