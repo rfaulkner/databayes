@@ -45,6 +45,14 @@ long Bayes::countEntityInRelations(Entity e) {
 }
 
 /** Marginal probability of an entities determined by occurrences present in relations */
-float Bayes::computeMarginal(Entity& e) { return (float)this->countEntityInRelations(e) / (float)this->indexHandler->getRelationCountTotal(); }
+float Bayes::computeMarginal(Entity& e) {
+    long total = this->indexHandler->getRelationCountTotal();
+    if (total > 0)
+        return (float)this->countEntityInRelations(e) / (float)total;
+    else {
+        cout << "DEBUG -- Bad total relation count: " << total << endl;
+        return 0;
+    }
+}
 
 #endif
