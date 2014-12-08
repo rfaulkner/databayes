@@ -43,7 +43,8 @@ public:
     void write(std::string, std::string);
     void writeHashMap(std::string, std::string, std::string);
     void incrementHashMap(std::string, std::string, int);
-
+    void incrementKey(std::string, int);
+    void decrementKey(std::string, int);
     void deleteKey(std::string);
 
     bool exists(std::string);

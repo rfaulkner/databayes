@@ -119,7 +119,7 @@ public:
     std::vector<std::string>* fetchPatternKeys(std::string);
     bool fetchFromDisk(int);   // Loads disk
 
-    std::vector<Json::Value>& filterRelationsByAttribute(std::vector<Json::Value>&, std::vector<std::pair<std::string, std::string>>&);
+    std::vector<Json::Value> filterRelationsByAttribute(std::vector<Json::Value>&, std::vector<std::pair<std::string, std::string>>&);
 
     std::string generateEntityKey(std::string);
     std::string generateRelationKey(std::string, std::string, std::string);
@@ -391,7 +391,7 @@ std::string IndexHandler::orderPairAlphaNumeric(std::string s1, std::string s2) 
 /**
  *  Filter matching relations based on contents attrs
  */
-std::vector<Json::Value> filterRelationsByAttribute(std::vector<Json::Value>& relations, std::vector<std::pair<std::string, std::string>>& attrs) {
+std::vector<Json::Value> IndexHandler::filterRelationsByAttribute(std::vector<Json::Value>& relations, std::vector<std::pair<std::string, std::string>>& attrs) {
     bool matching = true;
     std::vector<Json::Value> filtered_relations;
     for (std::vector<Json::Value>::iterator it = relations.begin(); it != relations.end(); ++it) {
@@ -417,7 +417,7 @@ std::vector<Json::Value> filterRelationsByAttribute(std::vector<Json::Value>& re
 }
 
 /** Fetch the number of relations existing */
-long Bayes::getRelationCountTotal() { return atol(this->redisHandler->read(KEY_TOTAL_RELATIONS).c_str()); }
+long IndexHandler::getRelationCountTotal() { return atol(this->redisHandler->read(KEY_TOTAL_RELATIONS).c_str()); }
 
 
 /**
