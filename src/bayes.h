@@ -28,7 +28,7 @@ class Bayes {
 public:
     Bayes() { this->indexHandler = new IndexHandler(); }
 
-    float computeMarginal(std::string, std::vector<std::string, std::string>&);
+    float computeMarginal(Entity&);
     float computeConditional(std::string, std::string, std::vector<std::string, std::string>&, std::vector<std::string, std::string>&);
     float computePairwise(std::string, std::string, std::vector<std::string, std::string>&, std::vector<std::string, std::string>&);
 
@@ -43,5 +43,8 @@ long Bayes::countEntityInRelations(Entity e) {
     return this->indexHandler->filterRelationsByAttribute(this->indexHandler->generateRelationKey(e.name, "*"), e.attrs).size() +
             this->indexHandler->filterRelationsByAttribute(this->indexHandler->generateRelationKey("*", e.name), e.attrs).size();
 }
+
+/** Marginal probability of an entities determined by occurrences present in relations */
+float Bayes::computeMarginal(Entity& e) { return (float)this->countEntityInRelations(e) / (float)this->indexHandler->getRelationCountTotal(); }
 
 #endif
