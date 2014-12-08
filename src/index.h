@@ -385,10 +385,26 @@ std::string IndexHandler::orderPairAlphaNumeric(std::string s1, std::string s2) 
 /**
  *  Filter matching relations based on contents attrs
  */
-std::vector<Json::Value>& filterRelationsByAttribute(std::vector<Json::Value>& relations, std::vector<std::pair<std::string, std::string>>& attrs) {
-    // TODO - implement filtering
-    for (std::vector<Json::Value>::iterator it = relations.begin(); it != relations.end(); ++it);
-    return relations;
+std::vector<Json::Value> filterRelationsByAttribute(std::vector<Json::Value>& relations, std::vector<std::pair<std::string, std::string>>& attrs) {
+    bool matching = true;
+    std::vector<Json::Value> filtered_relations;
+    for (std::vector<Json::Value>::iterator it = relations.begin(); it != relations.end(); ++it) {
+        for (std::vector<std::pair<std::string, std::string>>::iterator it_inner = attrs.begin(); it_inner != attrs.end(); ++it_inner) {
+            // Ensure that attribute key is in relation and that the value matches
+            if ((*it).isMember(std::get<0>(*it_inner))) {
+                if (!(*it)[std::get<0>(*it_inner)].compare(std::get<1>(*it_inner))) {
+                    matching = false;
+                    break;
+                }
+            } else {
+                matching = false;
+                break;
+            }
+        }
+        if (matching)
+            filtered_relations.push_back(*it);
+    }
+    return filtered_relations;
 }
 
 /**
