@@ -71,6 +71,16 @@ void RedisHandler::incrementHashMap(std::string key, std::string hash, int value
     redisCommand(this->context, "HINCRBY %s %s %s", key.c_str(), hash.c_str(), std::to_string(value).c_str());
 }
 
+/** Writes a value to redis hash map */
+void RedisHandler::incrementKey(std::string key, int value) {
+    redisCommand(this->context, "INCRBY %s %s", key.c_str(), std::to_string(value).c_str());
+}
+
+/** Writes a value to redis hash map */
+void RedisHandler::decrementKey(std::string key, int value) {
+    redisCommand(this->context, "DECRBY %s %s", key.c_str(), std::to_string(value).c_str());
+}
+
 /** Read a value from redis given a key */
 std::string RedisHandler::read(std::string key) {
     std::string result;
