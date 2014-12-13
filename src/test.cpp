@@ -257,6 +257,17 @@ void testComputeMarginal() {
     assert(bayes.computeMarginal(e2) == 3.0 / 5.0);
     assert(bayes.computeMarginal(e3) == 2.0 / 5.0);
     assert(bayes.computeMarginal(e4) == 1.0 / 5.0);
+
+    ih.removeEntity("_w");
+    ih.removeEntity("_x");
+    ih.removeEntity("_y");
+    ih.removeEntity("_z");
+
+    ih.removeRelation(r1);
+    ih.removeRelation(r2);
+    ih.removeRelation(r3);
+    ih.removeRelation(r4);
+    ih.removeRelation(r5);
 }
 
 
@@ -271,11 +282,11 @@ int main() {
 //    testRegexForTypes();
 //    testOrderPairAlphaNumeric();
 
-    testJSONEntityEncoding();
-    testJSONRelationEncoding();
-    testFieldAssignTypeMismatchInteger();
-    testFieldAssignTypeMismatchFloat();
-    testFieldAssignTypeMismatchString();
+    // testJSONEntityEncoding();
+    // testJSONRelationEncoding();
+    // testFieldAssignTypeMismatchInteger();
+    // testFieldAssignTypeMismatchFloat();
+    // testFieldAssignTypeMismatchString();
     testComputeMarginal();
 
     cout << endl << "-- TESTS END --" << endl;
