@@ -23,12 +23,12 @@ using namespace std;
 class Bayes {
     IndexHandler* indexHandler;
 
-    long countEntityInRelations(Entity&);
+    long countEntityInRelations(Entity&, std::vector<std::string, std::string>&);
 
 public:
     Bayes() { this->indexHandler = new IndexHandler(); }
 
-    float computeMarginal(Entity&);
+    float computeMarginal(Entity&, std::vector<std::string, std::string>&);
     float computeConditional(std::string, std::string, std::vector<std::string, std::string>&, std::vector<std::string, std::string>&);
     float computePairwise(std::string, std::string, std::vector<std::string, std::string>&, std::vector<std::string, std::string>&);
 
@@ -39,19 +39,18 @@ public:
 };
 
 /** Count the occurrences of an entity among relevant relations */
-long Bayes::countEntityInRelations(Entity& e) {
+long Bayes::countEntityInRelations(Entity& e, std::vector<std::string, std::string>& attrs) {
     std::vector<Json::Value> relations_left = this->indexHandler->fetchRelationPrefix(e.name, "*");
     std::vector<Json::Value> relations_right = this->indexHandler->fetchRelationPrefix("*", e.name);
-    std::vector<std::pair<std::string, std::string>> empty;
 
-    return this->indexHandler->filterRelationsByAttribute(relations_left, empty).size() + this->indexHandler->filterRelationsByAttribute(relations_right, empty).size();
+    return this->indexHandler->filterRelationsByAttribute(relations_left, attrs).size() + this->indexHandler->filterRelationsByAttribute(relations_right, attrs).size();
 }
 
 /** Marginal probability of an entities determined by occurrences present in relations */
-float Bayes::computeMarginal(Entity& e) {
+float Bayes::computeMarginal(Entity& e, std::vector<std::string, std::string>& attrs) {
     long total = this->indexHandler->getRelationCountTotal();
     if (total > 0)
-        return (float)this->countEntityInRelations(e) / (float)total;
+        return (float)this->countEntityInRelations(e, attrs) / (float)total;
     else {
         cout << "DEBUG -- Bad total relation count: " << total << endl;
         return 0;
