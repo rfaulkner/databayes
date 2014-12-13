@@ -23,7 +23,7 @@ using namespace std;
 class Bayes {
     IndexHandler* indexHandler;
 
-    long countEntityInRelations(std::string, std::vector<std::string, std::string>&);
+    long countEntityInRelations(Entity&);
 
 public:
     Bayes() { this->indexHandler = new IndexHandler(); }
@@ -39,9 +39,12 @@ public:
 };
 
 /** Count the occurrences of an entity among relevant relations */
-long Bayes::countEntityInRelations(Entity e) {
-    return this->indexHandler->filterRelationsByAttribute(this->indexHandler->generateRelationKey(e.name, "*"), e.attrs).size() +
-            this->indexHandler->filterRelationsByAttribute(this->indexHandler->generateRelationKey("*", e.name), e.attrs).size();
+long Bayes::countEntityInRelations(Entity& e) {
+    std::vector<Json::Value> relations_left = this->indexHandler->fetchRelationPrefix(e.name, "*");
+    std::vector<Json::Value> relations_right = this->indexHandler->fetchRelationPrefix("*", e.name);
+    std::vector<std::pair<std::string, std::string>> empty;
+
+    return this->indexHandler->filterRelationsByAttribute(relations_left, empty).size() + this->indexHandler->filterRelationsByAttribute(relations_right, empty).size();
 }
 
 /** Marginal probability of an entities determined by occurrences present in relations */
