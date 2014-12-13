@@ -167,7 +167,9 @@ void testFieldAssignTypeMismatchInteger() {
     Json::Value json;
     std::vector<std::pair<ColumnBase*, std::string>> fields_ent;
     fields_ent.push_back(std::make_pair(getColumnType("integer"), "a"));   // Create fields
-    ih.writeEntity("test", fields_ent);     // Create the entity
+    Entity e("test", fields_ent);
+
+    ih.writeEntity(e);     // Create the entity
     assert(
         ih.validateEntityFieldType("test", "a", "1") &&
         ih.validateEntityFieldType("test", "a", "12345") &&
@@ -185,7 +187,9 @@ void testFieldAssignTypeMismatchFloat() {
     Json::Value json;
     std::vector<std::pair<ColumnBase*, std::string>> fields_ent;
     fields_ent.push_back(std::make_pair(getColumnType("float"), "a"));   // Create fields
-    ih.writeEntity("test", fields_ent);     // Create the entity
+    Entity e("test", fields_ent);     // Create the entity
+
+    ih.writeEntity(e);     // Create the entity
     assert(
         ih.validateEntityFieldType("test", "a", "1.2") &&
         ih.validateEntityFieldType("test", "a", "12.5") &&
