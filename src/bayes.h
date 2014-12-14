@@ -24,14 +24,14 @@ class Bayes {
     IndexHandler* indexHandler;
 
     long countEntityInRelations(Entity&, std::vector<std::string, std::string>&);
-    long countRelations(std::string, std::string, std::vector<std::string, std::string>&, std::vector<std::string, std::string>&);
+    long countRelations(std::string, std::string, std::vector<std::string, std::string>&);
 
 public:
     Bayes() { this->indexHandler = new IndexHandler(); }
 
     float computeMarginal(Entity&, std::vector<std::string, std::string>&);
     float computeConditional(std::string, std::string, std::vector<std::string, std::string>&, std::vector<std::string, std::string>&);
-    float computePairwise(std::string, std::string, std::vector<std::string, std::string>&, std::vector<std::string, std::string>&);
+    float computePairwise(std::string, std::string, std::vector<std::string, std::string>&);
 
     Json::Value sampleMarginal(std::string, std::vector<std::string, std::string>&);
     Json::Value sampleConditional(std::string, std::string, std::vector<std::string, std::string>&, std::vector<std::string, std::string>&);
@@ -47,8 +47,11 @@ long Bayes::countEntityInRelations(Entity& e, std::vector<std::string, std::stri
     return this->indexHandler->filterRelationsByAttribute(relations_left, attrs).size() + this->indexHandler->filterRelationsByAttribute(relations_right, attrs).size();
 }
 
-/** Count the occurrences of an entity among relevant relations */
-long Bayes::countRelations(std::string e1, std::string e2, std::vector<std::string, std::string>& attrs1, std::vector<std::string, std::string>& attrs2) { return 1; }
+/** Count the occurrences of a relation */
+long Bayes::countRelations(std::string e1, std::string e2, std::vector<std::string, std::string>& attrs) {
+    std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(e1.name, e2.name);
+    return this->indexHandler->filterRelationsByAttribute(relations, attrs).size();
+}
 
 /** Count the occurrences of an entity among relevant relations */
 long Bayes::countEntityInRelations(Entity& e, std::vector<std::string, std::string>& attrs) {
@@ -70,6 +73,6 @@ float Bayes::computeMarginal(Entity& e, std::vector<std::string, std::string>& a
 }
 
 /** Marginal probability of an entities determined by occurrences present in relations */
-float Bayes::computePairwise(std::string e1, std::string e2, std::vector<std::string, std::string>& attrs1, std::vector<std::string, std::string>& attrs2) { return 0.0; }
+float Bayes::computePairwise(std::string e1, std::string e2, std::vector<std::string, std::string>& attrs) { return 0.0; }
 
 #endif
