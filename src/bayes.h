@@ -24,6 +24,7 @@ class Bayes {
     IndexHandler* indexHandler;
 
     long countEntityInRelations(Entity&, std::vector<std::string, std::string>&);
+    long countRelations(std::string, std::string, std::vector<std::string, std::string>&, std::vector<std::string, std::string>&);
 
 public:
     Bayes() { this->indexHandler = new IndexHandler(); }
@@ -46,6 +47,17 @@ long Bayes::countEntityInRelations(Entity& e, std::vector<std::string, std::stri
     return this->indexHandler->filterRelationsByAttribute(relations_left, attrs).size() + this->indexHandler->filterRelationsByAttribute(relations_right, attrs).size();
 }
 
+/** Count the occurrences of an entity among relevant relations */
+long Bayes::countRelations(std::string e1, std::string e2, std::vector<std::string, std::string>& attrs1, std::vector<std::string, std::string>& attrs2) { return 1; }
+
+/** Count the occurrences of an entity among relevant relations */
+long Bayes::countEntityInRelations(Entity& e, std::vector<std::string, std::string>& attrs) {
+    std::vector<Json::Value> relations_left = this->indexHandler->fetchRelationPrefix(e.name, "*");
+    std::vector<Json::Value> relations_right = this->indexHandler->fetchRelationPrefix("*", e.name);
+
+    return this->indexHandler->filterRelationsByAttribute(relations_left, attrs).size() + this->indexHandler->filterRelationsByAttribute(relations_right, attrs).size();
+}
+
 /** Marginal probability of an entities determined by occurrences present in relations */
 float Bayes::computeMarginal(Entity& e, std::vector<std::string, std::string>& attrs) {
     long total = this->indexHandler->getRelationCountTotal();
@@ -56,5 +68,8 @@ float Bayes::computeMarginal(Entity& e, std::vector<std::string, std::string>& a
         return 0;
     }
 }
+
+/** Marginal probability of an entities determined by occurrences present in relations */
+float Bayes::computePairwise(std::string e1, std::string e2, std::vector<std::string, std::string>& attrs1, std::vector<std::string, std::string>& attrs2) { return 0.0; }
 
 #endif
