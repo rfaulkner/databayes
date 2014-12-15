@@ -34,8 +34,8 @@ public:
     float computePairwise(std::string, std::string, std::vector<std::string, std::string>&);
 
     Json::Value sampleMarginal(std::string, std::vector<std::string, std::string>&);
-    Json::Value sampleConditional(std::string, std::string, std::vector<std::string, std::string>&, std::vector<std::string, std::string>&);
-    Json::Value samplePairwise(std::string, std::string, std::vector<std::string, std::string>&, std::vector<std::string, std::string>&);
+    Json::Value sampleConditional(std::string, std::string, std::vector<std::string, std::string>&);
+    Json::Value samplePairwise(std::string, std::string, std::vector<std::string, std::string>&);
 
 };
 
@@ -94,6 +94,18 @@ float Bayes::computeConditional(std::string e1, std::string e2, std::vector<std:
         cout << "DEBUG -- marginal likelihood is 0" << endl;
         return 0;
     }
+}
+
+Json::Value sampleMarginal(std::string e, std::vector<std::string, std::string>& attrs) {
+    return null;
+}
+
+Json::Value sampleConditional(std::string e1, std::string e2, std::vector<std::string, std::string>& attrs) {
+    return null;
+}
+
+Json::Value samplePairwise(std::string e1, std::string e2, std::vector<std::string, std::string>& attrs) {
+    return null;
 }
 
 #endif
