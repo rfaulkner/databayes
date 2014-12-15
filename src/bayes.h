@@ -30,7 +30,7 @@ public:
     Bayes() { this->indexHandler = new IndexHandler(); }
 
     float computeMarginal(Entity&, std::vector<std::string, std::string>&);
-    float computeConditional(std::string, std::string, std::vector<std::string, std::string>&, std::vector<std::string, std::string>&);
+    float computeConditional(std::string, std::string, std::vector<std::string, std::string>&);
     float computePairwise(std::string, std::string, std::vector<std::string, std::string>&);
 
     Json::Value sampleMarginal(std::string, std::vector<std::string, std::string>&);
@@ -79,6 +79,19 @@ float Bayes::computePairwise(std::string e1, std::string e2, std::vector<std::st
         return (float)this->countRelations(e1, e2, attrs) / (float)total;
     else {
         cout << "DEBUG -- Bad total relation count: " << total << endl;
+        return 0;
+    }
+}
+
+/** Conditional Probabilities among entities */
+float Bayes::computeConditional(std::string e1, std::string e2, std::vector<std::string, std::string>& attrs) {
+    float pairwise = this->computePairwise(e1, e2, attrs);
+    float marginal = this->computeMarginal(e2, attrs);
+
+    if (marginal > 0)
+        return pairwise / marginal;
+    else {
+        cout << "DEBUG -- marginal likelihood is 0" << endl;
         return 0;
     }
 }
