@@ -47,6 +47,8 @@
 
 using namespace std;
 
+typedef std::vector<std::pair<ColumnBase*, std::string>> defpair;
+typedef std::vector<std::pair<std::string, std::string>> valpair;
 
 // Define entity and relation builder classes
 
