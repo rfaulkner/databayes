@@ -56,6 +56,9 @@ class Entity {
 public:
 
     /** Constructor/Builder for relations  */
+    Entity(std::string name) { this->name = name; }
+
+    /** Constructor/Builder for relations  */
     Entity(std::string name, defpair& attrs) {
         this->name = name;
         this->attrs = attrs;
