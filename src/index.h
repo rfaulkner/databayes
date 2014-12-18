@@ -56,13 +56,13 @@ class Entity {
 public:
 
     /** Constructor/Builder for relations  */
-    Entity(std::string name, std::vector<std::pair<ColumnBase*, std::string>>& attrs) {
+    Entity(std::string name, defpair& attrs) {
         this->name = name;
         this->attrs = attrs;
     }
 
     std::string name;
-    std::vector<std::pair<ColumnBase*, std::string>> attrs;
+    defpair attrs;
 };
 
 class Relation {
@@ -72,8 +72,8 @@ public:
     Relation(
             std::string left,
             std::string right,
-            std::vector<std::pair<std::string, std::string>>& attrs_left,
-            std::vector<std::pair<std::string, std::string>>& attrs_right) {
+            valpair& attrs_left,
+            valpair& attrs_right) {
         this->name_left = left;
         this->name_right = right;
         this->attrs_left = attrs_left;
@@ -82,8 +82,8 @@ public:
 
     std::string name_left;
     std::string name_right;
-    std::vector<std::pair<std::string, std::string>> attrs_left;
-    std::vector<std::pair<std::string, std::string>> attrs_right;
+    valpair attrs_left;
+    valpair attrs_right;
 };
 
 
@@ -91,8 +91,8 @@ class IndexHandler {
 
     RedisHandler* redisHandler;
 
-    void buildFieldJSONDefinition(Json::Value&, std::vector<std::pair<ColumnBase*, std::string>>&);
-    void buildFieldJSONValue(Json::Value&, std::vector<std::pair<std::string, std::string>>&);
+    void buildFieldJSONDefinition(Json::Value&, defpair&);
+    void buildFieldJSONValue(Json::Value&, valpair&);
 
 public:
     /**
@@ -121,7 +121,7 @@ public:
     std::vector<std::string>* fetchPatternKeys(std::string);
     bool fetchFromDisk(int);   // Loads disk
 
-    std::vector<Json::Value> filterRelationsByAttribute(std::vector<Json::Value>&, std::vector<std::pair<std::string, std::string>>&);
+    std::vector<Json::Value> filterRelationsByAttribute(std::vector<Json::Value>&, valpair&);
 
     std::string generateEntityKey(std::string);
     std::string generateRelationKey(std::string, std::string, std::string);
@@ -147,9 +147,9 @@ std::string IndexHandler::generateRelationKey(std::string entityL, std::string e
 }
 
 /** Handles forming the json for field vectors in the index */
-void IndexHandler::buildFieldJSONDefinition(Json::Value& value, std::vector<std::pair<ColumnBase*, std::string>>& fields) {
+void IndexHandler::buildFieldJSONDefinition(Json::Value& value, defpair& fields) {
     int count = 0;
-    for (std::vector<std::pair<ColumnBase*, std::string>>::iterator it = fields.begin() ; it != fields.end(); ++it) {
+    for (defpair::iterator it = fields.begin() ; it != fields.end(); ++it) {
         value[(*it).second] = (*it).first->getType();
         count++;
     }
@@ -157,9 +157,9 @@ void IndexHandler::buildFieldJSONDefinition(Json::Value& value, std::vector<std:
 }
 
 /** Handles forming the json for field vectors in the index */
-void IndexHandler::buildFieldJSONValue(Json::Value& value, std::vector<std::pair<std::string, std::string>>& fields) {
+void IndexHandler::buildFieldJSONValue(Json::Value& value, valpair& fields) {
     int count = 0;
-    for (std::vector<std::pair<std::string, std::string>>::iterator it = fields.begin() ; it != fields.end(); ++it) {
+    for (valpair::iterator it = fields.begin() ; it != fields.end(); ++it) {
         value[(*it).first] = (*it).second;
         count++;
     }
@@ -393,11 +393,11 @@ std::string IndexHandler::orderPairAlphaNumeric(std::string s1, std::string s2) 
 /**
  *  Filter matching relations based on contents attrs
  */
-std::vector<Json::Value> IndexHandler::filterRelationsByAttribute(std::vector<Json::Value>& relations, std::vector<std::pair<std::string, std::string>>& attrs) {
+std::vector<Json::Value> IndexHandler::filterRelationsByAttribute(std::vector<Json::Value>& relations, valpair& attrs) {
     bool matching = true;
     std::vector<Json::Value> filtered_relations;
     for (std::vector<Json::Value>::iterator it = relations.begin(); it != relations.end(); ++it) {
-        for (std::vector<std::pair<std::string, std::string>>::iterator it_inner = attrs.begin(); it_inner != attrs.end(); ++it_inner) {
+        for (valpair::iterator it_inner = attrs.begin(); it_inner != attrs.end(); ++it_inner) {
             // Ensure that attribute key is in relation and that the value matches
             if ((*it).isMember(std::get<0>(*it_inner))) {
                 if (!(*it)[std::get<0>(*it_inner)].compare(std::get<1>(*it_inner))) {
