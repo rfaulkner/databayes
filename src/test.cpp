@@ -223,7 +223,6 @@ void testEntityDoesNotContainField() {
     // TODO - implement
 }
 
-
 /**
  *  Tests Bayes::computeMarginal function - ensure the marginal likelihood is correct
  */
@@ -262,6 +261,7 @@ void testComputeMarginal() {
     valpair attrs;
 
     // TODO - fix computeMarginal seg fault
+    cout << bayes.computeMarginal(e1.name, attrs) << endl;
     assert(bayes.computeMarginal(e1.name, attrs) == 4.0 / 5.0);
     assert(bayes.computeMarginal(e2.name, attrs) == 3.0 / 5.0);
     assert(bayes.computeMarginal(e3.name, attrs) == 2.0 / 5.0);
@@ -282,6 +282,27 @@ void testComputeMarginal() {
     ih.setRelationCountTotal(num_relations);
 }
 
+
+/**
+ *  Tests that removal of entities functions properly
+ */
+void testEntityRemoval() {
+    // TODO - implement
+}
+
+/**
+ *  Tests that removal of relations functions properly
+ */
+void testRelationRemoval() {
+    // TODO - implement
+}
+
+/**
+ *  Tests that removal of relations cascading on entities functions properly
+ */
+void testEntityCascadeRemoval() {
+    // TODO - implement
+}
 
 int main() {
     cout << "-- TESTS BEGIN --" << endl << endl;
