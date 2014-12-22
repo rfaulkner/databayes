@@ -235,6 +235,8 @@ void testComputeMarginal() {
     std::vector<std::pair<ColumnBase*, std::string>> fields_ent;
     std::vector<std::pair<std::string, std::string>> fields_rel;
 
+    long num_relations = ih.getRelationCountTotal();
+
     // declare three entities
     Entity e1("_w", fields_ent), e2("_x", fields_ent), e3("_y", fields_ent), e4("_z", fields_ent);
 
@@ -275,6 +277,9 @@ void testComputeMarginal() {
     ih.removeRelation(r3);
     ih.removeRelation(r4);
     ih.removeRelation(r5);
+
+    // Reset the relations count
+    ih.setRelationCountTotal(num_relations);
 }
 
 
