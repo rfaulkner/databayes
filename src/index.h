@@ -192,7 +192,12 @@ bool IndexHandler::removeEntity(std::string entity) {
     if (this->redisHandler->exists(entity)) {
         this->redisHandler->deleteKey(this->generateEntityKey(entity));
 
-        }
+        // Delete all relations containing this entity
+        std::vector<Json::Value> relations_left = this->indexHandler->fetchRelationPrefix(entity, "*");
+        std::vector<Json::Value> relations_right = this->indexHandler->fetchRelationPrefix("*", entity);
+        for (std::vector<Json::Value>::iterator it = relations_left.begin() ; it != relations_left.end(); ++it) this->removeRelation(*it);
+        for (std::vector<Json::Value>::iterator it = relations_right.begin() ; it != relations_right.end(); ++it) this->removeRelation(*it);
+
         return true;
     }
     return false;
