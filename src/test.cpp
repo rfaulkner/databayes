@@ -257,10 +257,13 @@ void testComputeMarginal() {
     ih.writeRelation(r5);
 
     // Ensure marginal likelihood reflects the number of relations that contain each entity
-    assert(bayes.computeMarginal(e1) == 4.0 / 5.0);
-    assert(bayes.computeMarginal(e2) == 3.0 / 5.0);
-    assert(bayes.computeMarginal(e3) == 2.0 / 5.0);
-    assert(bayes.computeMarginal(e4) == 1.0 / 5.0);
+    valpair attrs;
+
+    // TODO - fix computeMarginal seg fault
+    assert(bayes.computeMarginal(e1.name, attrs) == 4.0 / 5.0);
+    assert(bayes.computeMarginal(e2.name, attrs) == 3.0 / 5.0);
+    assert(bayes.computeMarginal(e3.name, attrs) == 2.0 / 5.0);
+    assert(bayes.computeMarginal(e4.name, attrs) == 1.0 / 5.0);
 
     ih.removeEntity("_w");
     ih.removeEntity("_x");
