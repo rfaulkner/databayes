@@ -108,8 +108,8 @@ public:
     bool writeRelation(Relation&);
     bool writeToDisk(int);
 
-    void removeEntity(std::string);
-    void removeRelation(Relation&);
+    bool removeEntity(std::string);
+    bool removeRelation(Relation&);
 
     bool composeJSON(std::string, Json::Value&);
 
@@ -194,7 +194,7 @@ void IndexHandler::removeEntity(std::string entity) {
 }
 
 /** Remove relation from redis */
-void IndexHandler::removeRelation(Relation& rel) {
+bool IndexHandler::removeRelation(Relation& rel) {
 
     Json::Value jsonVal;
     Json::Value jsonValFieldsLeft;
@@ -211,8 +211,13 @@ void IndexHandler::removeRelation(Relation& rel) {
     std::string key = this->generateRelationKey(rel.name_left, rel.name_right, md5(jsonVal.toStyledString()));
     Json::Value jsonValReal;
     this->fetchRaw(key, jsonValReal);   // Fetch the actual entry being removed
-    this->redisHandler->decrementKey(KEY_TOTAL_RELATIONS, jsonValReal[JSON_ATTR_REL_COUNT].asInt());    // decrement the global relation count
-    this->redisHandler->deleteKey(key);
+
+    if (this->redisHandler->exists(key)) {
+        this->redisHandler->decrementKey(KEY_TOTAL_RELATIONS, jsonValReal[JSON_ATTR_REL_COUNT].asInt());    // decrement the global relation count
+        this->redisHandler->deleteKey(key);
+        return true;
+    }
+    return false;
 }
 
 /**
