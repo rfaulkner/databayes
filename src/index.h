@@ -133,6 +133,7 @@ public:
     std::string orderPairAlphaNumeric(std::string, std::string);
 
     long getRelationCountTotal();
+    void setRelationCountTotal(long value);
 };
 
 /** Generate a key for an entity entry in the index */
@@ -425,6 +426,12 @@ std::vector<Json::Value> IndexHandler::filterRelationsByAttribute(std::vector<Js
 long IndexHandler::getRelationCountTotal() {
     this->redisHandler->connect();
     return atol(this->redisHandler->read(KEY_TOTAL_RELATIONS).c_str());
+}
+
+/** Fetch the number of relations existing */
+void IndexHandler::setRelationCountTotal(long value) {
+    this->redisHandler->connect();
+    this->redisHandler->write(KEY_TOTAL_RELATIONS, std::to_string(value).c_str());
 }
 
 
