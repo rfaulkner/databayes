@@ -422,7 +422,10 @@ std::vector<Json::Value> IndexHandler::filterRelationsByAttribute(std::vector<Js
 }
 
 /** Fetch the number of relations existing */
-long IndexHandler::getRelationCountTotal() { return atol(this->redisHandler->read(KEY_TOTAL_RELATIONS).c_str()); }
+long IndexHandler::getRelationCountTotal() {
+    this->redisHandler->connect();
+    return atol(this->redisHandler->read(KEY_TOTAL_RELATIONS).c_str());
+}
 
 
 /**
