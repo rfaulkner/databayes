@@ -187,13 +187,18 @@ bool IndexHandler::writeEntity(Entity& e) {
 }
 
 /** Remove entity key from redis */
-void IndexHandler::removeEntity(std::string entity) {
+bool IndexHandler::removeEntity(std::string entity) {
     this->redisHandler->connect();
-    this->redisHandler->deleteKey(this->generateEntityKey(entity));
-    // TODO - ensure that relations are consistent
+    if (this->redisHandler->exists(entity)) {
+        this->redisHandler->deleteKey(this->generateEntityKey(entity));
+
+        }
+        return true;
+    }
+    return false;
 }
 
-/** Remove relation from redis */
+/** Wraps removeRelation(Json::Value&) */
 bool IndexHandler::removeRelation(Relation& rel) {
 
     Json::Value jsonVal;
@@ -207,8 +212,14 @@ bool IndexHandler::removeRelation(Relation& rel) {
     jsonVal[JSON_ATTR_REL_FIELDSL] = jsonValFieldsLeft;
     jsonVal[JSON_ATTR_REL_FIELDSR] = jsonValFieldsRight;
 
+    return this->removeRelation(jsonVal);
+}
+
+/** Removes a relation from redis that is defined as a json object */
+bool IndexHandler::removeRelation(Json::Value& jsonVal) {
+
     this->redisHandler->connect();
-    std::string key = this->generateRelationKey(rel.name_left, rel.name_right, md5(jsonVal.toStyledString()));
+    std::string key = this->generateRelationKey(jsonVal[JSON_ATTR_REL_ENTL], jsonVal[JSON_ATTR_REL_ENTR], md5(jsonVal.toStyledString()));
     Json::Value jsonValReal;
     this->fetchRaw(key, jsonValReal);   // Fetch the actual entry being removed
 
@@ -219,6 +230,7 @@ bool IndexHandler::removeRelation(Relation& rel) {
     }
     return false;
 }
+
 
 /**
  * Writes relation to in memory index.
