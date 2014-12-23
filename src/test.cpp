@@ -304,6 +304,13 @@ void testEntityCascadeRemoval() {
     // TODO - implement
 }
 
+/**
+ *  Tests that the correct relations are filtered from a set
+ */
+void testRelationFiltering() {
+    // TODO - implement
+}
+
 int main() {
     cout << "-- TESTS BEGIN --" << endl << endl;
 
