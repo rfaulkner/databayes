@@ -48,6 +48,9 @@ def list_relation():
 view_list = {
     define_entity.__name__: define_entity,
     add_relation.__name__: add_relation,
+    generate.__name__: generate,
+    list_entity.__name__: list_entity,
+    list_relation.__name__: list_relation,
 }
 
 route_deco = {
