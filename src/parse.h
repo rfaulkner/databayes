@@ -45,8 +45,9 @@
 #define ERR_UNKNOWN_CMD "ERR: Unkown Command"
 #define ERR_MALFORMED_CMD "ERR: Malformed Command"
 
-
 #define WILDCARD_CHAR '*'
+
+#define REDIS_KEY_PREFIX_QUEUE 'dby_cmd_queue_'
 
 
 // STATE REPRESENTATIONS
