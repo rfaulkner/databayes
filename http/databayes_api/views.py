@@ -5,44 +5,42 @@
     layer handles communication to the databayes daemon.
 """
 
-from databayes_api import app
+from databayes_api import app, log
 import json
 
-from flask import Response
-
-# from flask import render_template, redirect, url_for, \
-#     request, escape, flash, g, session, Response
+from flask import render_template, redirect, url_for, \
+    request, escape, flash, g, session, Response
 
 
 def define_entity():
     """ Handles remote requests to databayes for entity definition
     :return:    JSON response indicating status of action & output
     """
-    return Response(json.dumps(['endorse-event']),  mimetype='application/json')
+    return Response(json.dumps(['']),  mimetype='application/json')
 
 def add_relation():
     """ Handles remote requests to databayes for adding relations
     :return:    JSON response indicating status of action & output
     """
-    return Response(json.dumps(['endorse-event']),  mimetype='application/json')
+    return Response(json.dumps(['']),  mimetype='application/json')
 
 def generate():
     """ Handles remote requests to databayes for generating samples
     :return:    JSON response indicating status of action & output
     """
-    return Response(json.dumps(['endorse-event']),  mimetype='application/json')
+    return Response(json.dumps(['']),  mimetype='application/json')
 
 def list_entity():
     """ Handles remote requests to databayes for listing entities
     :return:    JSON response indicating status of action & output
     """
-    return Response(json.dumps(['endorse-event']),  mimetype='application/json')
+    return Response(json.dumps(['']),  mimetype='application/json')
 
 def list_relation():
     """ Handles remote requests to databayes for listing relations
     :return:    JSON response indicating status of action & output
     """
-    return Response(json.dumps(['endorse-event']),  mimetype='application/json')
+    return Response(json.dumps(['']),  mimetype='application/json')
 
 # Stores view references in structure
 view_list = {
@@ -64,6 +62,7 @@ route_deco = {
 # Apply decorators to views
 def init_views():
     for key in route_deco:
+        log.info('Registering view - {0}'.format(key))
         route = route_deco[key]
         view_method = view_list[key]
         view_list[key] = route(view_method)
