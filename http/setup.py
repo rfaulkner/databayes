@@ -3,7 +3,7 @@
 
 from distutils.core import setup
 
-with open('README.md') as f:
+with open('../README.md') as f:
     long_description = f.read()
 
 __version__ = '0.0.1'
