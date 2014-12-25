@@ -17,7 +17,7 @@ setup(
     author="Ryan Faulkner",
     author_email="bobs.ur.uncle@gmail.com",
     packages=[
-        'databayes-api',
+        'databayes_api',
         ],
     install_requires=[
         'Flask == 0.9',
