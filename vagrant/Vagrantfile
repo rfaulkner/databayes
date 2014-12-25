@@ -13,7 +13,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "precise32"
   config.vm.provision :shell, :path => "bootstrap.sh"
   config.vm.network :forwarded_port, host: 4570, guest: 80
-  # config.vm.network :forwarded_port, host: 5002, guest: 5000
+  config.vm.network :forwarded_port, host: 5002, guest: 5000
   
   # The url from where the 'config.vm.box' box will be fetched if it
   # doesn't already exist on the user's system.
