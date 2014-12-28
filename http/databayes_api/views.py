@@ -13,6 +13,20 @@ from flask import render_template, redirect, url_for, \
     request, escape, flash, g, session, Response
 
 
+def handle_queue_validation():
+    """ Method for handling queue validation in the view logic
+    :return:
+    """
+    qid = str(gen_queue_id())
+    iterations = 0
+    while exists_queue_item(qid):
+        if iterations == config.REDIS_QUEUE_COUNTER_MAX:
+            return -1   # Indicates failure
+        qid = str(gen_queue_id())
+        iterations += 1
+    return str(qid)
+
+
 def define_entity(entity):
     """ Handles remote requests to databayes for entity definition
     Translation:    def e(<f1>_<t1>, <f2>_<t2>, ...) -> /def/e?fields=f1,f2,...&types=t1,t2,...
@@ -24,14 +38,14 @@ def define_entity(entity):
     fields = request.args.get('fields').split(',')
     types = request.args.get('types').split(',')
     if len(fields) != len(types):
-        return Response(json.dumps(['number of fields and types do not match']),
+        return Response(json.dumps(['Count of fields and types do not match']),
                         mimetype='application/json')
 
-    # Validate the queue
-    qid = str(gen_queue_id())
-    if exists_queue_item(qid):
-        return Response(json.dumps(['number of fields and types do not match']),
-                mimetype='application/json')
+    # Validate the queue - iterate until a valid id is found
+    qid = handle_queue_validation()
+    if qid == -1:
+        return Response(json.dumps(['Queue is full, try again later.']),
+                        mimetype='application/json')
 
     # Synthesize the command
     args = []
