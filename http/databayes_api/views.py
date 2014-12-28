@@ -6,7 +6,7 @@
 """
 
 from databayes_api import app, log, redisio, get_next_command, config, \
-    gen_queue_id
+    gen_queue_id, exists_queue_item
 import json
 
 from flask import render_template, redirect, url_for, \
@@ -19,21 +19,31 @@ def define_entity(entity):
     :return:    JSON response indicating status of action & output
     """
     redisio.DataIORedis().connect()
+
+    # Validate the url
     fields = request.args.get('fields').split(',')
     types = request.args.get('types').split(',')
-
     if len(fields) != len(types):
         return Response(json.dumps(['number of fields and types do not match']),
                         mimetype='application/json')
 
+    # Validate the queue
+    qid = str(gen_queue_id())
+    if exists_queue_item(qid):
+        return Response(json.dumps(['number of fields and types do not match']),
+                mimetype='application/json')
+
+    # Synthesize the command
     args = []
     for i in xrange(len(fields)):
         args[i] = fields[i] + '_' + types[i]
     cmd = 'def {0}({1})'.format(entity, ",".join(args))
+
     # Send cmd to databayes daemon
-    redisio.DataIORedis().write(config.DBY_CMD_QUEUE_PREFIX + str(gen_queue_id()), cmd)
+    redisio.DataIORedis().write(config.DBY_CMD_QUEUE_PREFIX + qid, cmd)
 
     return Response(json.dumps(['Command Inserted']),  mimetype='application/json')
+
 
 def add_relation(entity_1, entity_2):
     """ Handles remote requests to databayes for adding relations
@@ -43,6 +53,7 @@ def add_relation(entity_1, entity_2):
     """
     return Response(json.dumps(['Command Inserted']),  mimetype='application/json')
 
+
 def generate(entity_1, entity_2):
     """ Handles remote requests to databayes for generating samples
     Translation:    Translation:    gen e1(<f1_1>_<v1_1>,...) constrain e2(<f2_1>_<v2_1>,...) ->
@@ -51,6 +62,7 @@ def generate(entity_1, entity_2):
     """
     return Response(json.dumps(['Command Inserted']),  mimetype='application/json')
 
+
 def list_entity(pattern):
     """ Handles remote requests to databayes for listing entities
     Translation:    lst ent regex -> /lst/ent/regex
@@ -58,12 +70,14 @@ def list_entity(pattern):
     """
     return Response(json.dumps(['Command Inserted']),  mimetype='application/json')
 
+
 def list_relation(pattern_1, pattern_2):
     """ Handles remote requests to databayes for listing relations
     Translation:    lst rel regex1 regex2 -> /lst/ent/regex1/regex2
     :return:    JSON response indicating status of action & output
     """
     return Response(json.dumps(['Command Inserted']),  mimetype='application/json')
+
 
 # Stores view references in structure
 view_list = {

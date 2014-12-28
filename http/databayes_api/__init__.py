@@ -19,6 +19,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = config.__secret_key__
 app.config['VERSION'] = config.__version__
 
+
 def gen_queue_id():
     """ Handles the logic to determine the ID for a new queue item
     :return: the integer queue id
@@ -35,7 +36,15 @@ def gen_queue_id():
     return qid
 
 
-
+def exists_queue_item(qid):
+    """ Detects existence of unique queue elements
+    :param qid: int id of the queue item to look up
+    :return:    boolean indicating whether it was found
+    """
+    if redisio.DataIORedis().read(config.REDIS_QUEUE_COUNTER_KEY + str(qid)):
+        return True
+    else:
+        return False
 
 
 
