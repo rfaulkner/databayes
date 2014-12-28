@@ -28,7 +28,10 @@ using namespace std;
  */
 std::string getNextQueueKey(RedisHandler& rh) {
     std::vector<std::string> keys = rh.keys(std::string(DBY_CMD_QUEUE_PREFIX) + std::string("*"));
-    return keys[0];
+    if (keys.size() > 0)
+        return keys[0];
+    else
+        return "";
 }
 
 int main() {
@@ -47,7 +50,7 @@ int main() {
         // 1. Fetch next command off the queue
         this->redisHandler->connect();
         std::string key = getNextQueueKey(*redisHandler);
-        if (this->redisHandler->exists(key))
+        if (this->redisHandler->exists(key) && strcmp(key.c_str(), "") != 0)
             line = this->redisHandler->read(key);
 
         // TODO - 2. LOCK KEY
