@@ -16,6 +16,7 @@
 #include "parse.h"
 #include "redis.h"
 
+#define DBY_CMD_QUEUE_LOCK_SUFFIX "_lock"
 #define DBY_CMD_QUEUE_PREFIX "dby_command_queue_"
 
 using namespace std;
@@ -45,25 +46,33 @@ int main() {
     // Read the input
     while (1) {
 
-        // TODO - implement locking function
-
         // 1. Fetch next command off the queue
         this->redisHandler->connect();
         std::string key = getNextQueueKey(*redisHandler);
-        if (this->redisHandler->exists(key) && strcmp(key.c_str(), "") != 0)
-            line = this->redisHandler->read(key);
+        std::string lock;
+        if (this->redisHandler->exists(key) && strcmp(key.c_str(), "") != 0) {
+            line = redisHandler->read(key);
 
-        // TODO - 2. LOCK KEY
+            // 2. LOCK KEY.  If it's already locked try again
+            lock = key + std::string(DBY_CMD_QUEUE_LOCK_SUFFIX);
+            if (!redisHandler->exists(lock)) {
+                redisHandler->write(lock, "1"); // lock it
+            } else {
+                std::chrono::milliseconds(1);
+                continue;
+            }
+        }
 
         // 3. Parse the Command
         parser->parse(line);
         parser->resetState();
 
-        // 4. execute timeout
-        this->redisHandler->deleteKey(key)
+        // 4. Remove the element and it's lock
+        redisHandler->deleteKey(key);
+        redisHandler->deleteKey(lock);
 
         // 5. execute timeout
-        std::chrono::milliseconds(10)
+        std::chrono::milliseconds(10);
     }
     return 0;
 }
