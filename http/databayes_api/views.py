@@ -31,7 +31,7 @@ def define_entity(entity):
         args[i] = fields[i] + '_' + types[i]
     cmd = 'def {0}({1})'.format(entity, ",".join(args))
     # Send cmd to databayes daemon
-    redisio.DataIORedis().write(config.DBY_CMD_QUEUE_PREFIX + gen_queue_id(), cmd)
+    redisio.DataIORedis().write(config.DBY_CMD_QUEUE_PREFIX + str(gen_queue_id()), cmd)
 
     return Response(json.dumps(['Command Inserted']),  mimetype='application/json')
 
