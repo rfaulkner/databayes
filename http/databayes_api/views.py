@@ -5,7 +5,7 @@
     layer handles communication to the databayes daemon.
 """
 
-from databayes_api import app, log
+from databayes_api import app, log, redisio, get_next_command
 import json
 
 from flask import render_template, redirect, url_for, \
@@ -16,6 +16,9 @@ def define_entity():
     """ Handles remote requests to databayes for entity definition
     :return:    JSON response indicating status of action & output
     """
+    redisio.DataIORedis().connect()
+    cmd = redisio.DataIORedis().read("command_queue_" + get_next_command())
+    # Send cmd to databayes daemon
     return Response(json.dumps(['']),  mimetype='application/json')
 
 def add_relation():
