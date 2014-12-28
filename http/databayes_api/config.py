@@ -8,6 +8,8 @@ FLASK_LOG = '/var/log/flask.log'
 SITE_URL = 'http://databayes-api.com'
 
 DBY_CMD_QUEUE_PREFIX = 'dby_command_queue_' # Must match value in daemon.cpp
+REDIS_QUEUE_COUNTER_KEY = 'dby_command_queue_counter'
+REDIS_QUEUE_COUNTER_MAX = 'dby_command_queue_counter_max'
 
 __secret_key__ = "something"
 
