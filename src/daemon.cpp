@@ -9,29 +9,55 @@
  *  Copyright (c) 2014. All rights reserved.
  */
 
+#include <chrono>
 #include <iostream>
 #include <string>
 #include <redis3m/connection.h>
 #include "parse.h"
+#include "redis.h"
 
 using namespace std;
 
-bool handleUserInput(string input) {
-    return true;
+
+/**
+ * This method handles fetching the next item to be
+ *
+ * TODO - implement
+ */
+std::string getNextQueueKey(RedisHandler& rh) {
+    return "";
 }
 
 int main() {
-    string line;
+    std::string line;
     Parser* parser = new Parser();
+    RedisHandler* redisHandler = new RedisHandler(REDISHOST, REDISPORT);
     parser->setDebug(true);
+
+    cout << "" << endl;
 
     // Read the input
     while (1) {
-        // 1. Poll redis
-        // 2. Fetch next command off the queue
+
+        // TODO - implement locking function
+
+        // 1. Fetch next command off the queue
+        this->redisHandler->connect();
+        std::string key = getNextQueueKey(*redisHandler);
+        if (this->redisHandler->exists(key))
+            line = this->redisHandler->read(key);
+
+        // TODO - 2. LOCK KEY
+
+        // 3. Parse the Command
         parser->parse(line);
         parser->resetState();
-        // 3. execute timeout
+
+        // 4. execute timeout
+        this->redisHandler->deleteKey(key)
+
+        // 5. execute timeout
+        std::chrono::milliseconds(10)
     }
     return 0;
 }
