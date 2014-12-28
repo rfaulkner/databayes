@@ -24,10 +24,11 @@ using namespace std;
 /**
  * This method handles fetching the next item to be
  *
- * TODO - implement
+ * TODO - handle ordering
  */
 std::string getNextQueueKey(RedisHandler& rh) {
-    return "";
+    std::vector<std::string> keys = rh.keys(std::string(DBY_CMD_QUEUE_PREFIX) + std::string("*"));
+    return keys[0];
 }
 
 int main() {
