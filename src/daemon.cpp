@@ -16,6 +16,8 @@
 #include "parse.h"
 #include "redis.h"
 
+#define DBY_CMD_QUEUE_PREFIX "dby_command_queue_"
+
 using namespace std;
 
 

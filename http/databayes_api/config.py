@@ -7,6 +7,8 @@ ADMINS = { 'Ryan Faulkner': 'bobs.ur.uncle@gmail.com' }
 FLASK_LOG = '/var/log/flask.log'
 SITE_URL = 'http://databayes-api.com'
 
+DBY_CMD_QUEUE_PREFIX = 'dby_command_queue_'
+
 __secret_key__ = "something"
 
 __instance_host__ = '127.0.0.1'
