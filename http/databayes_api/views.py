@@ -15,6 +15,7 @@ from flask import render_template, redirect, url_for, \
 
 def define_entity(entity):
     """ Handles remote requests to databayes for entity definition
+    Translation:    def e(<f1>_<t1>, <f2>_<t2>, ...) -> /def/e?fields=f1,f2,...&types=t1,t2,...
     :return:    JSON response indicating status of action & output
     """
     redisio.DataIORedis().connect()
@@ -27,33 +28,39 @@ def define_entity(entity):
 
     args = []
     for i in xrange(len(fields)):
-        args[i] = fields[i] + '=' + types[i]
+        args[i] = fields[i] + '_' + types[i]
     cmd = 'def {0}({1})'.format(entity, ",".join(args))
     # Send cmd to databayes daemon
     redisio.DataIORedis().write(config.DBY_CMD_QUEUE_PREFIX + gen_queue_id(), cmd)
 
     return Response(json.dumps(['Command Inserted']),  mimetype='application/json')
 
-def add_relation():
+def add_relation(entity_1, entity_2):
     """ Handles remote requests to databayes for adding relations
+    Translation:    add rel e1(<f1_1>_<v1_1>,...) e2(<f2_1>_<v2_1>,...) ->
+                    /add/rel/e1/e2?fields1=f1_1,...&types1=t1_1,...&fields2=f2_1,...&types2=t2_1,...
     :return:    JSON response indicating status of action & output
     """
     return Response(json.dumps(['Command Inserted']),  mimetype='application/json')
 
-def generate():
+def generate(entity_1, entity_2):
     """ Handles remote requests to databayes for generating samples
+    Translation:    Translation:    gen e1(<f1_1>_<v1_1>,...) constrain e2(<f2_1>_<v2_1>,...) ->
+                    /gen/e1/e2?fields1=f1_1,...&types1=t1_1,...&fields2=f2_1,...&types2=t2_1,...
     :return:    JSON response indicating status of action & output
     """
     return Response(json.dumps(['Command Inserted']),  mimetype='application/json')
 
-def list_entity():
+def list_entity(pattern):
     """ Handles remote requests to databayes for listing entities
+    Translation:    lst ent regex -> /lst/ent/regex
     :return:    JSON response indicating status of action & output
     """
     return Response(json.dumps(['Command Inserted']),  mimetype='application/json')
 
-def list_relation():
+def list_relation(pattern_1, pattern_2):
     """ Handles remote requests to databayes for listing relations
+    Translation:    lst rel regex1 regex2 -> /lst/ent/regex1/regex2
     :return:    JSON response indicating status of action & output
     """
     return Response(json.dumps(['Command Inserted']),  mimetype='application/json')
