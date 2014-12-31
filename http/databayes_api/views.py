@@ -30,13 +30,24 @@ def handle_queue_validation():
 
 def unpack_query_params(request):
     """
-    Helper method to fetch
+    Helper method to fetch query paramaters for command requests
     :param request:
     :return:
     """
-    ret = {'ok': True, 'fields': [], 'types': ''}
-    ret['fields'] = request.args.get('fields').split(',')
-    ret['types'] = request.args.get('types').split(',')
+    ret = {'ok': True, 'fields': [], 'types': [], 'fields1': [],
+           'fields2': [], 'values1': [], 'values2': [], 'message': ''}
+    ret['fields'] = request.args.get('fields').split(',') \
+        if request.args.get('fields') else []
+    ret['types'] = request.args.get('types').split(',') \
+        if request.args.get('fields') else []
+    ret['fields1'] = request.args.get('fields1').split(',') \
+        if request.args.get('fields1') else []
+    ret['fields2'] = request.args.get('fields2').split(',') \
+        if request.args.get('fields2') else []
+    ret['values1'] = request.args.get('values1').split(',') \
+        if request.args.get('values1') else []
+    ret['values2'] = request.args.get('values2').split(',') \
+        if request.args.get('values2') else []
     if len(ret['fields']) != len(ret['types']):
         ret['ok'] = False
         ret['message'] = 'Count of fields and types do not match'
@@ -46,12 +57,11 @@ def unpack_query_params(request):
 def define_entity(entity):
     """
     Handles remote requests to databayes for entity definition
-    Translation:    def e(<f1>_<t1>, <f2>_<t2>, ...) -> /def/e?fields=f1,f2,...&types=t1,t2,...
+    Translation:    def e(<f1>_<t1>, <f2>_<t2>, ...) ->
+                    /def/e?fields=f1,f2,...&types=t1,t2,...
     :return:    JSON response indicating status of action & output
     """
     redisio.DataIORedis().connect()
-
-    # Validate the url
     query_param_obj = unpack_query_params(request)
     if (not query_param_obj['ok']):
         return Response(json.dumps([query_param_obj['message']]),
@@ -72,27 +82,28 @@ def define_entity(entity):
     # Send cmd to databayes daemon
     redisio.DataIORedis().write(config.DBY_CMD_QUEUE_PREFIX + qid, cmd)
 
-    return Response(json.dumps(['Command Inserted']),  mimetype='application/json')
+    return Response(json.dumps(['Command Inserted']), mimetype='application/json')
 
 
 def add_relation(entity_1, entity_2):
     """
     Handles remote requests to databayes for adding relations
     Translation:    add rel e1(<f1_1>_<v1_1>,...) e2(<f2_1>_<v2_1>,...) ->
-                    /add/rel/e1/e2?fields1=f1_1,...&types1=t1_1,...&fields2=f2_1,...&types2=t2_1,...
+                    /add/rel/e1/e2?fields1=f1_1,...&types1=t1_1,...
+                        &fields2=f2_1,...&types2=t2_1,...
     :return:    JSON response indicating status of action & output
     """
-    return Response(json.dumps(['Command Inserted']),  mimetype='application/json')
+    return Response(json.dumps(['Command Inserted']), mimetype='application/json')
 
 
 def generate(entity_1, entity_2):
     """
     Handles remote requests to databayes for generating samples
-    Translation:    Translation:    gen e1(<f1_1>_<v1_1>,...) constrain e2(<f2_1>_<v2_1>,...) ->
+    Translation:    gen e1(<f1_1>_<v1_1>,...) constrain e2(<f2_1>_<v2_1>,...) ->
                     /gen/e1/e2?fields1=f1_1,...&types1=t1_1,...&fields2=f2_1,...&types2=t2_1,...
     :return:    JSON response indicating status of action & output
     """
-    return Response(json.dumps(['Command Inserted']),  mimetype='application/json')
+    return Response(json.dumps(['Command Inserted']), mimetype='application/json')
 
 
 def list_entity(pattern):
@@ -101,7 +112,7 @@ def list_entity(pattern):
     Translation:    lst ent regex -> /lst/ent/regex
     :return:    JSON response indicating status of action & output
     """
-    return Response(json.dumps(['Command Inserted']),  mimetype='application/json')
+    return Response(json.dumps(['Command Inserted']), mimetype='application/json')
 
 
 def list_relation(pattern_1, pattern_2):
