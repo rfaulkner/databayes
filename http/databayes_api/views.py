@@ -48,9 +48,11 @@ def unpack_query_params(request):
         if request.args.get('values1') else []
     ret['values2'] = request.args.get('values2').split(',') \
         if request.args.get('values2') else []
-    if len(ret['fields']) != len(ret['types']):
+    if len(ret['fields']) != len(ret['types']) or \
+                    len(ret['fields1']) != len(ret['values1']) or \
+                    len(ret['fields2']) != len(ret['values2']):
         ret['ok'] = False
-        ret['message'] = 'Count of fields and types do not match'
+        ret['message'] = 'Count of fields and types or values do not match'
     return ret
 
 
@@ -76,13 +78,15 @@ def define_entity(entity):
     # Synthesize the command
     args = []
     for i in xrange(len(query_param_obj['fields'])):
-        args[i] = query_param_obj['fields'][i] + '_' + query_param_obj['types'][i]
+        args[i] = query_param_obj['fields'][i] + '_' + \
+                  query_param_obj['types'][i]
     cmd = 'def {0}({1})'.format(entity, ",".join(args))
 
     # Send cmd to databayes daemon
     redisio.DataIORedis().write(config.DBY_CMD_QUEUE_PREFIX + qid, cmd)
 
-    return Response(json.dumps(['Command Inserted']), mimetype='application/json')
+    return Response(json.dumps(['Command Inserted']),
+                    mimetype='application/json')
 
 
 def add_relation(entity_1, entity_2):
@@ -93,7 +97,34 @@ def add_relation(entity_1, entity_2):
                         &fields2=f2_1,...&types2=t2_1,...
     :return:    JSON response indicating status of action & output
     """
-    return Response(json.dumps(['Command Inserted']), mimetype='application/json')
+    redisio.DataIORedis().connect()
+    query_param_obj = unpack_query_params(request)
+    if (not query_param_obj['ok']):
+        return Response(json.dumps([query_param_obj['message']]),
+                        mimetype='application/json')
+    # Validate the queue - iterate until a valid id is found
+    qid = handle_queue_validation()
+    if qid == -1:
+        return Response(json.dumps(['Queue is full, try again later.']),
+                        mimetype='application/json')
+
+    # Synthesize the command
+    args1 = []
+    args2 = []
+    for i in xrange(len(query_param_obj['fields1'])):
+        args1[i] = query_param_obj['fields1'][i] + '=' + \
+                   query_param_obj['values1'][i]
+    for i in xrange(len(query_param_obj['fields2'])):
+        args2[i] = query_param_obj['fields2'][i] + '=' + \
+                   query_param_obj['values2'][i]
+    cmd = 'add rel {0}({1}) {2}({3})'.format(entity_1, ",".join(args1),
+                                             entity_2, ",".join(args2))
+
+    # Send cmd to databayes daemon
+    redisio.DataIORedis().write(config.DBY_CMD_QUEUE_PREFIX + qid, cmd)
+
+    return Response(json.dumps(['Command Inserted']),
+                    mimetype='application/json')
 
 
 def generate(entity_1, entity_2):
