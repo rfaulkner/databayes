@@ -15,6 +15,8 @@ from flask import render_template, redirect, url_for, \
     request, escape, flash, g, session, Response
 
 
+# UTILITY METHODS
+
 def handle_queue_validation():
     """
     Method for handling queue validation in the view logic
@@ -57,6 +59,24 @@ def unpack_query_params(request):
         ret['message'] = 'Count of fields and types or values do not match'
     return ret
 
+
+def wait_for_response(qid, poll_frequency = 10, max_tries = 5):
+    """
+    Handles polling a response from the redis queue determined by id.  Returns
+        an empty response if it never arrives.
+    :param qid:             int     redis queue id
+    :param poll_frequency:  int     millisecond frequency of a poll
+    :param max_tries:       int     poll no more times than this
+    :return:                string  response written to redis from the daemon
+    """
+    rsp = ""
+    for i in xrange(max_tries):
+        rsp = redisio.DataIORedis().read(config.DBY_RSP_QUEUE_PREFIX + qid)
+        if rsp: # got response, stop polling
+            break
+    return rsp
+
+# VIEW METHODS
 
 def define_entity(entity):
     """
@@ -164,8 +184,12 @@ def list_entity(pattern):
     # Send cmd to databayes daemon
     redisio.DataIORedis().write(config.DBY_CMD_QUEUE_PREFIX + qid, cmd)
 
-    # TODO - Wait for response
-    return Response(json.dumps(["Command Inserted"]), mimetype='application/json')
+    # Fetch response
+    rsp = wait_for_response(qid)
+    if not rsp:
+        rsp = "Could not find response before max retires expired."
+
+    return Response(json.dumps([rsp]), mimetype='application/json')
 
 
 def list_relation(pattern_1, pattern_2):
