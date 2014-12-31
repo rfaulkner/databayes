@@ -16,8 +16,10 @@
 #include "parse.h"
 #include "redis.h"
 
+// Daemon Macros
 #define DBY_CMD_QUEUE_LOCK_SUFFIX "_lock"
 #define DBY_CMD_QUEUE_PREFIX "dby_command_queue_"
+#define DBY_RSP_QUEUE_PREFIX "dby_response_queue_"
 
 using namespace std;
 
@@ -35,11 +37,18 @@ std::string getNextQueueKey(RedisHandler& rh) {
         return "";
 }
 
+/**
+ * This method handles extracting the value from the redis command key
+ */
+long getKeyOrderValue(std::string key) {
+    return 1;
+}
+
 int main() {
     std::string line;
     Parser* parser = new Parser();
     RedisHandler* redisHandler = new RedisHandler(REDISHOST, REDISPORT);
-    parser->setDebug(true);
+    parser->setDaemon(true);
 
     cout << "" << endl;
 
@@ -54,7 +63,7 @@ int main() {
             line = redisHandler->read(key);
 
             // 2. LOCK KEY.  If it's already locked try again
-            lock = key + std::string(DBY_CMD_QUEUE_LOCK_SUFFIX);
+            lock = std::string(DBY_CMD_QUEUE_LOCK_SUFFIX) + key;
             if (!redisHandler->exists(lock)) {
                 redisHandler->write(lock, "1"); // lock it
             } else {
@@ -63,8 +72,8 @@ int main() {
             }
         }
 
-        // 3. Parse the Command
-        parser->parse(line);
+        // 3. Parse the command and write response to redis
+        redisHandler->write(std::string(DBY_RSP_QUEUE_PREFIX) + getKeyOrderValue(key), parser->parse(line));
         parser->resetState();
 
         // 4. Remove the element and it's lock

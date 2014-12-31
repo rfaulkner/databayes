@@ -50,8 +50,6 @@
 
 #define WILDCARD_CHAR '*'
 
-#define REDIS_KEY_PREFIX_QUEUE 'dby_cmd_queue_'
-
 
 // STATE REPRESENTATIONS
 
@@ -110,6 +108,7 @@ class Parser {
 
     bool error;
     std::string errStr;
+    std::string rspStr;
 
     // Define lists that store state of newly defined fields and values
     std::vector<std::pair<ColumnBase*, std::string>>* currFields;
@@ -169,6 +168,7 @@ void Parser::resetState() {
     this->state = STATE_START;
     this->error = false;
     this->errStr = "";
+    this->rspStr = "";
     this->currFields = NULL;
     this->currValues = NULL;
     this->bufferValues = NULL;
@@ -221,7 +221,7 @@ bool Parser::parse(const string& s) {
 /**
  * Lexical analyzer and state interpreter (FSM mealy model)
  */
-void Parser::analyze(const std::string& s) {
+std:string Parser::analyze(const std::string& s) {
 
     // Convert to lower case to enforce case insensitivity
     string sLower = s;
@@ -410,6 +410,8 @@ void Parser::analyze(const std::string& s) {
         // Cleanup
         this->cleanup();
     }
+
+    return this->rspStr;
 }
 
 
