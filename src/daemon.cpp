@@ -21,6 +21,10 @@
 #define DBY_CMD_QUEUE_PREFIX "dby_command_queue_"
 #define DBY_RSP_QUEUE_PREFIX "dby_response_queue_"
 
+#define REDIS_POLL_TIMEOUT 2000
+#define REDIS_RETRY_TIMEOUT 1000
+
+
 using namespace std;
 
 
@@ -51,6 +55,8 @@ long getKeyOrderValue(Parser& p, std::string key) {
 
 int main() {
     std::string line;
+    std::string lock;
+    std::string key;
     Parser* parser = new Parser();
     RedisHandler* redisHandler = new RedisHandler(REDISHOST, REDISPORT);
     parser->setDaemon(true);
@@ -60,34 +66,44 @@ int main() {
     // Read the input
     while (1) {
 
-        // 1. Fetch next command off the queue
+        // 1. execute timeout
+        std::chrono::milliseconds(REDIS_POLL_TIMEOUT);
+
+        // 2. Fetch next command off the queue
         this->redisHandler->connect();
-        std::string key = getNextQueueKey(*redisHandler);
-        std::string lock;
+        key = getNextQueueKey(*redisHandler);
+        lock = "";
+
         if (this->redisHandler->exists(key) && strcmp(key.c_str(), "") != 0) {
             line = redisHandler->read(key);
 
-            // 2. LOCK KEY.  If it's already locked try again
+            // 3. LOCK KEY.  If it's already locked try again
             lock = std::string(DBY_CMD_QUEUE_LOCK_SUFFIX) + key;
             if (!redisHandler->exists(lock)) {
                 redisHandler->write(lock, "1"); // lock it
             } else {
-                std::chrono::milliseconds(1);
-                continue;
+                std::chrono::milliseconds(REDIS_RETRY_TIMEOUT);
+                continue;   // locked, try again after a timeout
             }
+        } else {
+            continue;  // If the key does not exist the
         }
 
-        // 3. Parse the command and write response to redis
+        // 4. Parse the command and write response to redis
         long key_value = getKeyOrderValue(key);
-        redisHandler->write(std::string(DBY_RSP_QUEUE_PREFIX) + key_value, parser->parse(line));
-        parser->resetState();
 
-        // 4. Remove the element and it's lock
+        // 5. Parse the command and write response to redis
+        if (key_value != -1) {
+            redisHandler->write(std::string(DBY_RSP_QUEUE_PREFIX) + key_value, parser->parse(line));
+            parser->resetState();
+        } else {
+            // Badly formed key, drop the key and remove the lock
+            cout << key + std::string(" is badly formed, can't determine value - not processed.") << endl;
+        }
+
+        // 6. Remove the element and it's lock
         redisHandler->deleteKey(key);
         redisHandler->deleteKey(lock);
-
-        // 5. execute timeout
-        std::chrono::milliseconds(10);
     }
     return 0;
 }
