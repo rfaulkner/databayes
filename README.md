@@ -49,6 +49,8 @@ The general parser syntax has the following definition:
  *      (3) DEF E1[(x_1, x_2, ...)]
  *      (4) LST REL [E1 [E2]]
  *      (5) LST ENT [E1]*
+ *      (6) RM REL E1(x_1 [, x_2, ..]) E2(y_1 [, y_2, ..])
+ *      (7) RM ENT [E1]*
 
 More details on how to use these to build entities, relations and how to use generative commands to sample.
 
@@ -71,23 +73,38 @@ and all attrbute types must be valid:
 When creating a relation you specify entities and optionally any number of entity attributes constrained by value.  Entities
 and specified attributes must exist however value constraints are optional:
 
-    databayes > add rel x(a=1, b_float) y(c_integer, d_float)
-    databayes > add rel x(a_integer, b_float) y(c_integer, d_float)
+    databayes > add rel x(a=1, b=2.1) y(c=22, d=0.3)
 
 
 ### Listing Entities:
 
 When listing entities (and in general) a wildcard ("*") for one or more characters may be used:
 
-    lst ent *   // List all entities
-    lst ent a*  // List all entities beginning with 'a'
+    databayes > lst ent *   // List all entities
+    databayes > lst ent a*  // List all entities beginning with 'a'
 
 
 ### Listing Relations:
 
 When listing relations conditions on attributes may be specified where desired.  Attributes and entities must exist.
 
-    lst rel * *                     // List all entities
-    lst rel a* b*                   // List all entities
-    lst rel a*(x=20) b*             // List all entities
-    lst rel a*(x=20) b*(y=hello)    // List all entities
+    databayes > lst rel * *                     // List all entities
+    databayes > lst rel a* b*                   // List all entities
+    databayes > lst rel a*(x=20) b*             // List all entities
+    databayes > lst rel a*(x=20) b*(y=hello)    // List all entities
+
+### Removing Entities:
+
+Allows client to remove entities from the database:
+
+    databayes > rm ent myent    // removes entity myent, this cascades to all relations containing myent
+
+Care must be taken when using this command since removal will automatically cascade to all relations dependent upon this entity.
+
+### Removing Relations:
+
+Allows client to remove relations from the database - WARNING, this will remove all relations of this type:
+
+    databayes > rm rel x(a=1, b=2.1) y(c=22, d=0.3)
+
+This will remove all relations whose attributes match the assignments.
