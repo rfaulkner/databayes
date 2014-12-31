@@ -3,6 +3,8 @@
 
     Each method corresponds to an API action and returns the status of the action and the output.  This
     layer handles communication to the databayes daemon.
+
+    IMPORTANT NOTE! - Only one of these server instances should be running to avoid race conditions
 """
 
 from databayes_api import app, log, redisio, get_next_command, config, \
@@ -69,7 +71,7 @@ def define_entity(entity):
         return Response(json.dumps([query_param_obj['message']]),
                         mimetype='application/json')
 
-    # Validate the queue - iterate until a valid id is found
+    # Retrieve a valid queue item
     qid = handle_queue_validation()
     if qid == -1:
         return Response(json.dumps(['Queue is full, try again later.']),
@@ -102,7 +104,8 @@ def add_relation(entity_1, entity_2):
     if (not query_param_obj['ok']):
         return Response(json.dumps([query_param_obj['message']]),
                         mimetype='application/json')
-    # Validate the queue - iterate until a valid id is found
+
+    # Retrieve a valid queue item
     qid = handle_queue_validation()
     if qid == -1:
         return Response(json.dumps(['Queue is full, try again later.']),
@@ -143,7 +146,26 @@ def list_entity(pattern):
     Translation:    lst ent regex -> /lst/ent/regex
     :return:    JSON response indicating status of action & output
     """
-    return Response(json.dumps(['Command Inserted']), mimetype='application/json')
+    redisio.DataIORedis().connect()
+    query_param_obj = unpack_query_params(request)
+    if (not query_param_obj['ok']):
+        return Response(json.dumps([query_param_obj['message']]),
+                        mimetype='application/json')
+
+    # Retrieve a valid queue item
+    qid = handle_queue_validation()
+    if qid == -1:
+        return Response(json.dumps(['Queue is full, try again later.']),
+                        mimetype='application/json')
+
+    # Synthesize the command
+    cmd = 'lst ent {0}'.format(pattern)
+
+    # Send cmd to databayes daemon
+    redisio.DataIORedis().write(config.DBY_CMD_QUEUE_PREFIX + qid, cmd)
+
+    # TODO - Wait for response
+    return Response(json.dumps(["Command Inserted"]), mimetype='application/json')
 
 
 def list_relation(pattern_1, pattern_2):
