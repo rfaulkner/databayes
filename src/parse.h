@@ -28,6 +28,7 @@
 #define STR_CMD_DEF "def"
 #define STR_CMD_LST "lst"
 #define STR_CMD_ENT "ent"
+#define STR_CMD_RM "rm"
 #define STR_CMD_EXIT "exit"
 
 #define BAD_INPUT "ERR: Bad input symbol"
@@ -44,6 +45,8 @@
 #define ERR_INVALID_DEF_FMT "ERR: Invalid Entity definition format"
 #define ERR_UNKNOWN_CMD "ERR: Unkown Command"
 #define ERR_MALFORMED_CMD "ERR: Malformed Command"
+#define ERR_RM_REL_CMD "ERR: Either relation not found or not successfully removed"
+#define ERR_RM_ENT_CMD "ERR: Either entity not found or not successfully removed"
 
 #define WILDCARD_CHAR '*'
 
@@ -68,6 +71,10 @@
 #define STATE_LST_ENT 51        // Lists entities
 #define STATE_LST_REL 52        // Lists relations
 
+#define STATE_RM 60        // Remove elements
+#define STATE_RM_ENT 61        // Remove entities
+#define STATE_RM_REL 62        // Remove relations
+
 #define STATE_FINISH 99     // Successful end state
 
 #define STATE_EXIT 100       // Terminate program
@@ -83,6 +90,8 @@ using namespace std;
  *      (3) DEF E1[(x_1, x_2, ...)]
  *      (4) LST REL [E1 [E2]]
  *      (5) LST ENT [E1]*
+ *      (6) RM ENT [E1]*
+ *      (6) RM REL E1(x_1 [, x_2, ..]) E2(y_1 [, y_2, ..])
  *
  *  (1) provides a facility for insertion into the system
  *  (2) generate a sample conditional on an entity
@@ -236,6 +245,9 @@ void Parser::analyze(const std::string& s) {
             this->macroState = STATE_LST;
         } else if (sLower.compare(STR_CMD_EXIT) == 0) {
             this->state = STATE_EXIT;
+        } else if (sLower.compare(STR_CMD_RM) == 0) {
+            this->state = STATE_RM;
+            this->macroState = STATE_RM;
         }
 
         cout << "DEBUG -- Setting Macro state: " << this->macroState << endl;
@@ -255,6 +267,21 @@ void Parser::analyze(const std::string& s) {
             this->errStr = BAD_INPUT;
             return;
         }
+
+}   } else if (this->state == STATE_RM) {   // Branch to parse "RM" commands
+        if (sLower.compare(STR_CMD_REL) == 0) {
+            this->macroState = STATE_RM_REL;
+            this->state = STATE_P1;
+        } else {
+            this->state = STATE_RM_ENT;
+        }
+
+    } else if (this->state == STATE_RM_ENT) {   // Branch to parse "RM ENT" commands
+        this->parseEntitySymbol(sLower);
+        this->state = STATE_FINISH;
+
+    } else if (this->macroState == STATE_RM_REL && (this->state == STATE_P1 || this->state == STATE_P2)) { // Branch to parse "RM REL" commands
+        this->parseRelationPair(sLower);
 
     } else if (this->macroState == STATE_ADD && (this->state == STATE_P1 || this->state == STATE_P2)) {
         this->parseRelationPair(sLower);
@@ -362,7 +389,24 @@ void Parser::analyze(const std::string& s) {
             for (std::vector<Json::Value>::iterator it = relations.begin() ; it != relations.end(); ++it)
                 cout << (*it).toStyledString() << endl << endl;
 
+        } else if (this->macroState == STATE_RM_REL) {
+            // Handle the logic for the removal of matching relations
+            Relation r(this->bufferEntity, this->currEntity, *(this->bufferValues), *(this->currValues));
+            if (this->indexHandler->removeRelation(r)) {
+                cout << "Relation removed." << endl;
+            } else {
+                cout << ERR_RM_REL_CMD << endl;
+            }
+
+        } else if (this->macroState == STATE_RM) {
+            // Handle the logic for the removal of matching entities
+            if (this->indexHandler->removeEntity(this->currEntity)) {
+                cout << "Entity removed." << endl;
+            } else {
+                cout << ERR_RM_ENT_CMD << endl;
+            }
         }
+
         // Cleanup
         this->cleanup();
     }
