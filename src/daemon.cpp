@@ -45,18 +45,24 @@ std::string getNextQueueKey(RedisHandler& rh) {
  * This method handles extracting the value from the redis command key.  The parser
  * functionality to tokenize strings is used to assist
  */
-long getKeyOrderValue(Parser& p, std::string key) {
+std::string getKeyOrderValue(Parser& p, std::string key) {
     vector<std::string> pieces = p.tokenize(key);
+    std::string number;
+    std::stringstream strstream;
+
     if (pieces.length() > 0)
-        return pieces[pieces.length() - 1];
+        strstream << pieces[pieces.length() - 1];
+        strstream >> number;
+        return number;
     else
-        return -1;  // error
+        return "";  // error
 }
 
 int main() {
     std::string line;
     std::string lock;
     std::string key;
+
     Parser* parser = new Parser();
     RedisHandler* redisHandler = new RedisHandler(REDISHOST, REDISPORT);
     parser->setDaemon(true);
@@ -90,10 +96,10 @@ int main() {
         }
 
         // 4. Parse the command and write response to redis
-        long key_value = getKeyOrderValue(key);
+        std::string key_value = getKeyOrderValue(key);
 
         // 5. Parse the command and write response to redis
-        if (key_value != -1) {
+        if (std::strcmp(key_value, "") == 0) {
             redisHandler->write(std::string(DBY_RSP_QUEUE_PREFIX) + key_value, parser->parse(line));
             parser->resetState();
         } else {
