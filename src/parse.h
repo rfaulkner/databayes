@@ -137,7 +137,7 @@ public:
     void resetState();
 
     bool parse(const string&);
-    void analyze(const string&);
+    std::string analyze(const string&);
 
     std::vector<std::string> tokenize(const std::string &source, const char delimiter = ' ');
     std::vector<std::string> &tokenize(const std::string &source, const char delimiter, std::vector<std::string> &elems);
@@ -221,7 +221,7 @@ bool Parser::parse(const string& s) {
 /**
  * Lexical analyzer and state interpreter (FSM mealy model)
  */
-std:string Parser::analyze(const std::string& s) {
+std::string Parser::analyze(const std::string& s) {
 
     // Convert to lower case to enforce case insensitivity
     string sLower = s;
@@ -265,10 +265,10 @@ std:string Parser::analyze(const std::string& s) {
         else {
             this->error = true;
             this->errStr = BAD_INPUT;
-            return;
+            return this->rspStr;
         }
 
-}   } else if (this->state == STATE_RM) {   // Branch to parse "RM" commands
+    } else if (this->state == STATE_RM) {   // Branch to parse "RM" commands
         if (sLower.compare(STR_CMD_REL) == 0) {
             this->macroState = STATE_RM_REL;
             this->state = STATE_P1;
@@ -300,14 +300,14 @@ std:string Parser::analyze(const std::string& s) {
         if (!boost::regex_match(this->currEntity.c_str(), e)) {
             this->error = true;
             this->errStr = ERR_ENT_EXISTS;
-            return;
+            return this->rspStr;
         }
 
         // Ensure this entity has not already been defined
         if (this->indexHandler->existsEntity(this->currEntity)) {
             this->error = true;
             this->errStr = ERR_ENT_EXISTS;
-            return;
+            return this->rspStr;
         }
 
         if (this->fieldsProcessed)
@@ -337,7 +337,7 @@ std:string Parser::analyze(const std::string& s) {
     } else if (this->state == STATE_FINISH) {  // Ensure processing is complete - no symbols should be left at this point
         this->error = true;
         this->errStr = BAD_EOL;
-        return;
+        return this->rspStr;
     }
 
     // Post processing if command complete
@@ -350,7 +350,7 @@ std:string Parser::analyze(const std::string& s) {
         }
 
         // If there's an error cleanup and bail
-        if (this->error) { this->cleanup(); return; }
+        if (this->error) { this->cleanup(); return this->rspStr; }
 
         if (this->macroState == STATE_DEF && !this->error) { // Add this entity to the index
             Entity e(this->currEntity, *(this->currFields));
