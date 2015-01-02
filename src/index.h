@@ -110,6 +110,7 @@ public:
 
     bool removeEntity(std::string);
     bool removeRelation(Relation&);
+    bool removeRelation(Json::Value&);
 
     bool composeJSON(std::string, Json::Value&);
 
