@@ -136,7 +136,7 @@ public:
     void setDebug(bool);
     void resetState();
 
-    bool parse(const string&);
+    std::string parse(const string&);
     std::string analyze(const string&);
 
     std::vector<std::string> tokenize(const std::string &source, const char delimiter = ' ');
@@ -181,9 +181,10 @@ void Parser::resetState() {
 /**
  *  Parse loop, calls analyzer
  */
-bool Parser::parse(const string& s) {
+std::string Parser::parse(const string& s) {
 
     vector<string> tokens = this->tokenize(s);
+    std::string result;
 
     this->state = STATE_START;      // Initialize state
     this->error = false;            // Initialize error condition
@@ -193,12 +194,12 @@ bool Parser::parse(const string& s) {
     for (std::vector<string>::iterator it = tokens.begin() ; it != tokens.end(); ++it) {
         if (this->debug)
             cout << "DEBUG -- Processing input token: " << *it << endl; // DEBUG
-        this->analyze(*it);
+        result = this->analyze(*it);
 
         // Handle Errors detected during statement parse
         if (this->error) {
             cout << this->errStr << endl;
-            return false;
+            return this->errStr;
         }
     }
 
@@ -208,13 +209,13 @@ bool Parser::parse(const string& s) {
     // If the input was not interpreted to any meaningful command
     if (this->state == STATE_START && tokens.size() > 0) {
         cout << ERR_UNKNOWN_CMD << endl;
-        return false;
+        return ERR_UNKNOWN_CMD;
     } else if (this->state != STATE_FINISH && tokens.size() > 0) {
         cout << ERR_MALFORMED_CMD << endl;
-        return false;
+        return ERR_MALFORMED_CMD;
     }
 
-    return true;
+    return result;
 }
 
 

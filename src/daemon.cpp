@@ -11,6 +11,7 @@
 
 #include <chrono>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <redis3m/connection.h>
 #include "parse.h"
@@ -50,11 +51,11 @@ std::string getKeyOrderValue(Parser& p, std::string key) {
     std::string number;
     std::stringstream strstream;
 
-    if (pieces.length() > 0)
-        strstream << pieces[pieces.length() - 1];
+    if (pieces.size() > 0) {
+        strstream << pieces[pieces.size() - 1];
         strstream >> number;
         return number;
-    else
+    } else
         return "";  // error
 }
 
@@ -65,9 +66,8 @@ int main() {
 
     Parser* parser = new Parser();
     RedisHandler* redisHandler = new RedisHandler(REDISHOST, REDISPORT);
-    parser->setDaemon(true);
 
-    cout << "" << endl;
+    cout << "Running databayes daemon..." << endl;
 
     // Read the input
     while (1) {
@@ -76,11 +76,11 @@ int main() {
         std::chrono::milliseconds(REDIS_POLL_TIMEOUT);
 
         // 2. Fetch next command off the queue
-        this->redisHandler->connect();
+        redisHandler->connect();
         key = getNextQueueKey(*redisHandler);
         lock = "";
 
-        if (this->redisHandler->exists(key) && strcmp(key.c_str(), "") != 0) {
+        if (redisHandler->exists(key) && strcmp(key.c_str(), "") != 0) {
             line = redisHandler->read(key);
 
             // 3. LOCK KEY.  If it's already locked try again
@@ -96,10 +96,10 @@ int main() {
         }
 
         // 4. Parse the command and write response to redis
-        std::string key_value = getKeyOrderValue(key);
+        std::string key_value = getKeyOrderValue(*parser, key);
 
         // 5. Parse the command and write response to redis
-        if (std::strcmp(key_value, "") == 0) {
+        if (std::strcmp(key_value.c_str(), "") == 0) {
             redisHandler->write(std::string(DBY_RSP_QUEUE_PREFIX) + key_value, parser->parse(line));
             parser->resetState();
         } else {
