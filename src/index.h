@@ -225,7 +225,7 @@ bool IndexHandler::removeRelation(Relation& rel) {
 bool IndexHandler::removeRelation(Json::Value& jsonVal) {
 
     this->redisHandler->connect();
-    std::string key = this->generateRelationKey(jsonVal[JSON_ATTR_REL_ENTL], jsonVal[JSON_ATTR_REL_ENTR], md5(jsonVal.toStyledString()));
+    std::string key = this->generateRelationKey(jsonVal[JSON_ATTR_REL_ENTL].asCString(), jsonVal[JSON_ATTR_REL_ENTR].asCString(), md5(jsonVal.toStyledString()));
     Json::Value jsonValReal;
     this->fetchRaw(key, jsonValReal);   // Fetch the actual entry being removed
 
