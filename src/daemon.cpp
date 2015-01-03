@@ -11,6 +11,7 @@
 
 #include <chrono>
 #include <iostream>
+#include <thread>
 #include <sstream>
 #include <string>
 #include <redis3m/connection.h>
@@ -73,7 +74,7 @@ int main() {
     while (1) {
 
         // 1. execute timeout
-        std::chrono::milliseconds(REDIS_POLL_TIMEOUT);
+        std::this_thread::sleep_for(std::chrono::milliseconds(REDIS_POLL_TIMEOUT));
 
         // 2. Fetch next command off the queue
         redisHandler->connect();
@@ -88,7 +89,7 @@ int main() {
             if (!redisHandler->exists(lock)) {
                 redisHandler->write(lock, "1"); // lock it
             } else {
-                std::chrono::milliseconds(REDIS_RETRY_TIMEOUT);
+                std::this_thread::sleep_for(std::chrono::milliseconds(REDIS_RETRY_TIMEOUT));
                 continue;   // locked, try again after a timeout
             }
         } else {
