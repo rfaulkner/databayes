@@ -48,7 +48,7 @@ std::string getNextQueueKey(RedisHandler& rh) {
  * functionality to tokenize strings is used to assist
  */
 std::string getKeyOrderValue(Parser& p, std::string key) {
-    vector<std::string> pieces = p.tokenize(key);
+    vector<std::string> pieces = p.tokenize(key, '_');
     std::string number;
     std::stringstream strstream;
 
