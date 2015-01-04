@@ -100,7 +100,7 @@ int main() {
         std::string key_value = getKeyOrderValue(*parser, key);
 
         // 5. Parse the command and write response to redis
-        if (std::strcmp(key_value.c_str(), "") == 0) {
+        if (std::strcmp(key_value.c_str(), "") != 0) {
             redisHandler->write(std::string(DBY_RSP_QUEUE_PREFIX) + key_value, parser->parse(line));
             parser->resetState();
         } else {
