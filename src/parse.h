@@ -387,10 +387,16 @@ std::string Parser::analyze(const std::string& s) {
         } else if (this->macroState == STATE_LST_REL) {
             // Get all relations on given entities
             cout << "Current Matched Relations for \"" << this->bufferEntity << "\" and \"" << this->currEntity << "\"" << endl;
+
+            // Combine buffer and current values
+            for (std::vector<std::pair<std::string, std::string>>::iterator it = this->bufferValues->begin() ; it != bufferValues->end(); ++it)
+                this->currValues->push_back(*it);
+
+            // Fetch relations and filter on attribute criteria
             std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(this->bufferEntity, this->currEntity);
+            this->indexHandler->filterRelationsByAttribute(relations, this->currValues);
 
             // for each relation determine if they match the condition criteria
-            // TODO - filter on attribute criteria
             for (std::vector<Json::Value>::iterator it = relations.begin() ; it != relations.end(); ++it)
                 this->rspStr += std::string(*it) + std::string(",");
             cout << this->rspStr << endl;
