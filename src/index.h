@@ -189,9 +189,10 @@ bool IndexHandler::writeEntity(Entity& e) {
 
 /** Remove entity key from redis */
 bool IndexHandler::removeEntity(std::string entity) {
+    std::string codedEntity = this->generateEntityKey(entity);
     this->redisHandler->connect();
-    if (this->redisHandler->exists(entity)) {
-        this->redisHandler->deleteKey(this->generateEntityKey(entity));
+    if (this->redisHandler->exists(codedEntity)) {
+        this->redisHandler->deleteKey(codedEntity);
 
         // Delete all relations containing this entity
         std::vector<Json::Value> relations_left = this->fetchRelationPrefix(entity, "*");
