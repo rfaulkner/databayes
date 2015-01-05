@@ -111,9 +111,9 @@ class Parser {
     std::string rspStr;
 
     // Define lists that store state of newly defined fields and values
-    std::vector<std::pair<ColumnBase*, std::string>>* currFields;
-    std::vector<std::pair<std::string, std::string>>* currValues;
-    std::vector<std::pair<std::string, std::string>>* bufferValues;
+    defpair* currFields;
+    valpair* currValues;
+    valpair* bufferValues;
 
     // Define internal state that stores entity handles
     std::string currEntity;
@@ -379,7 +379,7 @@ std::string Parser::analyze(const std::string& s) {
             entities = this->indexHandler->fetchPatternJson(this->indexHandler->generateEntityKey(this->currEntity));
             if (entities != NULL)
                 for (std::vector<Json::Value>::iterator it = entities->begin() ; it != entities->end(); ++it)
-                    this->rspStr += std::string(*it) + std::string(",");
+                    this->rspStr += std::string((*it).toStyledString());
             else
                 this->rspStr = "Not found";
             cout << this->rspStr << endl;
@@ -394,11 +394,11 @@ std::string Parser::analyze(const std::string& s) {
 
             // Fetch relations and filter on attribute criteria
             std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(this->bufferEntity, this->currEntity);
-            this->indexHandler->filterRelationsByAttribute(relations, this->currValues);
+            this->indexHandler->filterRelationsByAttribute(relations, *(this->currValues));
 
             // for each relation determine if they match the condition criteria
             for (std::vector<Json::Value>::iterator it = relations.begin() ; it != relations.end(); ++it)
-                this->rspStr += std::string(*it) + std::string(",");
+                this->rspStr += std::string((*it).toStyledString());
             cout << this->rspStr << endl;
 
         } else if (this->macroState == STATE_RM_REL) {
@@ -407,7 +407,7 @@ std::string Parser::analyze(const std::string& s) {
             if (this->indexHandler->removeRelation(r)) {
                 this->rspStr = "Relation removed";
             } else {
-                this->rspStr = ERR_RM_REL_CMD
+                this->rspStr = ERR_RM_REL_CMD;
             }
             cout << this->rspStr << endl;
 
