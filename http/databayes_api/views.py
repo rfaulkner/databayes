@@ -198,7 +198,75 @@ def list_relation(pattern_1, pattern_2):
     Translation:    lst rel regex1 regex2 -> /lst/ent/regex1/regex2
     :return:    JSON response indicating status of action & output
     """
-    return Response(json.dumps(['Command Inserted']),  mimetype='application/json')
+    return Response(json.dumps(['Command Inserted']),
+                    mimetype='application/json')
+
+
+def remove_entity(entity):
+    """
+    Handles remote requests to databayes for removing entities
+    Translation:    rm ent e -> /rm/ent/e
+    :return:    JSON response indicating status of action & output
+    """
+    redisio.DataIORedis().connect()
+    # Retrieve a valid queue item
+    qid = handle_queue_validation()
+    if qid == -1:
+        return Response(json.dumps(['Queue is full, try again later.']),
+                        mimetype='application/json')
+
+    # Synthesize the command
+    cmd = 'rm ent {0}'.format(entity)
+
+    # Send cmd to databayes daemon
+    redisio.DataIORedis().write(config.DBY_CMD_QUEUE_PREFIX + qid, cmd)
+
+    # TODO - check response to ensure that the entity was indeed removed
+
+    return Response(json.dumps(['Command Inserted']),
+                    mimetype='application/json')
+
+
+# TODO - this code is very similar to "add relation" ... refactor
+def remove_relation(entity_1, entity_2):
+    """
+    Handles remote requests to databayes for removing relations
+
+    Translation:    rm rel e1(<f1_1>_<v1_1>,...) e2(<f2_1>_<v2_1>,...)
+        -> /rm/rel/e1/e2?fields1=f1_1,...&values1=t1_1,...&fields2=f2_1,
+        ...&values2=t2_1,...
+    :return:    JSON response indicating status of action & output
+    """
+    redisio.DataIORedis().connect()
+    query_param_obj = unpack_query_params(request)
+    if (not query_param_obj['ok']):
+        return Response(json.dumps([query_param_obj['message']]),
+                        mimetype='application/json')
+
+    # Retrieve a valid queue item
+    qid = handle_queue_validation()
+    if qid == -1:
+        return Response(json.dumps(['Queue is full, try again later.']),
+                        mimetype='application/json')
+
+    # Synthesize the command
+    args1 = []
+    args2 = []
+    for i in xrange(len(query_param_obj['fields1'])):
+        args1[i] = query_param_obj['fields1'][i] + '=' + \
+                   query_param_obj['values1'][i]
+    for i in xrange(len(query_param_obj['fields2'])):
+        args2[i] = query_param_obj['fields2'][i] + '=' + \
+                   query_param_obj['values2'][i]
+    cmd = 'rm rel {0}({1}) {2}({3})'.format(entity_1, ",".join(args1),
+                                             entity_2, ",".join(args2))
+    # Send cmd to databayes daemon
+    redisio.DataIORedis().write(config.DBY_CMD_QUEUE_PREFIX + qid, cmd)
+
+    # TODO - check response to ensure that the relation was indeed removed
+
+    return Response(json.dumps(['Command Inserted']),
+                    mimetype='application/json')
 
 
 # Stores view references in structure
@@ -208,14 +276,18 @@ view_list = {
     generate.__name__: generate,
     list_entity.__name__: list_entity,
     list_relation.__name__: list_relation,
+    remove_entity.__name__: remove_entity,
+    remove_relation.__name__: remove_relation,
 }
 
 route_deco = {
-    define_entity.__name__: app.route('/def', methods=['GET', 'POST']),
-    add_relation.__name__: app.route('/add', methods=['GET', 'POST']),
+    define_entity.__name__: app.route('/def/<entity>', methods=['GET', 'POST']),
+    add_relation.__name__: app.route('/add/<entity_1>/<entity_2>', methods=['GET', 'POST']),
     generate.__name__: app.route('/gen', methods=['GET', 'POST']),
-    list_entity.__name__: app.route('/lstrel', methods=['GET', 'POST']),
-    list_relation.__name__: app.route('/lstent', methods=['GET', 'POST']),
+    list_entity.__name__: app.route('/lst/ent/<pattern>', methods=['GET', 'POST']),
+    list_relation.__name__: app.route('/lst/rel/<pattern_1>/<pattern_2>', methods=['GET', 'POST']),
+    remove_entity.__name__: app.route('/rm/ent/<entity>', methods=['GET', 'POST']),
+    remove_relation.__name__: app.route('/rm/rel/<entity_1>/<entity_2>', methods=['GET', 'POST']),
 }
 
 # Apply decorators to views
