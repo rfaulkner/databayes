@@ -356,6 +356,7 @@ std::string Parser::analyze(const std::string& s) {
         if (this->macroState == STATE_DEF && !this->error) { // Add this entity to the index
             Entity e(this->currEntity, *(this->currFields));
             this->indexHandler->writeEntity(e);
+            this->rspStr = "Entity successfully added";
 
             if (this->debug)
                 cout << "DEBUG -- Writing definition of entity." << endl;
@@ -363,6 +364,8 @@ std::string Parser::analyze(const std::string& s) {
         } else if (this->macroState == STATE_ADD) {
             Relation r(this->bufferEntity, this->currEntity, *(this->bufferValues), *(this->currValues));
             this->indexHandler->writeRelation(r);
+            this->rspStr = "Relation successfully added";
+
             if (this->debug)
                 cout << "DEBUG -- Adding relation." << endl;
 
@@ -376,9 +379,10 @@ std::string Parser::analyze(const std::string& s) {
             entities = this->indexHandler->fetchPatternJson(this->indexHandler->generateEntityKey(this->currEntity));
             if (entities != NULL)
                 for (std::vector<Json::Value>::iterator it = entities->begin() ; it != entities->end(); ++it)
-                    cout << (*it).toStyledString() << endl << endl;
+                    this->rspStr += std::string(*it) + std::string(",");
             else
-                cout << "not found." << endl;
+                this->rspStr = "Not found";
+            cout << this->rspStr << endl;
 
         } else if (this->macroState == STATE_LST_REL) {
             // Get all relations on given entities
@@ -386,26 +390,29 @@ std::string Parser::analyze(const std::string& s) {
             std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(this->bufferEntity, this->currEntity);
 
             // for each relation determine if they match the condition criteria
-            // TODO - filter on atribute criteria
+            // TODO - filter on attribute criteria
             for (std::vector<Json::Value>::iterator it = relations.begin() ; it != relations.end(); ++it)
-                cout << (*it).toStyledString() << endl << endl;
+                this->rspStr += std::string(*it) + std::string(",");
+            cout << this->rspStr << endl;
 
         } else if (this->macroState == STATE_RM_REL) {
             // Handle the logic for the removal of matching relations
             Relation r(this->bufferEntity, this->currEntity, *(this->bufferValues), *(this->currValues));
             if (this->indexHandler->removeRelation(r)) {
-                cout << "Relation removed." << endl;
+                this->rspStr = "Relation removed";
             } else {
-                cout << ERR_RM_REL_CMD << endl;
+                this->rspStr = ERR_RM_REL_CMD
             }
+            cout << this->rspStr << endl;
 
         } else if (this->macroState == STATE_RM) {
             // Handle the logic for the removal of matching entities
             if (this->indexHandler->removeEntity(this->currEntity)) {
-                cout << "Entity removed." << endl;
+                this->rspStr = "Entity removed";
             } else {
-                cout << ERR_RM_ENT_CMD << endl;
+                this->rspStr = ERR_RM_ENT_CMD;
             }
+            cout << this->rspStr << endl;
         }
 
         // Cleanup
