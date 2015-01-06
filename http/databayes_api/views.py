@@ -167,10 +167,6 @@ def list_entity(pattern):
     :return:    JSON response indicating status of action & output
     """
     redisio.DataIORedis().connect()
-    query_param_obj = unpack_query_params(request)
-    if (not query_param_obj['ok']):
-        return Response(json.dumps([query_param_obj['message']]),
-                        mimetype='application/json')
 
     # Retrieve a valid queue item
     qid = handle_queue_validation()
