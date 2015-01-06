@@ -188,12 +188,40 @@ def list_entity(pattern):
     return Response(json.dumps([rsp]), mimetype='application/json')
 
 
-def list_relation(pattern_1, pattern_2):
+def list_relation(entity_1, entity_2):
     """
     Handles remote requests to databayes for listing relations
     Translation:    lst rel regex1 regex2 -> /lst/ent/regex1/regex2
     :return:    JSON response indicating status of action & output
     """
+    redisio.DataIORedis().connect()
+    query_param_obj = unpack_query_params(request)
+    if (not query_param_obj['ok']):
+        return Response(json.dumps([query_param_obj['message']]),
+                        mimetype='application/json')
+
+    # Retrieve a valid queue item
+    qid = handle_queue_validation()
+    if qid == -1:
+        return Response(json.dumps(['Queue is full, try again later.']),
+                        mimetype='application/json')
+
+    # Synthesize the command
+    args1 = []
+    args2 = []
+    for i in xrange(len(query_param_obj['fields1'])):
+        args1[i] = query_param_obj['fields1'][i] + '=' + \
+                   query_param_obj['values1'][i]
+    for i in xrange(len(query_param_obj['fields2'])):
+        args2[i] = query_param_obj['fields2'][i] + '=' + \
+                   query_param_obj['values2'][i]
+    cmd = 'lst rel {0}({1}) {2}({3})'.format(entity_1, ",".join(args1),
+                                             entity_2, ",".join(args2))
+    # Send cmd to databayes daemon
+    redisio.DataIORedis().write(config.DBY_CMD_QUEUE_PREFIX + qid, cmd)
+
+    # TODO - check response to fetch the list
+
     return Response(json.dumps(['Command Inserted']),
                     mimetype='application/json')
 
