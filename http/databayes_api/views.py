@@ -9,7 +9,7 @@
 
 from databayes_api import app, log, redisio, get_next_command, config, \
     gen_queue_id, exists_queue_item
-import json
+import json, time
 
 from flask import render_template, redirect, url_for, \
     request, escape, flash, g, session, Response
@@ -60,7 +60,7 @@ def unpack_query_params(request):
     return ret
 
 
-def wait_for_response(qid, poll_frequency = 10, max_tries = 5):
+def wait_for_response(qid, poll_frequency=10.0, max_tries=5):
     """
     Handles polling a response from the redis queue determined by id.  Returns
         an empty response if it never arrives.
@@ -74,6 +74,7 @@ def wait_for_response(qid, poll_frequency = 10, max_tries = 5):
         rsp = redisio.DataIORedis().read(config.DBY_RSP_QUEUE_PREFIX + qid)
         if rsp: # got response, stop polling
             break
+        time.sleep(float(poll_frequency) / 1000.0)
     return rsp
 
 # VIEW METHODS
