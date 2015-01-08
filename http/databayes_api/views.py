@@ -97,16 +97,13 @@ def get_arg_str(fields, values, delimiter):
     return ",".join(items)
 
 
-def view_switch(view, args, qparams):
+def view_switch(view, args):
     """
     General method which implements view logic
     :param view:        str, view to construct a response for
     :param args:        view arguments passed along
-    :param qparams:     query parameters from request
     :return:            text response from databayes or error
     """
-
-    redisio.DataIORedis().connect()
     query_param_obj = unpack_query_params(request)
     if (not query_param_obj['ok']):
         return Response(json.dumps([query_param_obj['message']]),
@@ -121,12 +118,12 @@ def view_switch(view, args, qparams):
     # Construct command
     cmd = ""
     if view == 'define_entity':
-        arg_str = get_arg_str(qparams['fields'], qparams['values'], '_')
+        arg_str = get_arg_str(query_param_obj['fields'], query_param_obj['values'], '_')
         cmd = 'def {0}({1})'.format(args['entity'], arg_str)
 
     elif view == 'add_relation':
-        arg_str_1 = get_arg_str(qparams['fields1'], qparams['values1'], '=')
-        arg_str_2 = get_arg_str(qparams['fields2'], qparams['values2'], '=')
+        arg_str_1 = get_arg_str(query_param_obj['fields1'], query_param_obj['values1'], '=')
+        arg_str_2 = get_arg_str(query_param_obj['fields2'], query_param_obj['values2'], '=')
         cmd = 'add rel {0}({1}) {2}({3})'.format(args['entity_1'], arg_str_1,
                                                  args['entity_2'], arg_str_2)
 
@@ -137,8 +134,8 @@ def view_switch(view, args, qparams):
         cmd = 'lst ent {0}'.format(args['pattern'])
 
     elif view == 'list_relation':
-        arg_str_1 = get_arg_str(qparams['fields1'], qparams['values1'], '=')
-        arg_str_2 = get_arg_str(qparams['fields2'], qparams['values2'], '=')
+        arg_str_1 = get_arg_str(query_param_obj['fields1'], query_param_obj['values1'], '=')
+        arg_str_2 = get_arg_str(query_param_obj['fields2'], query_param_obj['values2'], '=')
         cmd = 'lst rel {0}({1}) {2}({3})'.format(args['entity_1'], arg_str_1,
                                                  args['entity_2'], arg_str_2)
 
@@ -146,12 +143,13 @@ def view_switch(view, args, qparams):
         cmd = 'rm ent {0}'.format(args['entity'])
 
     elif view == 'remove_relation':
-        arg_str_1 = get_arg_str(qparams['fields1'], qparams['values1'], '=')
-        arg_str_2 = get_arg_str(qparams['fields2'], qparams['values2'], '=')
+        arg_str_1 = get_arg_str(query_param_obj['fields1'], query_param_obj['values1'], '=')
+        arg_str_2 = get_arg_str(query_param_obj['fields2'], query_param_obj['values2'], '=')
         cmd = 'rm rel {0}({1}) {2}({3})'.format(args['entity_1'], arg_str_1,
                                                 args['entity_2'], arg_str_2)
 
     # Send cmd to databayes daemon
+    redisio.DataIORedis().connect()
     redisio.DataIORedis().write(config.DBY_CMD_QUEUE_PREFIX + qid, cmd)
 
     # check response
@@ -168,33 +166,8 @@ def define_entity(entity):
                     /def/e?fields=f1,f2,...&types=t1,t2,...
     :return:    JSON response indicating status of action & output
     """
-    redisio.DataIORedis().connect()
-    query_param_obj = unpack_query_params(request)
-    if (not query_param_obj['ok']):
-        return Response(json.dumps([query_param_obj['message']]),
-                        mimetype='application/json')
-
-    # Retrieve a valid queue item
-    qid = handle_queue_validation()
-    if qid == -1:
-        return Response(json.dumps(['Queue is full, try again later.']),
-                        mimetype='application/json')
-
-    # Synthesize the command
-    args = []
-    for i in xrange(len(query_param_obj['fields'])):
-        args[i] = query_param_obj['fields'][i] + '_' + \
-                  query_param_obj['types'][i]
-    cmd = 'def {0}({1})'.format(entity, ",".join(args))
-
-    # Send cmd to databayes daemon
-    redisio.DataIORedis().write(config.DBY_CMD_QUEUE_PREFIX + qid, cmd)
-
-    # check response
-    rsp = wait_for_response(qid)
-    if not rsp: rsp = "Could not find response before max retires expired."
-
-    return Response(json.dumps([rsp]), mimetype='application/json')
+    return Response(json.dumps([view_switch('define_entity', [entity])]),
+                    mimetype='application/json')
 
 
 def add_relation(entity_1, entity_2):
@@ -205,38 +178,8 @@ def add_relation(entity_1, entity_2):
                         &fields2=f2_1,...&types2=t2_1,...
     :return:    JSON response indicating status of action & output
     """
-    redisio.DataIORedis().connect()
-    query_param_obj = unpack_query_params(request)
-    if (not query_param_obj['ok']):
-        return Response(json.dumps([query_param_obj['message']]),
-                        mimetype='application/json')
-
-    # Retrieve a valid queue item
-    qid = handle_queue_validation()
-    if qid == -1:
-        return Response(json.dumps(['Queue is full, try again later.']),
-                        mimetype='application/json')
-
-    # Synthesize the command
-    args1 = []
-    args2 = []
-    for i in xrange(len(query_param_obj['fields1'])):
-        args1[i] = query_param_obj['fields1'][i] + '=' + \
-                   query_param_obj['values1'][i]
-    for i in xrange(len(query_param_obj['fields2'])):
-        args2[i] = query_param_obj['fields2'][i] + '=' + \
-                   query_param_obj['values2'][i]
-    cmd = 'add rel {0}({1}) {2}({3})'.format(entity_1, ",".join(args1),
-                                             entity_2, ",".join(args2))
-
-    # Send cmd to databayes daemon
-    redisio.DataIORedis().write(config.DBY_CMD_QUEUE_PREFIX + qid, cmd)
-
-    # check response
-    rsp = wait_for_response(qid)
-    if not rsp: rsp = "Could not find response before max retires expired."
-
-    return Response(json.dumps([rsp]), mimetype='application/json')
+    return Response(json.dumps([view_switch('add_relation', [entity_1, entity_2])]),
+                mimetype='application/json')
 
 
 def generate(entity_1, entity_2):
@@ -246,7 +189,8 @@ def generate(entity_1, entity_2):
                     /gen/e1/e2?fields1=f1_1,...&types1=t1_1,...&fields2=f2_1,...&types2=t2_1,...
     :return:    JSON response indicating status of action & output
     """
-    return Response(json.dumps(['Command Inserted']), mimetype='application/json')
+    return Response(json.dumps([view_switch('generate', [entity_1, entity_2])]),
+                mimetype='application/json')
 
 
 def list_entity(pattern):
@@ -255,25 +199,9 @@ def list_entity(pattern):
     Translation:    lst ent regex -> /lst/ent/regex
     :return:    JSON response indicating status of action & output
     """
-    redisio.DataIORedis().connect()
+    return Response(json.dumps([view_switch('list_entity', [pattern])]),
+                    mimetype='application/json')
 
-    # Retrieve a valid queue item
-    qid = handle_queue_validation()
-    if qid == -1:
-        return Response(json.dumps(['Queue is full, try again later.']),
-                        mimetype='application/json')
-
-    # Synthesize the command
-    cmd = 'lst ent {0}'.format(pattern)
-
-    # Send cmd to databayes daemon
-    redisio.DataIORedis().write(config.DBY_CMD_QUEUE_PREFIX + qid, cmd)
-
-    # Fetch response
-    rsp = wait_for_response(qid)
-    if not rsp: rsp = "Could not find response before max retires expired."
-
-    return Response(json.dumps([rsp]), mimetype='application/json')
 
 
 def list_relation(entity_1, entity_2):
@@ -282,37 +210,8 @@ def list_relation(entity_1, entity_2):
     Translation:    lst rel regex1 regex2 -> /lst/ent/regex1/regex2
     :return:    JSON response indicating status of action & output
     """
-    redisio.DataIORedis().connect()
-    query_param_obj = unpack_query_params(request)
-    if (not query_param_obj['ok']):
-        return Response(json.dumps([query_param_obj['message']]),
-                        mimetype='application/json')
-
-    # Retrieve a valid queue item
-    qid = handle_queue_validation()
-    if qid == -1:
-        return Response(json.dumps(['Queue is full, try again later.']),
-                        mimetype='application/json')
-
-    # Synthesize the command
-    args1 = []
-    args2 = []
-    for i in xrange(len(query_param_obj['fields1'])):
-        args1[i] = query_param_obj['fields1'][i] + '=' + \
-                   query_param_obj['values1'][i]
-    for i in xrange(len(query_param_obj['fields2'])):
-        args2[i] = query_param_obj['fields2'][i] + '=' + \
-                   query_param_obj['values2'][i]
-    cmd = 'lst rel {0}({1}) {2}({3})'.format(entity_1, ",".join(args1),
-                                             entity_2, ",".join(args2))
-    # Send cmd to databayes daemon
-    redisio.DataIORedis().write(config.DBY_CMD_QUEUE_PREFIX + qid, cmd)
-
-    # check response to fetch the list
-    rsp = wait_for_response(qid)
-    if not rsp: rsp = "Could not find response before max retires expired."
-
-    return Response(json.dumps([rsp]), mimetype='application/json')
+    return Response(json.dumps([view_switch('list_relation', [entity_1, entity_2])]),
+                    mimetype='application/json')
 
 
 def remove_entity(entity):
@@ -321,24 +220,8 @@ def remove_entity(entity):
     Translation:    rm ent e -> /rm/ent/e
     :return:    JSON response indicating status of action & output
     """
-    redisio.DataIORedis().connect()
-    # Retrieve a valid queue item
-    qid = handle_queue_validation()
-    if qid == -1:
-        return Response(json.dumps(['Queue is full, try again later.']),
-                        mimetype='application/json')
-
-    # Synthesize the command
-    cmd = 'rm ent {0}'.format(entity)
-
-    # Send cmd to databayes daemon
-    redisio.DataIORedis().write(config.DBY_CMD_QUEUE_PREFIX + qid, cmd)
-
-    # check response to ensure that the entity was indeed removed
-    rsp = wait_for_response(qid)
-    if not rsp: rsp = "Could not find response before max retires expired."
-
-    return Response(json.dumps([rsp]), mimetype='application/json')
+    return Response(json.dumps([view_switch('remove_entity', [entity])]),
+                    mimetype='application/json')
 
 
 def remove_relation(entity_1, entity_2):
@@ -350,37 +233,9 @@ def remove_relation(entity_1, entity_2):
         ...&values2=t2_1,...
     :return:    JSON response indicating status of action & output
     """
-    redisio.DataIORedis().connect()
-    query_param_obj = unpack_query_params(request)
-    if (not query_param_obj['ok']):
-        return Response(json.dumps([query_param_obj['message']]),
-                        mimetype='application/json')
+    return Response(json.dumps([view_switch('remove_relation', [entity_1, entity_2])]),
+                    mimetype='application/json')
 
-    # Retrieve a valid queue item
-    qid = handle_queue_validation()
-    if qid == -1:
-        return Response(json.dumps(['Queue is full, try again later.']),
-                        mimetype='application/json')
-
-    # Synthesize the command
-    args1 = []
-    args2 = []
-    for i in xrange(len(query_param_obj['fields1'])):
-        args1[i] = query_param_obj['fields1'][i] + '=' + \
-                   query_param_obj['values1'][i]
-    for i in xrange(len(query_param_obj['fields2'])):
-        args2[i] = query_param_obj['fields2'][i] + '=' + \
-                   query_param_obj['values2'][i]
-    cmd = 'rm rel {0}({1}) {2}({3})'.format(entity_1, ",".join(args1),
-                                             entity_2, ",".join(args2))
-    # Send cmd to databayes daemon
-    redisio.DataIORedis().write(config.DBY_CMD_QUEUE_PREFIX + qid, cmd)
-
-    # check response to ensure that the relation was indeed removed
-    rsp = wait_for_response(qid)
-    if not rsp: rsp = "Could not find response before max retires expired."
-
-    return Response(json.dumps([rsp]), mimetype='application/json')
 
 
 # Stores view references in structure
