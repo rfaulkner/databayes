@@ -82,11 +82,29 @@ def wait_for_response(qid, poll_frequency=10.0, max_tries=5):
 # ====================
 
 
-def get_arg_str(fields, values, delimeter):
-    return ""
+def get_arg_str(fields, values, delimiter):
+    """
+    Synthesizes argument strings for entity attributes for databayes. Length
+    of fields and values must be equal.
+    :param fields:      list of field names
+    :param values:      list of field values
+    :param delimeter:   str, relevant delimeter
+    :return:            argument string
+    """
+    items = []
+    for i in xrange(len(fields)):
+        items[i] = str(fields[i]) + str(delimiter) + str(values[i])
+    return ",".join(items)
 
 
 def view_switch(view, args, qparams):
+    """
+    General method which implements view logic
+    :param view:        str, view to construct a response for
+    :param args:        view arguments passed along
+    :param qparams:     query parameters from request
+    :return:            text response from databayes or error
+    """
 
     redisio.DataIORedis().connect()
     query_param_obj = unpack_query_params(request)
@@ -323,7 +341,6 @@ def remove_entity(entity):
     return Response(json.dumps([rsp]), mimetype='application/json')
 
 
-# TODO - this code is very similar to "add relation" ... refactor
 def remove_relation(entity_1, entity_2):
     """
     Handles remote requests to databayes for removing relations
