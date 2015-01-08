@@ -77,7 +77,71 @@ def wait_for_response(qid, poll_frequency=10.0, max_tries=5):
         time.sleep(float(poll_frequency) / 1000.0)
     return rsp
 
-# VIEW METHODS
+
+# --- VIEW METHODS ---
+# ====================
+
+
+def get_arg_str(fields, values, delimeter):
+    return ""
+
+
+def view_switch(view, args, qparams):
+
+    redisio.DataIORedis().connect()
+    query_param_obj = unpack_query_params(request)
+    if (not query_param_obj['ok']):
+        return Response(json.dumps([query_param_obj['message']]),
+                        mimetype='application/json')
+
+    # Retrieve a valid queue item
+    qid = handle_queue_validation()
+    if qid == -1:
+        return Response(json.dumps(['Queue is full, try again later.']),
+                        mimetype='application/json')
+
+    # Construct command
+    cmd = ""
+    if view == 'define_entity':
+        arg_str = get_arg_str(qparams['fields'], qparams['values'], '_')
+        cmd = 'def {0}({1})'.format(args['entity'], arg_str)
+
+    elif view == 'add_relation':
+        arg_str_1 = get_arg_str(qparams['fields1'], qparams['values1'], '=')
+        arg_str_2 = get_arg_str(qparams['fields2'], qparams['values2'], '=')
+        cmd = 'add rel {0}({1}) {2}({3})'.format(args['entity_1'], arg_str_1,
+                                                 args['entity_2'], arg_str_2)
+
+    elif view == 'generate':
+        pass
+
+    elif view == 'list_entity':
+        cmd = 'lst ent {0}'.format(args['pattern'])
+
+    elif view == 'list_relation':
+        arg_str_1 = get_arg_str(qparams['fields1'], qparams['values1'], '=')
+        arg_str_2 = get_arg_str(qparams['fields2'], qparams['values2'], '=')
+        cmd = 'lst rel {0}({1}) {2}({3})'.format(args['entity_1'], arg_str_1,
+                                                 args['entity_2'], arg_str_2)
+
+    elif view == 'remove_entity':
+        cmd = 'rm ent {0}'.format(args['entity'])
+
+    elif view == 'remove_relation':
+        arg_str_1 = get_arg_str(qparams['fields1'], qparams['values1'], '=')
+        arg_str_2 = get_arg_str(qparams['fields2'], qparams['values2'], '=')
+        cmd = 'rm rel {0}({1}) {2}({3})'.format(args['entity_1'], arg_str_1,
+                                                args['entity_2'], arg_str_2)
+
+    # Send cmd to databayes daemon
+    redisio.DataIORedis().write(config.DBY_CMD_QUEUE_PREFIX + qid, cmd)
+
+    # check response
+    rsp = wait_for_response(qid)
+    if not rsp: rsp = "Could not find response before max retires expired."
+
+    return rsp
+
 
 def define_entity(entity):
     """
@@ -108,7 +172,7 @@ def define_entity(entity):
     # Send cmd to databayes daemon
     redisio.DataIORedis().write(config.DBY_CMD_QUEUE_PREFIX + qid, cmd)
 
-    # check response to ensure that the relation was indeed removed
+    # check response
     rsp = wait_for_response(qid)
     if not rsp: rsp = "Could not find response before max retires expired."
 
@@ -150,7 +214,7 @@ def add_relation(entity_1, entity_2):
     # Send cmd to databayes daemon
     redisio.DataIORedis().write(config.DBY_CMD_QUEUE_PREFIX + qid, cmd)
 
-    # check response to ensure that the relation was indeed removed
+    # check response
     rsp = wait_for_response(qid)
     if not rsp: rsp = "Could not find response before max retires expired."
 
