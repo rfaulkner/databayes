@@ -38,8 +38,16 @@ def unpack_query_params(request):
     :param request:
     :return:
     """
-    ret = {'ok': True, 'fields': [], 'types': [], 'fields1': [],
-           'fields2': [], 'values1': [], 'values2': [], 'message': ''}
+    ret = dict()
+    ret['ok'] = True
+    ret['types'] = []
+    ret['fields'] = []
+    ret['fields1'] = []
+    ret['fields2'] = []
+    ret['values1'] = []
+    ret['values2'] = []
+    ret['message'] = ''
+
     ret['fields'] = request.args.get('fields').split(',') \
         if request.args.get('fields') else []
     ret['types'] = request.args.get('types').split(',') \
