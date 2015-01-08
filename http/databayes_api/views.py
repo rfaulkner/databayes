@@ -108,8 +108,11 @@ def define_entity(entity):
     # Send cmd to databayes daemon
     redisio.DataIORedis().write(config.DBY_CMD_QUEUE_PREFIX + qid, cmd)
 
-    return Response(json.dumps(['Command Inserted']),
-                    mimetype='application/json')
+    # check response to ensure that the relation was indeed removed
+    rsp = wait_for_response(qid)
+    if not rsp: rsp = "Could not find response before max retires expired."
+
+    return Response(json.dumps([rsp]), mimetype='application/json')
 
 
 def add_relation(entity_1, entity_2):
@@ -147,8 +150,11 @@ def add_relation(entity_1, entity_2):
     # Send cmd to databayes daemon
     redisio.DataIORedis().write(config.DBY_CMD_QUEUE_PREFIX + qid, cmd)
 
-    return Response(json.dumps(['Command Inserted']),
-                    mimetype='application/json')
+    # check response to ensure that the relation was indeed removed
+    rsp = wait_for_response(qid)
+    if not rsp: rsp = "Could not find response before max retires expired."
+
+    return Response(json.dumps([rsp]), mimetype='application/json')
 
 
 def generate(entity_1, entity_2):
@@ -183,8 +189,7 @@ def list_entity(pattern):
 
     # Fetch response
     rsp = wait_for_response(qid)
-    if not rsp:
-        rsp = "Could not find response before max retires expired."
+    if not rsp: rsp = "Could not find response before max retires expired."
 
     return Response(json.dumps([rsp]), mimetype='application/json')
 
@@ -221,10 +226,11 @@ def list_relation(entity_1, entity_2):
     # Send cmd to databayes daemon
     redisio.DataIORedis().write(config.DBY_CMD_QUEUE_PREFIX + qid, cmd)
 
-    # TODO - check response to fetch the list
+    # check response to fetch the list
+    rsp = wait_for_response(qid)
+    if not rsp: rsp = "Could not find response before max retires expired."
 
-    return Response(json.dumps(['Command Inserted']),
-                    mimetype='application/json')
+    return Response(json.dumps([rsp]), mimetype='application/json')
 
 
 def remove_entity(entity):
@@ -246,10 +252,11 @@ def remove_entity(entity):
     # Send cmd to databayes daemon
     redisio.DataIORedis().write(config.DBY_CMD_QUEUE_PREFIX + qid, cmd)
 
-    # TODO - check response to ensure that the entity was indeed removed
+    # check response to ensure that the entity was indeed removed
+    rsp = wait_for_response(qid)
+    if not rsp: rsp = "Could not find response before max retires expired."
 
-    return Response(json.dumps(['Command Inserted']),
-                    mimetype='application/json')
+    return Response(json.dumps([rsp]), mimetype='application/json')
 
 
 # TODO - this code is very similar to "add relation" ... refactor
@@ -288,10 +295,11 @@ def remove_relation(entity_1, entity_2):
     # Send cmd to databayes daemon
     redisio.DataIORedis().write(config.DBY_CMD_QUEUE_PREFIX + qid, cmd)
 
-    # TODO - check response to ensure that the relation was indeed removed
+    # check response to ensure that the relation was indeed removed
+    rsp = wait_for_response(qid)
+    if not rsp: rsp = "Could not find response before max retires expired."
 
-    return Response(json.dumps(['Command Inserted']),
-                    mimetype='application/json')
+    return Response(json.dumps([rsp]), mimetype='application/json')
 
 
 # Stores view references in structure
