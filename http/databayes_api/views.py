@@ -7,7 +7,7 @@
     IMPORTANT NOTE! - Only one of these server instances should be running to avoid race conditions
 """
 
-from databayes_api import app, log, redisio, get_next_command, config, \
+from databayes_api import app, log, redisio, config, \
     gen_queue_id, exists_queue_item
 import json, time
 
