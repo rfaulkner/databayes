@@ -5,7 +5,7 @@ Module for handling redis IO
 import redis
 import hashlib
 
-from flickipedia.config import log, settings
+from databayes_api import log, config
 
 __author__ = 'Ryan Faulkner'
 __date__ = "2014-04-01"
@@ -13,7 +13,7 @@ __date__ = "2014-04-01"
 
 def hmac(key):
     """ Use an hmac to generate a hash key """
-    return hashlib.md5(key + settings.__secret_key__).hexdigest()
+    return hashlib.md5(key + config.__secret_key__).hexdigest()
 
 
 def _decode_list(data):
