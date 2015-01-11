@@ -2,10 +2,11 @@
 Module for handling redis IO
 """
 
+import logging
 import redis
 import hashlib
 
-from databayes_api import log, config
+from databayes_api import config
 
 __author__ = 'Ryan Faulkner'
 __date__ = "2014-04-01"
@@ -87,10 +88,10 @@ class DataIORedis(object):
             try:
                 return self.conn.set(key, value)
             except KeyError as e:
-                log.error('Missing param -> {0}'.format(e.message))
+                logging.error('Missing param -> {0}'.format(e.message))
                 return False
         else:
-            log.error('No redis connection.')
+            logging.error('No redis connection.')
             return False
 
     def read(self, key):
@@ -98,10 +99,10 @@ class DataIORedis(object):
             try:
                 return self.conn.get(key)
             except KeyError as e:
-                log.error('Missing param -> {0}'.format(e.message))
+                logging.error('Missing param -> {0}'.format(e.message))
                 return False
         else:
-            log.error('No redis connection.')
+            logging.error('No redis connection.')
             return False
 
     def delete(self, **kwargs):
@@ -109,8 +110,8 @@ class DataIORedis(object):
             try:
                 return self.conn.delete(kwargs['key'])
             except KeyError as e:
-                log.error('Missing param -> {0}'.format(e.message))
+                logging.error('Missing param -> {0}'.format(e.message))
                 return False
         else:
-            log.error('No redis connection.')
+            logging.error('No redis connection.')
             return False
