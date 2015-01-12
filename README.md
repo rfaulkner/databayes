@@ -39,18 +39,27 @@ For execution (link hiredis):
     databayes$ ./dbcli
 
 
+How does it work?
+-----------------
+
+"Databayes" is a probabilistic database.  "Entities" define classes of things that are sets of attributes that may take on different values.  The
+"Relation" is the atomic unit which expresses a link between instances of two entities dependent on attribute values.  From the set of relations
+probability distributions may be determined that allow for sampling and inference to be applied over sets of entity attributes.
+
+
 Parser
 ------
 
 The general parser syntax has the following definition:
 
  *      (1) ADD REL E1(x_1 [, x_2, ..]) E2(y_1 [, y_2, ..])
- *      (2) GEN REL E1[(x_1=v_1, x_2=v_2, ...)] CONSTRAIN E2[, E3, ...]
- *      (3) DEF E1[(x_1, x_2, ...)]
- *      (4) LST REL [E1 [E2]]
- *      (5) LST ENT [E1]*
- *      (6) RM REL E1(x_1 [, x_2, ..]) E2(y_1 [, y_2, ..])
- *      (7) RM ENT [E1]*
+ *      (2) GEN E1.x_1[, E2.x_2,..] GIVEN E3.y_1[E4.y_2, ..]
+ *      (3) INF E1.x_1[, E2.x_2,..] GIVEN E3.y_1[E4.y_2, ..]
+ *      (4) DEF E1[(x_1, x_2, ...)]
+ *      (5) LST REL [E1 [E2]]
+ *      (6) LST ENT [E1]*
+ *      (7) RM REL E1(x_1 [, x_2, ..]) E2(y_1 [, y_2, ..])
+ *      (8) RM ENT [E1]*
 
 More details on how to use these to build entities, relations and how to use generative commands to sample.
 
