@@ -26,13 +26,21 @@ def gen_queue_id():
     """
     redisio.DataIORedis().connect()
     counter_curr = redisio.DataIORedis().read(config.REDIS_QUEUE_COUNTER_KEY)
+
+    # In the case that the counter is not set initialize to 0
+    if not counter_curr:
+        counter_curr = 0
+
     if int(counter_curr) < config.REDIS_QUEUE_COUNTER_MAX:
         qid = counter_curr
         counter_curr = int(counter_curr) + 1
     else:
         qid = config.REDIS_QUEUE_COUNTER_MAX
         counter_curr = 0
-    redisio.DataIORedis().write(config.DBY_CMD_QUEUE_PREFIX + gen_queue_id(), counter_curr)
+
+    # Update the queue position / insert the command
+    redisio.DataIORedis().write(config.REDIS_QUEUE_COUNTER_KEY, counter_curr)
+
     return qid
 
 
