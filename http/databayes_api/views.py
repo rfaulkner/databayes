@@ -101,7 +101,7 @@ def get_arg_str(fields, values, delimiter):
     """
     items = []
     for i in xrange(len(fields)):
-        items[i] = str(fields[i]) + str(delimiter) + str(values[i])
+        items.append(str(fields[i]) + str(delimiter) + str(values[i]))
     return ",".join(items)
 
 
@@ -175,7 +175,8 @@ def view_switch(view, args):
 
     # check response
     rsp = wait_for_response(qid)
-    if not rsp: rsp = "Could not find response before max retires expired."
+    if not rsp:
+        rsp = "Could not find response before max retires expired."
 
     return rsp
 
