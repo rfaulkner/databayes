@@ -14,6 +14,8 @@ import json, time
 from flask import render_template, redirect, url_for, \
     request, escape, flash, g, session, Response
 
+ERR_MSG_BADLY_FORMED_REQUEST = 'Malformed request, try again'
+
 
 # UTILITY METHODS
 
@@ -188,9 +190,15 @@ def define_entity(entity):
                     /def/e?fields=f1,f2,...&types=t1,t2,...
     :return:    JSON response indicating status of action & output
     """
-    return Response(
-        json.dumps([view_switch('define_entity', {'entity': entity})]),
-        mimetype='application/json')
+    try:
+        return Response(
+            json.dumps([view_switch('define_entity', {'entity': entity})]),
+            mimetype='application/json')
+    except Exception as e:
+        log.error(e.message)
+        return Response(
+            json.dumps([ERR_MSG_BADLY_FORMED_REQUEST]),
+            mimetype='application/json')
 
 
 def add_relation(entity_1, entity_2):
@@ -201,10 +209,16 @@ def add_relation(entity_1, entity_2):
                         &fields2=f2_1,...&types2=t2_1,...
     :return:    JSON response indicating status of action & output
     """
-    return Response(
-        json.dumps([view_switch(
-            'add_relation', {'entity_1': entity_1, 'entity_2': entity_2})]),
-        mimetype='application/json')
+    try:
+        return Response(
+            json.dumps([view_switch(
+                'add_relation', {'entity_1': entity_1, 'entity_2': entity_2})]),
+            mimetype='application/json')
+    except Exception as e:
+        log.error(e.message)
+        return Response(
+            json.dumps([ERR_MSG_BADLY_FORMED_REQUEST]),
+            mimetype='application/json')
 
 
 def generate(entity_1, entity_2):
@@ -214,11 +228,17 @@ def generate(entity_1, entity_2):
                     /gen/e1/e2?fields1=f1_1,...&types1=t1_1,...&fields2=f2_1,...&types2=t2_1,...
     :return:    JSON response indicating status of action & output
     """
-    return Response(
-        json.dumps(
-            [view_switch('generate',
-                         {'entity_1': entity_1, 'entity_2': entity_2})]),
-        mimetype='application/json')
+    try:
+        return Response(
+            json.dumps(
+                [view_switch('generate',
+                             {'entity_1': entity_1, 'entity_2': entity_2})]),
+            mimetype='application/json')
+    except Exception as e:
+        log.error(e.message)
+        return Response(
+            json.dumps([ERR_MSG_BADLY_FORMED_REQUEST]),
+            mimetype='application/json')
 
 
 def list_entity(pattern):
@@ -227,9 +247,15 @@ def list_entity(pattern):
     Translation:    lst ent regex -> /lst/ent/regex
     :return:    JSON response indicating status of action & output
     """
-    return Response(
-        json.dumps([view_switch('list_entity', {'pattern': pattern})]),
-        mimetype='application/json')
+    try:
+        return Response(
+            json.dumps([view_switch('list_entity', {'pattern': pattern})]),
+            mimetype='application/json')
+    except Exception as e:
+        log.error(e.message)
+        return Response(
+            json.dumps([ERR_MSG_BADLY_FORMED_REQUEST]),
+            mimetype='application/json')
 
 
 
@@ -239,11 +265,17 @@ def list_relation(entity_1, entity_2):
     Translation:    lst rel regex1 regex2 -> /lst/ent/regex1/regex2
     :return:    JSON response indicating status of action & output
     """
-    return Response(
-        json.dumps(
-            [view_switch('list_relation',
-                         {'entity_1': entity_1, 'entity_2': entity_2})]),
-        mimetype='application/json')
+    try:
+        return Response(
+            json.dumps(
+                [view_switch('list_relation',
+                             {'entity_1': entity_1, 'entity_2': entity_2})]),
+            mimetype='application/json')
+    except Exception as e:
+        log.error(e.message)
+        return Response(
+            json.dumps([ERR_MSG_BADLY_FORMED_REQUEST]),
+            mimetype='application/json')
 
 
 def remove_entity(entity):
@@ -252,9 +284,15 @@ def remove_entity(entity):
     Translation:    rm ent e -> /rm/ent/e
     :return:    JSON response indicating status of action & output
     """
-    return Response(
-        json.dumps([view_switch('remove_entity', {'entity': entity})]),
-        mimetype='application/json')
+    try:
+        return Response(
+            json.dumps([view_switch('remove_entity', {'entity': entity})]),
+            mimetype='application/json')
+    except Exception as e:
+        log.error(e.message)
+        return Response(
+            json.dumps([ERR_MSG_BADLY_FORMED_REQUEST]),
+            mimetype='application/json')
 
 
 def remove_relation(entity_1, entity_2):
@@ -266,11 +304,17 @@ def remove_relation(entity_1, entity_2):
         ...&values2=t2_1,...
     :return:    JSON response indicating status of action & output
     """
-    return Response(
-        json.dumps(
-            [view_switch('remove_relation',
-                         {'entity_1': entity_1, 'entity_2': entity_2})]),
-        mimetype='application/json')
+    try:
+        return Response(
+            json.dumps(
+                [view_switch('remove_relation',
+                             {'entity_1': entity_1, 'entity_2': entity_2})]),
+            mimetype='application/json')
+    except Exception as e:
+        log.error(e.message)
+        return Response(
+            json.dumps([ERR_MSG_BADLY_FORMED_REQUEST]),
+            mimetype='application/json')
 
 
 # Stores view references in structure
