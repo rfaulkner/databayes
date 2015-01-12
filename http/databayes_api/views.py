@@ -156,6 +156,8 @@ def view_switch(view, args):
         cmd = 'rm rel {0}({1}) {2}({3})'.format(args['entity_1'], arg_str_1,
                                                 args['entity_2'], arg_str_2)
 
+    log.info('sending command: "{0}"'.format(cmd))
+
     # Send cmd to databayes daemon
     redisio.DataIORedis().connect()
     redisio.DataIORedis().write(config.DBY_CMD_QUEUE_PREFIX + qid, cmd)
