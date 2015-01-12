@@ -112,6 +112,10 @@ def view_switch(view, args):
     :param args:        view arguments passed along
     :return:            text response from databayes or error
     """
+
+    log.debug('Processing view: "{0}"'.format(view))
+    log.debug('Processing args: "{0}"'.format(str(args)))
+
     query_param_obj = unpack_query_params(request)
     if (not query_param_obj['ok']):
         return Response(json.dumps([query_param_obj['message']]),
@@ -126,8 +130,15 @@ def view_switch(view, args):
     # Construct command
     cmd = ""
     if view == 'define_entity':
-        arg_str = get_arg_str(query_param_obj['fields'], query_param_obj['values'], '_')
-        cmd = 'def {0}({1})'.format(args['entity'], arg_str)
+        if 'values' in query_param_obj.keys() and \
+                        'fields' in query_param_obj.keys():
+            arg_str = get_arg_str(query_param_obj['fields'],
+                                  query_param_obj['values'], '_')
+        else:
+            arg_str = ""
+            log.info('Warning: entity has no attributes')
+        cmd = 'def {0}({1})'.format(args['entity'], arg_str) \
+            if arg_str else 'def ' + str(args['entity'])
 
     elif view == 'add_relation':
         arg_str_1 = get_arg_str(query_param_obj['fields1'], query_param_obj['values1'], '=')
@@ -176,8 +187,9 @@ def define_entity(entity):
                     /def/e?fields=f1,f2,...&types=t1,t2,...
     :return:    JSON response indicating status of action & output
     """
-    return Response(json.dumps([view_switch('define_entity', [entity])]),
-                    mimetype='application/json')
+    return Response(
+        json.dumps([view_switch('define_entity', {'entity': entity})]),
+        mimetype='application/json')
 
 
 def add_relation(entity_1, entity_2):
@@ -188,8 +200,10 @@ def add_relation(entity_1, entity_2):
                         &fields2=f2_1,...&types2=t2_1,...
     :return:    JSON response indicating status of action & output
     """
-    return Response(json.dumps([view_switch('add_relation', [entity_1, entity_2])]),
-                mimetype='application/json')
+    return Response(
+        json.dumps([view_switch(
+            'add_relation', {'entity_1': entity_1, 'entity_2': entity_2})]),
+        mimetype='application/json')
 
 
 def generate(entity_1, entity_2):
@@ -199,8 +213,11 @@ def generate(entity_1, entity_2):
                     /gen/e1/e2?fields1=f1_1,...&types1=t1_1,...&fields2=f2_1,...&types2=t2_1,...
     :return:    JSON response indicating status of action & output
     """
-    return Response(json.dumps([view_switch('generate', [entity_1, entity_2])]),
-                mimetype='application/json')
+    return Response(
+        json.dumps(
+            [view_switch('generate',
+                         {'entity_1': entity_1, 'entity_2': entity_2})]),
+        mimetype='application/json')
 
 
 def list_entity(pattern):
@@ -209,8 +226,9 @@ def list_entity(pattern):
     Translation:    lst ent regex -> /lst/ent/regex
     :return:    JSON response indicating status of action & output
     """
-    return Response(json.dumps([view_switch('list_entity', [pattern])]),
-                    mimetype='application/json')
+    return Response(
+        json.dumps([view_switch('list_entity', {'pattern': pattern})]),
+        mimetype='application/json')
 
 
 
@@ -220,8 +238,11 @@ def list_relation(entity_1, entity_2):
     Translation:    lst rel regex1 regex2 -> /lst/ent/regex1/regex2
     :return:    JSON response indicating status of action & output
     """
-    return Response(json.dumps([view_switch('list_relation', [entity_1, entity_2])]),
-                    mimetype='application/json')
+    return Response(
+        json.dumps(
+            [view_switch('list_relation',
+                         {'entity_1': entity_1, 'entity_2': entity_2})]),
+        mimetype='application/json')
 
 
 def remove_entity(entity):
@@ -230,8 +251,9 @@ def remove_entity(entity):
     Translation:    rm ent e -> /rm/ent/e
     :return:    JSON response indicating status of action & output
     """
-    return Response(json.dumps([view_switch('remove_entity', [entity])]),
-                    mimetype='application/json')
+    return Response(
+        json.dumps([view_switch('remove_entity', {'entity': entity})]),
+        mimetype='application/json')
 
 
 def remove_relation(entity_1, entity_2):
@@ -243,9 +265,11 @@ def remove_relation(entity_1, entity_2):
         ...&values2=t2_1,...
     :return:    JSON response indicating status of action & output
     """
-    return Response(json.dumps([view_switch('remove_relation', [entity_1, entity_2])]),
-                    mimetype='application/json')
-
+    return Response(
+        json.dumps(
+            [view_switch('remove_relation',
+                         {'entity_1': entity_1, 'entity_2': entity_2})]),
+        mimetype='application/json')
 
 
 # Stores view references in structure
