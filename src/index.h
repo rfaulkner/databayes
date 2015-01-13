@@ -441,46 +441,36 @@ std::string IndexHandler::orderPairAlphaNumeric(std::string s1, std::string s2) 
 /**
  *  Filter matching relations based on contents attrs
  */
-std::vector<Json::Value> IndexHandler::filterRelationsByAttribute(std::vector<Json::Value>& relations, AttributeBucket& attrs) {
+std::vector<Relation> IndexHandler::filterRelationsByAttribute(
+                            std::vector<Relation>& relations, AttributeBucket& filterAttrs) {
     bool matching = true;
-    std::string entity;
-    valpair attr_set;
-    std::vector<Json::Value> filtered_relations;
+    std::string key, value;
+    Json::value filterAttrsJson = filterAttrs.getJson();
 
     // Iterate over relations
-    for (std::vector<Json::Value>::iterator it = relations.begin(); it != relations.end(); ++it) {
+    for (std::vector<Relation>::iterator it = relations.begin(); it != relations.end(); ++it) {
 
-        // Ensure that attribute key is in relation and that the value matches
-        for (attribute_vector::iterator it_inner = attrs.begin(); it_inner != attrs.end(); ++it_inner) {
-
-            entity = std::get<0>(*it_inner);
-            attr_set = std::get<1>(*it_inner);
-
-
-            // Match left hand relations
-            if ((*it)[JSON_ATTR_REL_FIELDSL].isMember(std::get<0>(attr_set))) {
-                if (!(*it)[JSON_ATTR_REL_FIELDSL][std::get<0>(attr_set)].compare(std::get<1>(attr_set))) {
-                    cout << "DEBUG -- Filtering relation, no match on attr" << endl;
+        // Match left hand relations
+        for (valpair::iterator it_inner = it->attrs_left.begin(); it_inner != attrs.end(); ++it_inner) {
+            key = it->name_left + std::string(".") + std::get<0>(*it_inner);
+            if (filterAttrsJson.isMember(key)) {
+                value = std::get<1>(*it_inner);
+                if (filterAttrsJson[key].compare(value)) {
                     matching = false;
                     break;
-                } // Filter passed
-            } else {
-                cout << "DEBUG -- Filtering relation, attr not found" << endl;
-                matching = false;
-                break;
+                }
             }
+        }
 
-            // Match right hand relations
-            if ((*it)[JSON_ATTR_REL_FIELDSR].isMember(std::get<0>(attr_set))) {
-                if (!(*it)[JSON_ATTR_REL_FIELDSR][std::get<0>(attr_set)].compare(std::get<1>(attr_set))) {
-                    cout << "DEBUG -- Filtering relation, no match on attr" << endl;
+        // Match right hand relations
+        for (valpair::iterator it_inner = it->attrs_right.begin(); it_inner != attrs.end(); ++it_inner) {
+            key = it->name_left + std::string(".") + std::get<0>(*it_inner);
+            if (filterAttrsJson.isMember(key)) {
+                value = std::get<1>(*it_inner);
+                if (filterAttrsJson[key].compare(value)) {
                     matching = false;
                     break;
-                } // Filter passed
-            } else {
-                cout << "DEBUG -- Filtering relation, attr not found" << endl;
-                matching = false;
-                break;
+                }
             }
         }
 
