@@ -428,17 +428,24 @@ std::string IndexHandler::orderPairAlphaNumeric(std::string s1, std::string s2) 
 /**
  *  Filter matching relations based on contents attrs
  */
-std::vector<Json::Value> IndexHandler::filterRelationsByAttribute(std::vector<Json::Value>& relations, valpair& attrs) {
+std::vector<Json::Value> IndexHandler::filterRelationsByAttribute(std::vector<Json::Value>& relations, attribute_vector& attrs) {
     bool matching = true;
+    std::string entity;
+    valpair attr_set;
     std::vector<Json::Value> filtered_relations;
+
+    // Iterate over relations
     for (std::vector<Json::Value>::iterator it = relations.begin(); it != relations.end(); ++it) {
 
         // Ensure that attribute key is in relation and that the value matches
-        for (valpair::iterator it_inner = attrs.begin(); it_inner != attrs.end(); ++it_inner) {
+        for (attribute_vector::iterator it_inner = attrs.begin(); it_inner != attrs.end(); ++it_inner) {
+
+            entity = std::get<0>(*it_inner);
+            attr_set = std::get<1>(*it_inner);
 
             // Match left hand relations
-            if ((*it)[JSON_ATTR_REL_FIELDSL].isMember(std::get<0>(*it_inner))) {
-                if (!(*it)[JSON_ATTR_REL_FIELDSL][std::get<0>(*it_inner)].compare(std::get<1>(*it_inner))) {
+            if ((*it)[JSON_ATTR_REL_FIELDSL].isMember(std::get<0>(attr_set))) {
+                if (!(*it)[JSON_ATTR_REL_FIELDSL][std::get<0>(attr_set)].compare(std::get<1>(attr_set))) {
                     cout << "DEBUG -- Filtering relation, no match on attr" << endl;
                     matching = false;
                     break;
@@ -450,8 +457,8 @@ std::vector<Json::Value> IndexHandler::filterRelationsByAttribute(std::vector<Js
             }
 
             // Match right hand relations
-            if ((*it)[JSON_ATTR_REL_FIELDSR].isMember(std::get<0>(*it_inner))) {
-                if (!(*it)[JSON_ATTR_REL_FIELDSR][std::get<0>(*it_inner)].compare(std::get<1>(*it_inner))) {
+            if ((*it)[JSON_ATTR_REL_FIELDSR].isMember(std::get<0>(attr_set))) {
+                if (!(*it)[JSON_ATTR_REL_FIELDSR][std::get<0>(attr_set)].compare(std::get<1>(attr_set))) {
                     cout << "DEBUG -- Filtering relation, no match on attr" << endl;
                     matching = false;
                     break;
