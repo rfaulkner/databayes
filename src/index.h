@@ -53,9 +53,6 @@ typedef std::vector<std::pair<ColumnBase*, std::string>> defpair;
 // Vector type that defines a set of assignment pairs
 typedef std::vector<std::pair<std::string, std::string>> valpair;
 
-// Vector type that defines a set of attribute assignments
-typedef std::vector<std::pair<std::string, valpair>> attribute_vector;
-
 
 // Define entity and relation builder classes
 
@@ -96,6 +93,22 @@ public:
     valpair attrs_right;
 };
 
+/**
+ *  Wrapper around a json object that stores a series of attributes
+ */
+class AttributeBucket {
+
+    Json::Value inMem;
+    Json::Reader reader;
+
+public:
+
+    void addAttribute(std::string entity, valpair& vp);
+    std::string std::string getAttribute(std::string entity, valpair& vp);
+    Json::Value& getJson();
+    void removeAttribute(std::string entity, valpair& vp);
+
+};
 
 class IndexHandler {
 
@@ -428,7 +441,7 @@ std::string IndexHandler::orderPairAlphaNumeric(std::string s1, std::string s2) 
 /**
  *  Filter matching relations based on contents attrs
  */
-std::vector<Json::Value> IndexHandler::filterRelationsByAttribute(std::vector<Json::Value>& relations, attribute_vector& attrs) {
+std::vector<Json::Value> IndexHandler::filterRelationsByAttribute(std::vector<Json::Value>& relations, AttributeBucket& attrs) {
     bool matching = true;
     std::string entity;
     valpair attr_set;
@@ -442,6 +455,7 @@ std::vector<Json::Value> IndexHandler::filterRelationsByAttribute(std::vector<Js
 
             entity = std::get<0>(*it_inner);
             attr_set = std::get<1>(*it_inner);
+
 
             // Match left hand relations
             if ((*it)[JSON_ATTR_REL_FIELDSL].isMember(std::get<0>(attr_set))) {
