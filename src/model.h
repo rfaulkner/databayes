@@ -61,7 +61,41 @@ public:
     valpair attrs_left;
     valpair attrs_right;
 
+    /**
+     *  Build relation from Json
+     */
+    void fromJSON(Json::Value) { return *this; }
 
+    /**
+     *  Convert relation object to JSON
+     */
+    Json::Value toJson() {
+
+        Json::Value jsonVal;
+        std::string key;
+        Json::Value jsonValFieldsLeft;
+        Json::Value jsonValFieldsRight;
+
+        jsonVal[JSON_ATTR_REL_ENTL] = this->name_left;
+        jsonVal[JSON_ATTR_REL_ENTR] = this->name_right;
+
+        this->buildFieldJSONValue(jsonValFieldsLeft, this->attrs_left);
+        this->buildFieldJSONValue(jsonValFieldsRight, this->attrs_right);
+
+        jsonVal[JSON_ATTR_REL_FIELDSL] = jsonValFieldsLeft;
+        jsonVal[JSON_ATTR_REL_FIELDSR] = jsonValFieldsRight;
+
+        this->redisHandler->connect();
+        key = this->generateRelationKey(this->name_left, this->name_right, md5(jsonVal.toStyledString()));
+
+        if (this->redisHandler->exists(key)) {
+            if (this->fetchRaw(key, jsonVal)) {
+                jsonVal[JSON_ATTR_REL_COUNT] = jsonVal[JSON_ATTR_REL_COUNT].asInt() + 1;
+            } else
+                return false;
+        } else {jsonVal[JSON_ATTR_REL_COUNT] = 1;}
+        return jsonVal;
+    }
 };
 
 /**
@@ -76,7 +110,12 @@ public:
 
     void addAttribute(std::string entity, valpair& vp);
     std::string std::string getAttribute(std::string entity, valpair& vp);
-    Json::Value& getJson();
+
+    Json::Value& getJson() {
+    }
+
     void removeAttribute(std::string entity, valpair& vp);
 
 };
+
+#endif
