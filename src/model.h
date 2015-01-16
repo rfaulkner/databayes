@@ -61,14 +61,17 @@ public:
     valpair attrs_left;
     valpair attrs_right;
 
-    /**
-     *  Build relation from Json
-     */
-    void fromJSON(Json::Value) { return *this; }
+    /** Handles forming the json for field vectors in the index */
+    void getJSONValue(Json::Value& value, valpair& fields) {
+        int count = 0;
+        for (valpair::iterator it = fields.begin() ; it != fields.end(); ++it) {
+            value[(*it).first] = (*it).second;
+            count++;
+        }
+        value[JSON_ATTR_FIELDS_COUNT] = count;
+    }
 
-    /**
-     *  Convert relation object to JSON
-     */
+    /** Convert relation object to JSON */
     Json::Value toJson() {
 
         Json::Value jsonVal;
