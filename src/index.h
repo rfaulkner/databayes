@@ -70,7 +70,7 @@ public:
     std::vector<std::string>* fetchPatternKeys(std::string);
     bool fetchFromDisk(int);   // Loads disk
 
-    std::vector<Json::Value> filterRelationsByAttribute(std::vector<Json::Value>&, AttributeBucket&);
+    std::vector<Relation> filterRelationsByAttribute(std::vector<Relation>&, AttributeBucket&);
 
     std::string generateEntityKey(std::string);
     std::string generateRelationKey(std::string, std::string, std::string);
