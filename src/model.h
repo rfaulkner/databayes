@@ -68,10 +68,31 @@ public:
     }
 
     /** Build relation from Json */
-    void fromJSON(Json::Value value) {
+    bool fromJSON(Json::Value value) {
+
+        // Ensure that all of the realtion fields are present
+        if (!value.isMember(JSON_ATTR_REL_ENTL) || !value.isMember(JSON_ATTR_REL_ENTR) || !value.isMember(JSON_ATTR_REL_FIELDSL) || !value.isMember(JSON_ATTR_REL_FIELDSR))
+            return false;
+
         this->name_left = value[JSON_ATTR_REL_ENTL].asCString();
         this->name_right = value[JSON_ATTR_REL_ENTR].asCString();
-        // jsonVal[JSON_ATTR_REL_FIELDSL];
+
+        Json::Value left = jsonVal[JSON_ATTR_REL_FIELDSL];
+        Json::Value right = jsonVal[JSON_ATTR_REL_FIELDSL];
+
+        // Extract the left-hand & right-hand fields
+        Json::Value::Members members = jsonVal[JSON_ATTR_REL_FIELDSL].getMemberNames();
+        for (Json::Value::Members::iterator it = members.begin(); it != members.end(); ++it)
+            if (std::strcmp(JSON_ATTR_FIELDS_COUNT, *it) != 0) {
+                attrs_left.push_back(
+                    std::make_pair(*it, jsonVal[JSON_ATTR_REL_FIELDSL][*it].asCString()));
+
+        members = jsonVal[JSON_ATTR_REL_FIELDSR].getMemberNames();
+        for (Json::Value::Members::iterator it = members.begin(); it != members.end(); ++it)
+            if (std::strcmp(JSON_ATTR_FIELDS_COUNT, *it) != 0) {
+                attrs_left.push_back(
+                    std::make_pair(*it, jsonVal[JSON_ATTR_REL_FIELDSR][*it].asCString()));
+        return true;
     }
 
     /** Handles forming the json for field vectors in the index */
