@@ -14,6 +14,16 @@
 #include <string>
 #include <json/json.h>
 
+// JSON Attribute Macros
+#define JSON_ATTR_ENT_ENT "entity"
+#define JSON_ATTR_ENT_FIELDS "fields"
+#define JSON_ATTR_FIELDS_COUNT "_itemcount"
+#define JSON_ATTR_REL_COUNT "instance_count"
+#define JSON_ATTR_REL_ENTL "entity_left"
+#define JSON_ATTR_REL_ENTR "entity_right"
+#define JSON_ATTR_REL_FIELDSL "fields_left"
+#define JSON_ATTR_REL_FIELDSR "fields_right"
+
 using namespace std;
 
 // Vector type that defines entities
@@ -44,22 +54,18 @@ public:
 class Relation {
 public:
 
+    std::string name_left;
+    std::string name_right;
+    valpair attrs_left;
+    valpair attrs_right;
+
     /** Constructor/Builder for relations  */
-    Relation(
-            std::string left,
-            std::string right,
-            valpair& attrs_left,
-            valpair& attrs_right) {
+    Relation(std::string left, std::string right, valpair& attrs_left, valpair& attrs_right) {
         this->name_left = left;
         this->name_right = right;
         this->attrs_left = attrs_left;
         this->attrs_right = attrs_right;
     }
-
-    std::string name_left;
-    std::string name_right;
-    valpair attrs_left;
-    valpair attrs_right;
 
     /** Handles forming the json for field vectors in the index */
     void getJSONValue(Json::Value& value, valpair& fields) {
@@ -82,8 +88,8 @@ public:
         jsonVal[JSON_ATTR_REL_ENTL] = this->name_left;
         jsonVal[JSON_ATTR_REL_ENTR] = this->name_right;
 
-        this->buildFieldJSONValue(jsonValFieldsLeft, this->attrs_left);
-        this->buildFieldJSONValue(jsonValFieldsRight, this->attrs_right);
+        this->getJSONValue(jsonValFieldsLeft, this->attrs_left);
+        this->getJSONValue(jsonValFieldsRight, this->attrs_right);
 
         jsonVal[JSON_ATTR_REL_FIELDSL] = jsonValFieldsLeft;
         jsonVal[JSON_ATTR_REL_FIELDSR] = jsonValFieldsRight;
@@ -97,6 +103,7 @@ public:
             } else
                 return false;
         } else {jsonVal[JSON_ATTR_REL_COUNT] = 1;}
+
         return jsonVal;
     }
 };

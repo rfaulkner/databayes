@@ -35,18 +35,6 @@
 #define KEY_DELIMETER "+"
 #define KEY_TOTAL_RELATIONS "total_relations"
 
-// JSON Attribute Macros
-#define JSON_ATTR_ENT_ENT "entity"
-#define JSON_ATTR_ENT_FIELDS "fields"
-#define JSON_ATTR_FIELDS_COUNT "_itemcount"
-#define JSON_ATTR_REL_COUNT "instance_count"
-#define JSON_ATTR_REL_ENTL "entity_left"
-#define JSON_ATTR_REL_ENTR "entity_right"
-#define JSON_ATTR_REL_FIELDSL "fields_left"
-#define JSON_ATTR_REL_FIELDSR "fields_right"
-
-
-
 class IndexHandler {
 
     RedisHandler* redisHandler;
