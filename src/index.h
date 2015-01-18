@@ -70,6 +70,7 @@ public:
     std::vector<std::string>* fetchPatternKeys(std::string);
     bool fetchFromDisk(int);   // Loads disk
 
+    std::vector<Relation> Json2RelationVector(std::vector<Json::Value>);
     std::vector<Relation> filterRelationsByAttribute(std::vector<Relation>&, AttributeBucket&);
 
     std::string generateEntityKey(std::string);
@@ -415,6 +416,18 @@ long IndexHandler::getRelationCountTotal() {
 void IndexHandler::setRelationCountTotal(long value) {
     this->redisHandler->connect();
     this->redisHandler->write(KEY_TOTAL_RELATIONS, std::to_string(value).c_str());
+}
+
+/** Fetch the number of relations existing */
+std::vector<Relation> IndexHandler::Json2RelationVector(std::vector<Json::Value>) {
+    std::vector<Relation> relations;
+    Relation* relation;
+    for (std::vector<Json::Value>::iterator it = fields.begin() ; it != fields.end(); ++it) {
+        relation = new Relation();
+        relation.fromJSON(*it);
+        relations.push_back(*relation);
+    }
+    return relations;
 }
 
 
