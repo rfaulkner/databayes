@@ -67,6 +67,13 @@ public:
         this->attrs_right = attrs_right;
     }
 
+    /** Build relation from Json */
+    void fromJSON(Json::Value value) {
+        this->name_left = value[JSON_ATTR_REL_ENTL].asCString();
+        this->name_right = value[JSON_ATTR_REL_ENTR].asCString();
+        // jsonVal[JSON_ATTR_REL_FIELDSL];
+    }
+
     /** Handles forming the json for field vectors in the index */
     void getJSONValue(Json::Value& value, valpair& fields) {
         int count = 0;
@@ -94,16 +101,6 @@ public:
         jsonVal[JSON_ATTR_REL_FIELDSL] = jsonValFieldsLeft;
         jsonVal[JSON_ATTR_REL_FIELDSR] = jsonValFieldsRight;
 
-        this->redisHandler->connect();
-        key = this->generateRelationKey(this->name_left, this->name_right, md5(jsonVal.toStyledString()));
-
-        if (this->redisHandler->exists(key)) {
-            if (this->fetchRaw(key, jsonVal)) {
-                jsonVal[JSON_ATTR_REL_COUNT] = jsonVal[JSON_ATTR_REL_COUNT].asInt() + 1;
-            } else
-                return false;
-        } else {jsonVal[JSON_ATTR_REL_COUNT] = 1;}
-
         return jsonVal;
     }
 };
@@ -119,7 +116,7 @@ class AttributeBucket {
 public:
 
     void addAttribute(std::string entity, valpair& vp);
-    std::string std::string getAttribute(std::string entity, valpair& vp);
+    std::string getAttribute(std::string entity, valpair& vp);
 
     Json::Value& getJson() {
     }
