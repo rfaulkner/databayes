@@ -134,7 +134,17 @@ public:
 /**
  *  Structure for storing the identifiable properties of an Attribute
  */
-struct AttributeTuple {
+class AttributeTuple {
+
+public:
+
+    AttributeTuple(std::string entity, std::string attribute, std::string value, std::string comparator) {
+        this->entity = entity;
+        this->attribute = attribute;
+        this->value = value;
+        this->comparator = comparator;
+    }
+
     ColumnBase type;
     std::string entity;
     std::string attribute;
