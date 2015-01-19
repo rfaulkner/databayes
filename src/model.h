@@ -60,12 +60,7 @@ public:
     valpair attrs_right;
 
     /** Constructor/Builder for relations  */
-    Relation() {
-        this->name_left = NULL;
-        this->name_right = NULL;
-        this->attrs_left = NULL;
-        this->attrs_right = NULL;
-    }
+    Relation() {}
 
     Relation(std::string left, std::string right, valpair& attrs_left, valpair& attrs_right) {
         this->name_left = left;
