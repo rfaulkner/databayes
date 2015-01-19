@@ -371,13 +371,14 @@ std::vector<Relation> IndexHandler::filterRelationsByAttribute(
                             std::vector<Relation>& relations, AttributeBucket& filterAttrs) {
     bool matching = true;
     std::string key, value;
-    Json::value filterAttrsJson = filterAttrs.getJson();
+    Json::Value filterAttrsJson = filterAttrs.getJson();
+    std::vector<Relation> filtered_relations;
 
     // Iterate over relations
     for (std::vector<Relation>::iterator it = relations.begin(); it != relations.end(); ++it) {
 
         // Match left hand relations
-        for (valpair::iterator it_inner = it->attrs_left.begin(); it_inner != attrs.end(); ++it_inner) {
+        for (valpair::iterator it_inner = it->attrs_left.begin(); it_inner != it->attrs_left.end(); ++it_inner) {
             key = it->name_left + std::string(".") + std::get<0>(*it_inner);
             if (filterAttrsJson.isMember(key)) {
                 value = std::get<1>(*it_inner);
@@ -389,7 +390,7 @@ std::vector<Relation> IndexHandler::filterRelationsByAttribute(
         }
 
         // Match right hand relations
-        for (valpair::iterator it_inner = it->attrs_right.begin(); it_inner != attrs.end(); ++it_inner) {
+        for (valpair::iterator it_inner = it->attrs_right.begin(); it_inner !=  it->attrs_right.end(); ++it_inner) {
             key = it->name_left + std::string(".") + std::get<0>(*it_inner);
             if (filterAttrsJson.isMember(key)) {
                 value = std::get<1>(*it_inner);
@@ -419,7 +420,7 @@ void IndexHandler::setRelationCountTotal(long value) {
 }
 
 /** Fetch the number of relations existing */
-std::vector<Relation> IndexHandler::Json2RelationVector(std::vector<Json::Value>) {
+std::vector<Relation> IndexHandler::Json2RelationVector(std::vector<Json::Value> fields) {
     std::vector<Relation> relations;
     Relation* relation;
     for (std::vector<Json::Value>::iterator it = fields.begin() ; it != fields.end(); ++it) {
