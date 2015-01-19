@@ -12,6 +12,7 @@
 #define _model_h
 
 #include <string>
+#include <unordered_map>
 #include <json/json.h>
 
 // JSON Attribute Macros
@@ -129,22 +130,36 @@ public:
 };
 
 /**
+ *  Structure for storing the identifiable properties of an Attribute
+ */
+struct AttributeTuple {
+    ColumnBase type;
+    std::string entity;
+    std::string attribute;
+    std::string value;
+};
+
+/**
  *  Wrapper around a json object that stores a series of attributes
  */
 class AttributeBucket {
 
-    Json::Value inMem;
-    Json::Reader reader;
+    // Hashmap storing attribute instances in this bucket
+    std::unordered_map<std::string, AttributeTuple&> attrs;
 
 public:
 
-    void addAttribute(std::string entity, valpair& vp);
-    std::string getAttribute(std::string entity, valpair& vp);
+    // Insert a new atribute into the bucket
+    bool addAttribute(AttributeTuple&) { return true; }
 
-    Json::Value& getJson() {
-    }
+    // Remove an existing attribute from the bucket
+    bool removeAttribute(AttributeTuple&) { return true; }
 
-    void removeAttribute(std::string entity, valpair& vp);
+    // Get the attribute for this key in this bucket.
+    AttributeTuple& getAttribute(std::string entity, std::string attr) { return new AttributeBucket(); }
+
+    // Does the attribute exist in this bucket?
+    bool isAttribute(std::string entity, std::string attr) { return true; }
 
 };
 
