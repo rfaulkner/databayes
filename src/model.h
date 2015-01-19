@@ -154,6 +154,37 @@ public:
 
     // Performs comparison on an AttributeTuple argument
     bool doCompare(AttributeTuple& attrIn) { return true; }
+
+    bool operator>(const AttributeTuple &rhs) const {
+
+        // convert value to column type and make comparison
+
+        return false;
+    }
+
+    bool operator<(const AttributeTuple &rhs) const {
+        return rhs > *this;
+    }
+
+    bool operator>=(const AttributeTuple &rhs) const {
+        return *this > rhs || *this == rhs;
+    }
+
+    bool operator<=(const AttributeTuple &rhs) const {
+        return *this < rhs || *this == rhs;
+    }
+
+    bool operator==(const AttributeTuple &other) const {
+
+        // convert value to column type and make comparison
+
+        // Everything matches, success!
+        return true;
+    }
+
+    bool operator!=(const AttributeTuple &other) const {
+        return !(*this==other);
+    }
 };
 
 /**
