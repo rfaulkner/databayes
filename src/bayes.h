@@ -43,7 +43,7 @@ public:
 long Bayes::countRelations(std::string e1, std::string e2, AttributeBucket& attrs) {
     std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(e1, e2);
     std::vector<Relation> relationsVec = this->indexHandler->Json2RelationVector(relations);
-    return this->indexHandler->filterRelationsByAttribute(relationsVec, attrs).size();
+    return this->indexHandler->filterRelations(relationsVec, attrs).size();
 }
 
 /** Count the occurrences of an entity among relevant relations */
@@ -52,8 +52,8 @@ long Bayes::countEntityInRelations(std::string e, AttributeBucket& attrs) {
     std::vector<Json::Value> relations_right = this->indexHandler->fetchRelationPrefix("*", e);
     std::vector<Relation> relationsVecLeft = this->indexHandler->Json2RelationVector(relations_left);
     std::vector<Relation> relationsVecRight = this->indexHandler->Json2RelationVector(relations_right);
-    return this->indexHandler->filterRelationsByAttribute(relationsVecLeft, attrs).size() +
-        this->indexHandler->filterRelationsByAttribute(relationsVecRight, attrs).size();
+    return this->indexHandler->filterRelations(relationsVecLeft, attrs).size() +
+        this->indexHandler->filterRelations(relationsVecRight, attrs).size();
 }
 
 /** Marginal probability of an entities determined by occurrences present in relations */

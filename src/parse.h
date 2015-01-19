@@ -394,7 +394,7 @@ std::string Parser::analyze(const std::string& s) {
 
             // Fetch relations and filter on attribute criteria
             std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(this->bufferEntity, this->currEntity);
-            this->indexHandler->filterRelationsByAttribute(relations, *(this->currValues));
+            this->indexHandler->filterRelations(relations, *(this->currValues));
 
             // for each relation determine if they match the condition criteria
             for (std::vector<Json::Value>::iterator it = relations.begin() ; it != relations.end(); ++it)

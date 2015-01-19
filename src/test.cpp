@@ -19,6 +19,7 @@
 #include "md5.h"
 #include "index.h"
 #include "bayes.h"
+#include "model.h"
 
 #define REDISHOST "127.0.0.1"
 #define REDISPORT 6379
@@ -311,6 +312,19 @@ void testRelationFiltering() {
     // TODO - implement
 }
 
+/**
+ *  Tests that the correct relations are filtered from a set
+ */
+void testRelation_toJson() {
+    valpair left, right;
+    left.push_back(std::make_pair("x", "1"));
+    right.push_back(std::make_pair("y", "2"));
+    Relation rel("x", "y", left, right);
+    Json::Value json = rel.toJson();
+    cout << value.toStyledString() << endl;
+}
+
+
 int main() {
     cout << "-- TESTS BEGIN --" << endl << endl;
 
@@ -327,7 +341,9 @@ int main() {
     // testFieldAssignTypeMismatchInteger();
     // testFieldAssignTypeMismatchFloat();
     // testFieldAssignTypeMismatchString();
-    testComputeMarginal();
+    // testComputeMarginal();
+
+    testRelation_toJson();
 
     cout << endl << "-- TESTS END --" << endl;
 

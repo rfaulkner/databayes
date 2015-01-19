@@ -71,7 +71,7 @@ public:
     bool fetchFromDisk(int);   // Loads disk
 
     std::vector<Relation> Json2RelationVector(std::vector<Json::Value>);
-    std::vector<Relation> filterRelationsByAttribute(std::vector<Relation>&, AttributeBucket&);
+    std::vector<Relation> filterRelations(std::vector<Relation>&, AttributeBucket&);
 
     std::string generateEntityKey(std::string);
     std::string generateRelationKey(std::string, std::string, std::string);
@@ -365,41 +365,37 @@ std::string IndexHandler::orderPairAlphaNumeric(std::string s1, std::string s2) 
 }
 
 /**
- *  Filter matching relations based on contents attrs
+ *  Filter matching relations based on contents attrs.  All of a relations attributes must match those
+ *  in the bucket to be included
  */
-std::vector<Relation> IndexHandler::filterRelationsByAttribute(
+std::vector<Relation> IndexHandler::filterRelations(
                             std::vector<Relation>& relations, AttributeBucket& filterAttrs) {
     bool matching = true;
     std::string key, value;
-    Json::Value filterAttrsJson = filterAttrs.getJson();
     std::vector<Relation> filtered_relations;
+    AttributeTuple* currAttr, bucketAttr;
 
     // Iterate over relations
     for (std::vector<Relation>::iterator it = relations.begin(); it != relations.end(); ++it) {
 
         // Match left hand relations
         for (valpair::iterator it_inner = it->attrs_left.begin(); it_inner != it->attrs_left.end(); ++it_inner) {
-            key = it->name_left + std::string(".") + std::get<0>(*it_inner);
-            if (filterAttrsJson.isMember(key)) {
-                value = std::get<1>(*it_inner);
-                if (filterAttrsJson[key].compare(value)) {
-                    matching = false;
-                    break;
-                }
+            currAttr = new AttributeTuple(it->name_left, std::get<0>(*it_inner), std::get<1>(*it_inner));
+            if (bucketAttr = filterAttrs.getAttribute(*currAttr)) {
+                matching = bucketAttr->doCompare(*currAttr);
+                if (!matching) break;
             }
         }
 
-        // Match right hand relations
-        for (valpair::iterator it_inner = it->attrs_right.begin(); it_inner !=  it->attrs_right.end(); ++it_inner) {
-            key = it->name_left + std::string(".") + std::get<0>(*it_inner);
-            if (filterAttrsJson.isMember(key)) {
-                value = std::get<1>(*it_inner);
-                if (filterAttrsJson[key].compare(value)) {
-                    matching = false;
-                    break;
+        // Match right hand relations - only process if left hand relations matched
+        if (matching)
+            for (valpair::iterator it_inner = it->attrs_right.begin(); it_inner != it->attrs_right.end(); ++it_inner) {
+                currAttr = new AttributeTuple(it->name_left, std::get<0>(*it_inner), std::get<1>(*it_inner));
+                if (bucketAttr = filterAttrs.getAttribute(*currAttr)) {
+                    matching = bucketAttr->doCompare(*currAttr);
+                    if (!matching) break;
                 }
             }
-        }
 
         if (matching)
             filtered_relations.push_back(*it);
