@@ -168,6 +168,16 @@ public:
     // Remove an existing attribute from the bucket
     bool removeAttribute(AttributeTuple&) { return true; }
 
+    // Remove an existing attribute from the bucket
+    ColumnBase* getType(AttributeTuple&) {
+        AttributeTuple localAttr;
+            localAttr = attrs[this->makeKey(attr)];
+            return &localAttr.type;
+        } else {
+            return NULL;
+        }
+    }
+
     // Get the attribute for this key in this bucket
     AttributeTuple* getAttribute(AttributeTuple& attr) {
         if (this->isAttribute(attr))
@@ -177,7 +187,12 @@ public:
     }
 
     // Does the attribute exist in this bucket?
-    bool isAttribute(AttributeTuple& attr) { return true; }
+    bool isAttribute(AttributeTuple& attr) {
+        if (this->isAttribute(attr))
+            return true;
+        else
+            return false;
+    }
 
     std::string makeKey(AttributeTuple& attr) { return md5(attr.entity + attr.attribute + attr.value + attr.comparator); }
 };
