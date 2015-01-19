@@ -11,6 +11,8 @@
 #ifndef _model_h
 #define _model_h
 
+#include "md5.h"
+
 #include <string>
 #include <unordered_map>
 #include <json/json.h>
@@ -137,6 +139,7 @@ struct AttributeTuple {
     std::string entity;
     std::string attribute;
     std::string value;
+    std::string comparator;
 };
 
 /**
@@ -155,12 +158,18 @@ public:
     // Remove an existing attribute from the bucket
     bool removeAttribute(AttributeTuple&) { return true; }
 
-    // Get the attribute for this key in this bucket.
-    AttributeTuple& getAttribute(std::string entity, std::string attr) { return new AttributeBucket(); }
+    // Get the attribute for this key in this bucket
+    AttributeTuple* getAttribute(AttributeTuple& attr) {
+        if (this->isAttribute(attr))
+            return &attrs[this->makeKey(attr)];
+        else
+            return NULL;   // return an empty tuple
+    }
 
     // Does the attribute exist in this bucket?
-    bool isAttribute(std::string entity, std::string attr) { return true; }
+    bool isAttribute(AttributeTuple& attr) { return true; }
 
+    std::string makeKey(AttributeTuple& attr) { return md5(attr.entity + attr.attribute + attr.value + attr.comparator); }
 };
 
 #endif
