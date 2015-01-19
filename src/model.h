@@ -132,17 +132,18 @@ public:
 };
 
 /**
- *  Structure for storing the identifiable properties of an Attribute
+ *  Structure for storing the identifiable properties of an Attribute and matching.
+ *
+ *  TODO - operator overloading
  */
 class AttributeTuple {
 
 public:
 
-    AttributeTuple(std::string entity, std::string attribute, std::string value, std::string comparator) {
+    AttributeTuple(std::string entity, std::string attribute, std::string value) {
         this->entity = entity;
         this->attribute = attribute;
         this->value = value;
-        this->comparator = comparator;
     }
 
     ColumnBase type;
@@ -150,6 +151,9 @@ public:
     std::string attribute;
     std::string value;
     std::string comparator;
+
+    // Performs comparison on an AttributeTuple argument
+    bool doCompare(AttributeTuple& attrIn) { return true; }
 };
 
 /**
@@ -168,25 +172,23 @@ public:
     // Remove an existing attribute from the bucket
     bool removeAttribute(AttributeTuple&) { return attrs.erase(this->makeKey(attr)) == 0; }
 
-    // Remove an existing attribute from the bucket
-    ColumnBase* getType(AttributeTuple&) {
-        AttributeTuple localAttr;
-            localAttr = attrs[this->makeKey(attr)];
-            return &localAttr.type;
-        } else {
+    // Does the attribute exist in this bucket?
+    AttributeTuple* getAttribute(AttributeTuple& attr) {
+        if (this->isAttribute(attr))
+            return this->attrs[this->makeKey(attr)];
+        else
             return NULL;
-        }
     }
 
     // Does the attribute exist in this bucket?
     bool isAttribute(AttributeTuple& attr) {
-        if (this->isAttribute(attr))
+        if (this->attrs.find(this->makeKey(attr)) != this->attrs.end())
             return true;
         else
             return false;
     }
 
-    std::string makeKey(AttributeTuple& attr) { return md5(attr.entity + attr.attribute + attr.value + attr.comparator); }
+    std::string makeKey(AttributeTuple& attr) { return md5(attr.entity + attr.attribute + attr.value); }
 };
 
 #endif
