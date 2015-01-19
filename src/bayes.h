@@ -23,38 +23,41 @@ using namespace std;
 class Bayes {
     IndexHandler* indexHandler;
 
-    long countEntityInRelations(std::string, valpair&);
-    long countRelations(std::string, std::string, valpair&);
+    long countEntityInRelations(std::string, AttributeBucket&);
+    long countRelations(std::string, std::string, AttributeBucket&);
 
 public:
     Bayes() { this->indexHandler = new IndexHandler(); }
 
-    float computeMarginal(std::string, valpair&);
-    float computeConditional(std::string, std::string, valpair&);
-    float computePairwise(std::string, std::string, valpair&);
+    float computeMarginal(std::string, AttributeBucket&);
+    float computeConditional(std::string, std::string, AttributeBucket&);
+    float computePairwise(std::string, std::string, AttributeBucket&);
 
-    Json::Value sampleMarginal(std::string, valpair&);
-    Json::Value sampleConditional(std::string, std::string, valpair&);
-    Json::Value samplePairwise(std::string, std::string, valpair&);
+    Json::Value sampleMarginal(std::string, AttributeBucket&);
+    Json::Value sampleConditional(std::string, std::string, AttributeBucket&);
+    Json::Value samplePairwise(std::string, std::string, AttributeBucket&);
 
 };
 
 /** Count the occurrences of a relation */
-long Bayes::countRelations(std::string e1, std::string e2, valpair& attrs) {
+long Bayes::countRelations(std::string e1, std::string e2, AttributeBucket& attrs) {
     std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(e1, e2);
-    return this->indexHandler->filterRelationsByAttribute(relations, attrs).size();
+    std::vector<Relation> relationsVec = this->indexHandler->Json2RelationVector(relations);
+    return this->indexHandler->filterRelationsByAttribute(relationsVec, attrs).size();
 }
 
 /** Count the occurrences of an entity among relevant relations */
-long Bayes::countEntityInRelations(std::string e, valpair& attrs) {
+long Bayes::countEntityInRelations(std::string e, AttributeBucket& attrs) {
     std::vector<Json::Value> relations_left = this->indexHandler->fetchRelationPrefix(e, "*");
     std::vector<Json::Value> relations_right = this->indexHandler->fetchRelationPrefix("*", e);
-
-    return this->indexHandler->filterRelationsByAttribute(relations_left, attrs).size() + this->indexHandler->filterRelationsByAttribute(relations_right, attrs).size();
+    std::vector<Relation> relationsVecLeft = this->indexHandler->Json2RelationVector(relations_left);
+    std::vector<Relation> relationsVecRight = this->indexHandler->Json2RelationVector(relations_right);
+    return this->indexHandler->filterRelationsByAttribute(relationsVecLeft, attrs).size() +
+        this->indexHandler->filterRelationsByAttribute(relationsVecRight, attrs).size();
 }
 
 /** Marginal probability of an entities determined by occurrences present in relations */
-float Bayes::computeMarginal(std::string e, valpair& attrs) {
+float Bayes::computeMarginal(std::string e, AttributeBucket& attrs) {
     long total = this->indexHandler->getRelationCountTotal();
     if (total > 0)
         return (float)this->countEntityInRelations(e, attrs) / (float)total;
@@ -65,7 +68,7 @@ float Bayes::computeMarginal(std::string e, valpair& attrs) {
 }
 
 /** Relation probabilities determined by occurrences present in relations */
-float Bayes::computePairwise(std::string e1, std::string e2, valpair& attrs) {
+float Bayes::computePairwise(std::string e1, std::string e2, AttributeBucket& attrs) {
     long total = this->indexHandler->getRelationCountTotal();
     if (total > 0)
         return (float)this->countRelations(e1, e2, attrs) / (float)total;
@@ -76,7 +79,7 @@ float Bayes::computePairwise(std::string e1, std::string e2, valpair& attrs) {
 }
 
 /** Conditional Probabilities among entities */
-float Bayes::computeConditional(std::string e1, std::string e2, valpair& attrs) {
+float Bayes::computeConditional(std::string e1, std::string e2, AttributeBucket& attrs) {
     float pairwise = this->computePairwise(e1, e2, attrs);
     float marginal = this->computeMarginal(e2, attrs);
 
@@ -88,17 +91,17 @@ float Bayes::computeConditional(std::string e1, std::string e2, valpair& attrs) 
     }
 }
 
-Json::Value sampleMarginal(std::string e, valpair& attrs) {
+Json::Value sampleMarginal(std::string e, AttributeBucket& attrs) {
     Json::Value j;
     return j;
 }
 
-Json::Value sampleConditional(std::string e1, std::string e2, valpair& attrs) {
+Json::Value sampleConditional(std::string e1, std::string e2, AttributeBucket& attrs) {
     Json::Value j;
     return j;
 }
 
-Json::Value samplePairwise(std::string e1, std::string e2, valpair& attrs) {
+Json::Value samplePairwise(std::string e1, std::string e2, AttributeBucket& attrs) {
     Json::Value j;
     return j;
 }
