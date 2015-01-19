@@ -79,21 +79,21 @@ public:
         this->name_left = value[JSON_ATTR_REL_ENTL].asCString();
         this->name_right = value[JSON_ATTR_REL_ENTR].asCString();
 
-        Json::Value left = jsonVal[JSON_ATTR_REL_FIELDSL];
-        Json::Value right = jsonVal[JSON_ATTR_REL_FIELDSL];
+        Json::Value left = value[JSON_ATTR_REL_FIELDSL];
+        Json::Value right = value[JSON_ATTR_REL_FIELDSL];
 
         // Extract the left-hand & right-hand fields
-        Json::Value::Members members = jsonVal[JSON_ATTR_REL_FIELDSL].getMemberNames();
+        Json::Value::Members members = value[JSON_ATTR_REL_FIELDSL].getMemberNames();
         for (Json::Value::Members::iterator it = members.begin(); it != members.end(); ++it)
-            if (std::strcmp(JSON_ATTR_FIELDS_COUNT, *it) != 0) {
+            if (std::strcmp(JSON_ATTR_FIELDS_COUNT, it->c_str()) != 0)
                 attrs_left.push_back(
-                    std::make_pair(*it, jsonVal[JSON_ATTR_REL_FIELDSL][*it].asCString()));
+                    std::make_pair(*it, value[JSON_ATTR_REL_FIELDSL][*it].asCString()));
 
-        members = jsonVal[JSON_ATTR_REL_FIELDSR].getMemberNames();
+        members = value[JSON_ATTR_REL_FIELDSR].getMemberNames();
         for (Json::Value::Members::iterator it = members.begin(); it != members.end(); ++it)
-            if (std::strcmp(JSON_ATTR_FIELDS_COUNT, *it) != 0) {
+            if (std::strcmp(JSON_ATTR_FIELDS_COUNT, it->c_str()) != 0)
                 attrs_left.push_back(
-                    std::make_pair(*it, jsonVal[JSON_ATTR_REL_FIELDSR][*it].asCString()));
+                    std::make_pair(*it, value[JSON_ATTR_REL_FIELDSR][*it].asCString()));
         return true;
     }
 
