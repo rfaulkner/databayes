@@ -163,10 +163,10 @@ class AttributeBucket {
 public:
 
     // Insert a new atribute into the bucket
-    bool addAttribute(AttributeTuple&) { return true; }
+    void addAttribute(AttributeTuple& attr) { attrs.insert(std::make_pair<std::string, AttributeTuple&>(this->makeKey(attr), attr)); }
 
     // Remove an existing attribute from the bucket
-    bool removeAttribute(AttributeTuple&) { return true; }
+    bool removeAttribute(AttributeTuple&) { return attrs.erase(this->makeKey(attr)) == 0; }
 
     // Remove an existing attribute from the bucket
     ColumnBase* getType(AttributeTuple&) {
@@ -176,14 +176,6 @@ public:
         } else {
             return NULL;
         }
-    }
-
-    // Get the attribute for this key in this bucket
-    AttributeTuple* getAttribute(AttributeTuple& attr) {
-        if (this->isAttribute(attr))
-            return &attrs[this->makeKey(attr)];
-        else
-            return NULL;   // return an empty tuple
     }
 
     // Does the attribute exist in this bucket?
