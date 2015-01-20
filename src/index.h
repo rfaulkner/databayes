@@ -382,7 +382,7 @@ std::vector<Relation> IndexHandler::filterRelations(
         for (valpair::iterator it_inner = it->attrs_left.begin(); it_inner != it->attrs_left.end(); ++it_inner) {
             currAttr = new AttributeTuple(it->name_left, std::get<0>(*it_inner), std::get<1>(*it_inner));
             if (bucketAttr = filterAttrs.getAttribute(*currAttr)) {
-                matching = bucketAttr->doCompare(*currAttr);
+                matching = AttributeTuple::compare(*bucketAttr, *currAttr);
                 if (!matching) break;
             }
         }
@@ -392,7 +392,7 @@ std::vector<Relation> IndexHandler::filterRelations(
             for (valpair::iterator it_inner = it->attrs_right.begin(); it_inner != it->attrs_right.end(); ++it_inner) {
                 currAttr = new AttributeTuple(it->name_left, std::get<0>(*it_inner), std::get<1>(*it_inner));
                 if (bucketAttr = filterAttrs.getAttribute(*currAttr)) {
-                    matching = bucketAttr->doCompare(*currAttr);
+                    matching = AttributeTuple::compare(*bucketAttr, *currAttr);
                     if (!matching) break;
                 }
             }

@@ -155,8 +155,26 @@ public:
     std::string value;
     std::string comparator;
 
-    // Performs comparison on an AttributeTuple argument
-    bool doCompare(AttributeTuple& attrIn) { return true; }
+    /** Switching logic for attribute tuples */
+    static bool compare(AttributeTuple& lhs, AttributeTuple& rhs) {
+        switch (lhs.comparator) {
+            case "<":
+                return lhs < rhs;
+            case ">":
+                return lhs > rhs;
+            case "<=":
+                return lhs <= rhs;
+            case ">=":
+                return lhs >= rhs;
+            case "=":
+                return lhs == rhs;
+            case "!=":
+                return lhs != rhs;
+            default:
+                // Error - unrecogmized operator
+                return false;
+        }
+    }
 
     bool operator>(const AttributeTuple &rhs) const {
 
