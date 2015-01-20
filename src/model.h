@@ -54,6 +54,9 @@ public:
     defpair attrs;
 };
 
+/**
+ *  Models relations which consist of
+ */
 class Relation {
 public:
 
@@ -158,8 +161,16 @@ public:
     bool operator>(const AttributeTuple &rhs) const {
 
         // convert value to column type and make comparison
+        if (strcmp(rhs.type.getType(), COLTYPE_NAME_INT) == 0) {
+            return atoi(this->value.c_str()) > atoi(rhs.value.c_str());
+        } else if (strcmp(rhs.type.getType(), COLTYPE_NAME_FLOAT) == 0) {
+            return atof(this->value.c_str()) > atof(rhs.value.c_str());
+        } else if (strcmp(rhs.type.getType(), COLTYPE_NAME_STR) == 0) {
+            return this->value.c_str()[0] > rhs.value.c_str()[0];
+        }
 
-        return false;
+        // Match by default
+        return true;
     }
 
     bool operator<(const AttributeTuple &rhs) const {
@@ -177,8 +188,15 @@ public:
     bool operator==(const AttributeTuple &other) const {
 
         // convert value to column type and make comparison
+        if (strcmp(rhs.type.getType(), COLTYPE_NAME_INT) == 0) {
+            return atoi(this->value.c_str()) == atoi(rhs.value.c_str());
+        } else if (strcmp(rhs.type.getType(), COLTYPE_NAME_FLOAT) == 0) {
+            return atof(this->value.c_str()) == atof(rhs.value.c_str());
+        } else if (strcmp(rhs.type.getType(), COLTYPE_NAME_STR)) {
+            return strcmp(this->value.c_str(), rhs.value.c_str()) == 0;
+        }
 
-        // Everything matches, success!
+        // Match by default
         return true;
     }
 
