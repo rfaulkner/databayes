@@ -158,6 +158,8 @@ public:
         this->type = new NullColumn();
     }
 
+    ~AttributeTuple() { delete type; }
+
     /** Switching logic for attribute tuples */
     static bool compare(AttributeTuple& lhs, AttributeTuple& rhs) {
         if (std::strcmp(lhs.comparator.c_str(), "<"))
