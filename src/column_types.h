@@ -14,6 +14,7 @@
 #include <boost/regex.hpp>
 
 #define COLTYPE_NAME_BASE "base"
+#define COLTYPE_NAME_NULL "null"
 #define COLTYPE_NAME_INT "integer"
 #define COLTYPE_NAME_FLOAT "float"
 #define COLTYPE_NAME_STR "string"
@@ -32,10 +33,22 @@ public:
     void setValue(void* value) { this->value = value; }
 
     /** Returns the object type */
-    virtual string getType() { return COLTYPE_NAME_BASE; }
+    virtual std::string getType() { return COLTYPE_NAME_BASE; }
 
     /** Validates the string value as being of this type */
     virtual bool validate(std::string value) { return true; }
+};
+
+
+/**
+ *  Integer column type
+ */
+class NullColumn : public ColumnBase {
+    void* value;
+public:
+    NullColumn() { this->value = NULL; }
+    string getType() { return COLTYPE_NAME_NULL; }
+    bool validate(std::string value) { return true; }
 };
 
 
