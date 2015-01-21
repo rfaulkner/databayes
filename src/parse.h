@@ -393,12 +393,13 @@ std::string Parser::analyze(const std::string& s) {
                 this->currValues->push_back(*it);
 
             // Fetch relations and filter on attribute criteria
-            std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(this->bufferEntity, this->currEntity);
-            this->indexHandler->filterRelations(relations, *(this->currValues));
+            std::vector<Json::Value> relationsJson = this->indexHandler->fetchRelationPrefix(this->bufferEntity, this->currEntity);
+            std::vector<Relation> relations = this->indexHandler->Json2RelationVector(relationsJson);
+            relations = this->indexHandler->filterRelations(relations, *(new AttributeBucket(this->currEntity, *(this->currValues))));
 
             // for each relation determine if they match the condition criteria
-            for (std::vector<Json::Value>::iterator it = relations.begin() ; it != relations.end(); ++it)
-                this->rspStr += std::string((*it).toStyledString());
+            for (std::vector<Relation>::iterator it = relations.begin() ; it != relations.end(); ++it)
+                this->rspStr += std::string(it->toJson().toStyledString());
             cout << this->rspStr << endl;
 
         } else if (this->macroState == STATE_RM_REL) {

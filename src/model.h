@@ -232,6 +232,17 @@ class AttributeBucket {
 
 public:
 
+    AttributeBucket() {}
+
+    /** Constructor that converts valpair list to AttributeBucket */
+    AttributeBucket(std::string entity, valpair& vals) {
+        AttributeTuple* tuple;
+        for (valpair::iterator it = vals.begin() ; it != vals.end(); ++it) {
+            tuple = new AttributeTuple(entity, std::get<0>(*it), std::get<1>(*it));
+            this->addAttribute(*tuple);
+        }
+    }
+
     // Insert a new atribute into the bucket
     void addAttribute(AttributeTuple& attr) { this->attrs.insert(std::make_pair<std::string, AttributeTuple&>(this->makeKey(attr), attr)); }
 
