@@ -136,56 +136,53 @@ public:
 
 /**
  *  Structure for storing the identifiable properties of an Attribute and matching.
- *
- *  TODO - operator overloading
  */
 class AttributeTuple {
 
 public:
 
-    AttributeTuple() {}
-
-    AttributeTuple(std::string entity, std::string attribute, std::string value) {
-        this->entity = entity;
-        this->attribute = attribute;
-        this->value = value;
-    }
-
-    ColumnBase type;
+    ColumnBase* type;
     std::string entity;
     std::string attribute;
     std::string value;
     std::string comparator;
 
+    AttributeTuple() {
+        this->type = new NullColumn();
+    }
+
+    AttributeTuple(std::string entity, std::string attribute, std::string value) {
+        this->entity = entity;
+        this->attribute = attribute;
+        this->value = value;
+        this->type = new NullColumn();
+    }
+
     /** Switching logic for attribute tuples */
     static bool compare(AttributeTuple& lhs, AttributeTuple& rhs) {
-        switch (lhs.comparator) {
-            case "<":
-                return lhs < rhs;
-            case ">":
-                return lhs > rhs;
-            case "<=":
-                return lhs <= rhs;
-            case ">=":
-                return lhs >= rhs;
-            case "=":
-                return lhs == rhs;
-            case "!=":
-                return lhs != rhs;
-            default:
-                // Error - unrecogmized operator
-                return false;
-        }
+        if (std::strcmp(lhs.comparator.c_str(), "<"))
+            return lhs < rhs;
+        else if (std::strcmp(lhs.comparator.c_str(), ">"))
+            return lhs > rhs;
+        else if (std::strcmp(lhs.comparator.c_str(), "<="))
+            return lhs <= rhs;
+        else if (std::strcmp(lhs.comparator.c_str(), ">="))
+            return lhs >= rhs;
+        else if (std::strcmp(lhs.comparator.c_str(), "!="))
+            return lhs != rhs;
+        else if (std::strcmp(lhs.comparator.c_str(), "="))
+            return lhs == rhs;
+        else    // Error - unrecogmized operator
+            return false;
     }
 
     bool operator>(const AttributeTuple &rhs) const {
-
         // convert value to column type and make comparison
-        if (strcmp(rhs.type.getType(), COLTYPE_NAME_INT) == 0) {
+        if (strcmp(rhs.type->getType().c_str(), COLTYPE_NAME_INT) == 0) {
             return atoi(this->value.c_str()) > atoi(rhs.value.c_str());
-        } else if (strcmp(rhs.type.getType(), COLTYPE_NAME_FLOAT) == 0) {
+        } else if (strcmp(rhs.type->getType().c_str(), COLTYPE_NAME_FLOAT) == 0) {
             return atof(this->value.c_str()) > atof(rhs.value.c_str());
-        } else if (strcmp(rhs.type.getType(), COLTYPE_NAME_STR) == 0) {
+        } else if (strcmp(rhs.type->getType().c_str(), COLTYPE_NAME_STR) == 0) {
             return this->value.c_str()[0] > rhs.value.c_str()[0];
         }
 
@@ -208,12 +205,12 @@ public:
     bool operator==(const AttributeTuple &other) const {
 
         // convert value to column type and make comparison
-        if (strcmp(rhs.type.getType(), COLTYPE_NAME_INT) == 0) {
-            return atoi(this->value.c_str()) == atoi(rhs.value.c_str());
-        } else if (strcmp(rhs.type.getType(), COLTYPE_NAME_FLOAT) == 0) {
-            return atof(this->value.c_str()) == atof(rhs.value.c_str());
-        } else if (strcmp(rhs.type.getType(), COLTYPE_NAME_STR)) {
-            return strcmp(this->value.c_str(), rhs.value.c_str()) == 0;
+        if (strcmp(other.type->getType().c_str(), COLTYPE_NAME_INT) == 0) {
+            return atoi(this->value.c_str()) == atoi(other.value.c_str());
+        } else if (strcmp(other.type->getType().c_str(), COLTYPE_NAME_FLOAT) == 0) {
+            return atof(this->value.c_str()) == atof(other.value.c_str());
+        } else if (strcmp(other.type->getType().c_str(), COLTYPE_NAME_STR)) {
+            return strcmp(this->value.c_str(), other.value.c_str()) == 0;
         }
 
         // Match by default
