@@ -143,6 +143,8 @@ class AttributeTuple {
 
 public:
 
+    AttributeTuple() {}
+
     AttributeTuple(std::string entity, std::string attribute, std::string value) {
         this->entity = entity;
         this->attribute = attribute;
@@ -229,20 +231,21 @@ public:
 class AttributeBucket {
 
     // Hashmap storing attribute instances in this bucket
-    std::unordered_map<std::string, AttributeTuple&> attrs;
+    std::unordered_map<std::string, AttributeTuple> attrs;
 
 public:
 
     // Insert a new atribute into the bucket
-    void addAttribute(AttributeTuple& attr) { attrs.insert(std::make_pair<std::string, AttributeTuple&>(this->makeKey(attr), attr)); }
+    void addAttribute(AttributeTuple& attr) { this->attrs.insert(std::make_pair<std::string, AttributeTuple&>(this->makeKey(attr), attr)); }
 
     // Remove an existing attribute from the bucket
-    bool removeAttribute(AttributeTuple&) { return attrs.erase(this->makeKey(attr)) == 0; }
+    bool removeAttribute(AttributeTuple& attr) { return this->attrs.erase(this->makeKey(attr)) == 0; }
 
     // Does the attribute exist in this bucket?
     AttributeTuple* getAttribute(AttributeTuple& attr) {
+        std::string key = this->makeKey(attr);
         if (this->isAttribute(attr))
-            return this->attrs[this->makeKey(attr)];
+            return &(this->attrs[key]);
         else
             return NULL;
     }
