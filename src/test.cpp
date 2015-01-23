@@ -259,7 +259,7 @@ void testComputeMarginal() {
     ih.writeRelation(r5);
 
     // Ensure marginal likelihood reflects the number of relations that contain each entity
-    valpair attrs;
+    AttributeBucket attrs;
 
     // TODO - fix computeMarginal seg fault
     cout << bayes.computeMarginal(e1.name, attrs) << endl;
@@ -321,7 +321,7 @@ void testRelation_toJson() {
     right.push_back(std::make_pair("y", "2"));
     Relation rel("x", "y", left, right);
     Json::Value json = rel.toJson();
-    cout << value.toStyledString() << endl;
+    cout << json.toStyledString() << endl;
 }
 
 
