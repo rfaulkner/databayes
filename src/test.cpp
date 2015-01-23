@@ -321,7 +321,7 @@ void testRelation_toJson() {
     right.push_back(std::make_pair("y", "2"));
     Relation rel("x", "y", left, right);
     Json::Value json = rel.toJson();
-    cout << json.toStyledString() << endl;
+    assert(std::atoi(json[JSON_ATTR_REL_FIELDSL]["x"].asCString()) == 1 && std::atoi(json[JSON_ATTR_REL_FIELDSR]["y"].asCString()) == 2);
 }
 
 
