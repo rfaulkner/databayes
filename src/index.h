@@ -373,6 +373,9 @@ std::string IndexHandler::orderPairAlphaNumeric(std::string s1, std::string s2) 
  */
 std::vector<Relation> IndexHandler::filterRelations(
                             std::vector<Relation>& relations, AttributeBucket& filterAttrs) {
+
+    if (filterAttrs.getAttributeHash().size() == 0) return relations;
+
     bool matching = true;
     std::string key, value;
     std::vector<Relation> filtered_relations;
@@ -414,6 +417,9 @@ std::vector<Relation> IndexHandler::filterRelations(
  */
 std::vector<Json::Value> IndexHandler::filterRelations(
                             std::vector<Json::Value>& relations, AttributeBucket& filterAttrs) {
+
+    if (filterAttrs.getAttributeHash().size() == 0) return relations;
+
     bool matching = true;
     std::string key, value;
     std::vector<Json::Value> filtered_relations;
