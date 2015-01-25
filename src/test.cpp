@@ -240,17 +240,28 @@ void testComputeMarginal() {
     // declare three entities
     Entity e1("_w", fields_ent), e2("_x", fields_ent), e3("_y", fields_ent), e4("_z", fields_ent);
 
-    ih.writeEntity(e1);
-    ih.writeEntity(e2);
-    ih.writeEntity(e3);
-    ih.writeEntity(e4);
-
     // construct a number of relations
     Relation r1("_x", "_y", fields_rel, fields_rel);
     Relation r2("_x", "_y", fields_rel, fields_rel);
     Relation r3("_x", "_z", fields_rel, fields_rel);
     Relation r4("_x", "_z", fields_rel, fields_rel);
     Relation r5("_w", "_y", fields_rel, fields_rel);
+
+    ih.removeEntity("_w");
+    ih.removeEntity("_x");
+    ih.removeEntity("_y");
+    ih.removeEntity("_z");
+
+    ih.writeEntity(e1);
+    ih.writeEntity(e2);
+    ih.writeEntity(e3);
+    ih.writeEntity(e4);
+
+    ih.removeRelation(r1);
+    ih.removeRelation(r2);
+    ih.removeRelation(r3);
+    ih.removeRelation(r4);
+    ih.removeRelation(r5);
 
     ih.writeRelation(r1);
     ih.writeRelation(r2);
@@ -267,17 +278,6 @@ void testComputeMarginal() {
     assert(bayes.computeMarginal(e2.name, attrs) == 3.0 / 5.0);
     assert(bayes.computeMarginal(e3.name, attrs) == 2.0 / 5.0);
     assert(bayes.computeMarginal(e4.name, attrs) == 1.0 / 5.0);
-
-    ih.removeEntity("_w");
-    ih.removeEntity("_x");
-    ih.removeEntity("_y");
-    ih.removeEntity("_z");
-
-    ih.removeRelation(r1);
-    ih.removeRelation(r2);
-    ih.removeRelation(r3);
-    ih.removeRelation(r4);
-    ih.removeRelation(r5);
 
     // Reset the relations count
     ih.setRelationCountTotal(num_relations);
@@ -341,9 +341,9 @@ int main() {
     // testFieldAssignTypeMismatchInteger();
     // testFieldAssignTypeMismatchFloat();
     // testFieldAssignTypeMismatchString();
-    // testComputeMarginal();
+    testComputeMarginal();
 
-    testRelation_toJson();
+    // testRelation_toJson();
 
     cout << endl << "-- TESTS END --" << endl;
 
