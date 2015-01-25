@@ -251,6 +251,9 @@ public:
     // Remove an existing attribute from the bucket
     bool removeAttribute(AttributeTuple& attr) { return this->attrs.erase(this->makeKey(attr)) == 0; }
 
+    // Get hashmap copy
+    std::unordered_map<std::string, AttributeTuple> getAttributeHash() { return attrs; }
+
     // Does the attribute exist in this bucket?
     AttributeTuple* getAttribute(AttributeTuple& attr) {
         std::string key = this->makeKey(attr);
