@@ -415,7 +415,7 @@ void IndexHandler::setRelationCountTotal(long value) {
     this->redisHandler->write(KEY_TOTAL_RELATIONS, std::to_string(value).c_str());
 }
 
-/** Fetch the number of relations existing */
+/** Takes a list of relations represented as a json vector and returns a relation vector */
 std::vector<Relation> IndexHandler::Json2RelationVector(std::vector<Json::Value> fields) {
     std::vector<Relation> relations;
     Relation* relation;
@@ -425,6 +425,14 @@ std::vector<Relation> IndexHandler::Json2RelationVector(std::vector<Json::Value>
         relations.push_back(*relation);
     }
     return relations;
+}
+
+/** Takes a list of relations represented as a relation vector and returns a json vector */
+std::vector<Json::Value> IndexHandler::Relation2JsonVector(std::vector<Relation> fields) {
+    std::vector<Json::Value> jsonRelations;
+    for (std::vector<Relation>::iterator it = fields.begin() ; it != fields.end(); ++it)
+        jsonRelations.push_back(it->toJson());
+    return jsonRelations;
 }
 
 
