@@ -218,6 +218,56 @@ void testFieldAssignTypeMismatchString() {
 }
 
 /**
+ *  Tests Bayes::countRelations - ensure relation counting is functioning correctly
+ */
+void testCountRelations() {
+    Bayes bayes;
+    IndexHandler ih;
+    std::vector<Json::Value> ret;
+    std::vector<std::pair<ColumnBase*, std::string>> fields_ent;
+    std::vector<std::pair<std::string, std::string>> fields_rel;
+
+    // declare three entities
+    Entity e1("_w", fields_ent), e2("_x", fields_ent), e3("_y", fields_ent), e4("_z", fields_ent);
+
+    // construct a number of relations
+    Relation r1("_x", "_y", fields_rel, fields_rel);
+    Relation r2("_x", "_y", fields_rel, fields_rel);
+    Relation r3("_x", "_z", fields_rel, fields_rel);
+    Relation r4("_x", "_z", fields_rel, fields_rel);
+    Relation r5("_w", "_y", fields_rel, fields_rel);
+
+    ih.removeEntity("_w");
+    ih.removeEntity("_x");
+    ih.removeEntity("_y");
+    ih.removeEntity("_z");
+
+    ih.writeEntity(e1);
+    ih.writeEntity(e2);
+    ih.writeEntity(e3);
+    ih.writeEntity(e4);
+
+    ih.removeRelation(r1);
+    ih.removeRelation(r2);
+    ih.removeRelation(r3);
+    ih.removeRelation(r4);
+    ih.removeRelation(r5);
+
+    ih.writeRelation(r1);
+    ih.writeRelation(r2);
+    ih.writeRelation(r3);
+    ih.writeRelation(r4);
+    ih.writeRelation(r5);
+
+    AttributeBucket attrs; // empty set of filters
+
+    assert(bayes.countRelations(e1.name, std::string("*"), attrs) == 1);
+    assert(bayes.countRelations(e2.name, std::string("*"), attrs) == 4);
+    assert(bayes.countRelations(e3.name, std::string("*"), attrs) == 3);
+    assert(bayes.countRelations(e4.name, std::string("*"), attrs) == 2);
+}
+
+/**
  *  Tests that existsEntityField correctly flags when entity does not contain a field
  */
 void testEntityDoesNotContainField() {
@@ -341,7 +391,7 @@ int main() {
     // testFieldAssignTypeMismatchInteger();
     // testFieldAssignTypeMismatchFloat();
     // testFieldAssignTypeMismatchString();
-    testComputeMarginal();
+    testCountRelations();
 
     // testRelation_toJson();
 
