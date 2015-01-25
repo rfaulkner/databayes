@@ -42,7 +42,7 @@ public:
 /** Count the occurrences of a relation */
 long Bayes::countRelations(std::string e1, std::string e2, AttributeBucket& attrs) {
     std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(e1, e2);
-    relations = this->indexHandler->filterRelations(relationsVec, attrs);
+    relations = this->indexHandler->filterRelations(relations, attrs);
     long total_relations = 0;
     for (std::vector<Json::Value>::iterator it = relations.begin(); it != relations.end(); ++it) total_relations += (*it)[JSON_ATTR_REL_COUNT].asInt();
     return total_relations;

@@ -71,8 +71,10 @@ public:
     bool fetchFromDisk(int);   // Loads disk
 
     std::vector<Relation> Json2RelationVector(std::vector<Json::Value>);
+    std::vector<Json::Value> Relation2JsonVector(std::vector<Relation>);
+
     std::vector<Relation> filterRelations(std::vector<Relation>&, AttributeBucket&);
-    std::vector<Relation> filterRelations(std::vector<Json::Value>&, AttributeBucket&);
+    std::vector<Json::Value> filterRelations(std::vector<Json::Value>&, AttributeBucket&);
 
     std::string generateEntityKey(std::string);
     std::string generateRelationKey(std::string, std::string, std::string);
@@ -410,42 +412,41 @@ std::vector<Relation> IndexHandler::filterRelations(
  *  Filter matching relations based on contents attrs.  All of a relations attributes must match those
  *  in the bucket to be included
  */
-std::vector<Json::value> IndexHandler::filterRelations(
-                            std::vector<Json::value>& relations, AttributeBucket& filterAttrs) {
+std::vector<Json::Value> IndexHandler::filterRelations(
+                            std::vector<Json::Value>& relations, AttributeBucket& filterAttrs) {
     bool matching = true;
     std::string key, value;
-    std::vector<Json::value> filtered_relations;
-    AttributeTuple *currAttr, *bucketAttr;
+    std::vector<Json::Value> filtered_relations;
+    AttributeTuple *currAttr;
+    std::unordered_map<std::string, AttributeTuple> hm = filterAttrs.getAttributeHash();
 
-    // Iterate over relations
-    for (std::vector<Json::value>::iterator it = relations.begin(); it != relations.end(); ++it) {
+    // Not very efficient (O(n*m)), but OK if filterAttrs is small (m << n)
+    for (std::vector<Json::Value>::iterator it = relations.begin(); it != relations.end(); ++it)
+        for (std::unordered_map<std::string, AttributeTuple>::iterator it_inner = hm.begin(); it_inner != hm.end(); ++it) {
 
-        // Match left hand relations
-        for (valpair::iterator it_inner = it->attrs_right.begin(); it_inner != it->attrs_right.end(); ++it_inner) {
-            if ((*it)[JSON_ATTR_REL_FIELDSL].isMember(std::get<0>(*it_inner))) {
-                currAttr = new AttributeTuple((*it)[JSON_ATTR_REL_FIELDSL], std::get<0>(*it_inner), std::get<1>(*it_inner));
-                if (bucketAttr = filterAttrs.getAttribute(*currAttr)) {
-                    matching = AttributeTuple::compare(*bucketAttr, *currAttr);
+            // Match left hand relations
+            if ((*it)[JSON_ATTR_REL_FIELDSL].isMember(it_inner->second.attribute) &&
+                    std::strcmp((*it)[JSON_ATTR_REL_ENTL].asCString(), it_inner->second.entity.c_str()) == 0) {
+                currAttr = new AttributeTuple(it_inner->second.entity, it_inner->second.attribute,
+                                                (*it)[JSON_ATTR_REL_ENTL][it_inner->second.attribute].asCString());
+                matching = AttributeTuple::compare(it_inner->second, *currAttr);
+                if (!matching) break;
+            }
+
+            // Match right hand relations - only process if left hand relations matched
+            if (matching)
+                if ((*it)[JSON_ATTR_REL_FIELDSL].isMember(it_inner->second.attribute) &&
+                        std::strcmp((*it)[JSON_ATTR_REL_ENTR].asCString(), it_inner->second.entity.c_str()) == 0) {
+                    currAttr = new AttributeTuple(it_inner->second.entity, it_inner->second.attribute,
+                                                    (*it)[JSON_ATTR_REL_ENTR][it_inner->second.attribute].asCString());
+                    matching = AttributeTuple::compare(it_inner->second, *currAttr);
                     if (!matching) break;
                 }
-            }
-        }
 
-        // Match right hand relations - only process if left hand relations matched
-        if (matching)
-            for (valpair::iterator it_inner = it->attrs_right.begin(); it_inner != it->attrs_right.end(); ++it_inner) {
-                if ((*it)[JSON_ATTR_REL_FIELDSL].isMember(std::get<0>(*it_inner))) {
-                    currAttr = new AttributeTuple((*it)[JSON_ATTR_REL_FIELDSL], std::get<0>(*it_inner), std::get<1>(*it_inner));
-                    if (bucketAttr = filterAttrs.getAttribute(*currAttr)) {
-                        matching = AttributeTuple::compare(*bucketAttr, *currAttr);
-                        if (!matching) break;
-                    }
-                }
-            }
+            if (matching)
+                filtered_relations.push_back(*it);
+       }
 
-        if (matching)
-            filtered_relations.push_back(*it);
-    }
     return filtered_relations;
 }
 
