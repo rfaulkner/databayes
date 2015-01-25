@@ -42,23 +42,33 @@ public:
 /** Count the occurrences of a relation */
 long Bayes::countRelations(std::string e1, std::string e2, AttributeBucket& attrs) {
     std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(e1, e2);
-    std::vector<Relation> relationsVec = this->indexHandler->Json2RelationVector(relations);
-    return this->indexHandler->filterRelations(relationsVec, attrs).size();
+    relations = this->indexHandler->filterRelations(relationsVec, attrs);
+    long total_relations = 0;
+    for (std::vector<Json::Value>::iterator it = relations.begin(); it != relations.end(); ++it) total_relations += (*it)[JSON_ATTR_REL_COUNT].asInt();
+    return total_relations;
 }
 
 /** Count the occurrences of an entity among relevant relations */
 long Bayes::countEntityInRelations(std::string e, AttributeBucket& attrs) {
     std::vector<Json::Value> relations_left = this->indexHandler->fetchRelationPrefix(e, "*");
     std::vector<Json::Value> relations_right = this->indexHandler->fetchRelationPrefix("*", e);
-    std::vector<Relation> relationsVecLeft = this->indexHandler->Json2RelationVector(relations_left);
-    std::vector<Relation> relationsVecRight = this->indexHandler->Json2RelationVector(relations_right);
-    return this->indexHandler->filterRelations(relationsVecLeft, attrs).size() +
-        this->indexHandler->filterRelations(relationsVecRight, attrs).size();
+
+    // Filter on attribute conditions in AttributeBucket
+    relations_left = this->indexHandler->filterRelations(relations_left, attrs);
+    relations_right = this->indexHandler->filterRelations(relations_right, attrs);
+
+    // Count the relations
+    long total_relations = 0;
+    for (std::vector<Json::Value>::iterator it = relations_left.begin(); it != relations_left.end(); ++it) total_relations += (*it)[JSON_ATTR_REL_COUNT].asInt();
+    for (std::vector<Json::Value>::iterator it = relations_right.begin(); it != relations_right.end(); ++it) total_relations+= (*it)[JSON_ATTR_REL_COUNT].asInt();
+
+    return total_relations;
 }
 
 /** Marginal probability of an entities determined by occurrences present in relations */
 float Bayes::computeMarginal(std::string e, AttributeBucket& attrs) {
     long total = this->indexHandler->getRelationCountTotal();
+    cout << total << endl;
     if (total > 0)
         return (float)this->countEntityInRelations(e, attrs) / (float)total;
     else {
