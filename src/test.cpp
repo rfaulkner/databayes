@@ -261,10 +261,10 @@ void testCountRelations() {
 
     AttributeBucket attrs; // empty set of filters
 
-    assert(bayes.countRelations(e1.name, std::string("*"), attrs) == 1);
-    assert(bayes.countRelations(e2.name, std::string("*"), attrs) == 4);
-    assert(bayes.countRelations(e3.name, std::string("*"), attrs) == 3);
-    assert(bayes.countRelations(e4.name, std::string("*"), attrs) == 2);
+    assert(bayes.countEntityInRelations(e1.name, attrs) == 1);
+    assert(bayes.countEntityInRelations(e2.name, attrs) == 4);
+    assert(bayes.countEntityInRelations(e3.name, attrs) == 3);
+    assert(bayes.countEntityInRelations(e4.name, attrs) == 2);
 }
 
 /**
