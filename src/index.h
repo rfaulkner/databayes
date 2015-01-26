@@ -84,6 +84,8 @@ public:
 
     long getRelationCountTotal();
     void setRelationCountTotal(long value);
+
+    long computeRelationsCount(std::string, std::string);
 };
 
 /** Generate a key for an entity entry in the index */
@@ -488,6 +490,13 @@ std::vector<Json::Value> IndexHandler::Relation2JsonVector(std::vector<Relation>
     return jsonRelations;
 }
 
+long IndexHandler::computeRelationsCount(std::string left_entity, std::string right_entity) {
+    std::vector<Json::Value> relations = this->fetchRelationPrefix(left_entity, right_entity);
+    long totalCount = 0;
+    for (std::vector<Json::Value>::iterator it = relations.begin() ; it != relations.end(); ++it)
+        totalCount += (*it)[JSON_ATTR_REL_COUNT].asInt();
+    return totalCount;
+}
 
 /**
  * Handles writes to in memory index
