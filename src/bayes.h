@@ -68,7 +68,6 @@ long Bayes::countEntityInRelations(std::string e, AttributeBucket& attrs) {
 /** Marginal probability of an entities determined by occurrences present in relations */
 float Bayes::computeMarginal(std::string e, AttributeBucket& attrs) {
     long total = this->indexHandler->getRelationCountTotal();
-    cout << total << endl;
     if (total > 0)
         return (float)this->countEntityInRelations(e, attrs) / (float)total;
     else {
