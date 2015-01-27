@@ -100,18 +100,33 @@ float Bayes::computeConditional(std::string e1, std::string e2, AttributeBucket&
     }
 }
 
-Json::Value sampleMarginal(std::string e, AttributeBucket& attrs) {
-    Json::Value j;
+/*
+ *  Samples an entity from the marginal distribution with respect to the filter attributes
+ **/
+Relation sampleMarginal(Entity& e, AttributeBucket& attrs) {
+    Relation j;
+
+    // Find all relations with containing "e"
+
+    // Filter relations based on "attrs"
+
+    // Randomly select a sample paying attention to frequency of relations
+
     return j;
 }
 
-Json::Value sampleConditional(std::string e1, std::string e2, AttributeBucket& attrs) {
-    Json::Value j;
-    return j;
-}
+/*
+ *  Samples an entity from the pairwise distribution with respect to the filter attributes
+ **/
+Relation samplePairwise(Entity& x, Entity& y, AttributeBucket& attrs) {
+    Relation j;
 
-Json::Value samplePairwise(std::string e1, std::string e2, AttributeBucket& attrs) {
-    Json::Value j;
+    // Find all relations with containing "x" and "y"
+
+    // Filter relations based on "attrs"
+
+    // Randomly select a sample paying attention to frequency of relations
+
     return j;
 }
 
