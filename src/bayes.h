@@ -130,4 +130,21 @@ Relation samplePairwise(Entity& x, Entity& y, AttributeBucket& attrs) {
     return j;
 }
 
+/*
+ *  Samples an entity from the pairwise distribution with respect to the filter attributes
+ *
+ *  TODO - there must be a way in relations to specify causality
+ **/
+Relation samplePairwiseCausal(Entity& x, Entity& y, AttributeBucket& attrs) {
+    Relation j;
+
+    // Find all relations with containing "x" primary and "y" secondary
+
+    // Filter relations based on "attrs"
+
+    // Randomly select a sample paying attention to frequency of relations
+
+    return j;
+}
+
 #endif
