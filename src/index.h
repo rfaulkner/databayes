@@ -209,6 +209,7 @@ bool IndexHandler::writeRelation(Relation& rel) {
 
     jsonVal[JSON_ATTR_REL_FIELDSL] = jsonValFieldsLeft;
     jsonVal[JSON_ATTR_REL_FIELDSR] = jsonValFieldsRight;
+    jsonVal[JSON_ATTR_REL_CAUSE] = rel.cause;
 
     this->redisHandler->connect();
     key = this->generateRelationKey(rel.name_left, rel.name_right, md5(jsonVal.toStyledString()));
@@ -218,7 +219,8 @@ bool IndexHandler::writeRelation(Relation& rel) {
             jsonVal[JSON_ATTR_REL_COUNT] = jsonVal[JSON_ATTR_REL_COUNT].asInt() + 1;
         } else
             return false;
-    } else {jsonVal[JSON_ATTR_REL_COUNT] = 1;}
+    } else
+        jsonVal[JSON_ATTR_REL_COUNT] = 1;
 
     this->redisHandler->incrementKey(KEY_TOTAL_RELATIONS, 1);
     this->redisHandler->write(key, jsonVal.toStyledString());
