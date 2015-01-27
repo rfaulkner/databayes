@@ -112,6 +112,8 @@ public:
 
         this->name_left = value[JSON_ATTR_REL_ENTL].asCString();
         this->name_right = value[JSON_ATTR_REL_ENTR].asCString();
+        this->cause = value[JSON_ATTR_REL_CAUSE].asCString();
+        this->instance_count = value[JSON_ATTR_REL_COUNT].asInt();
 
         Json::Value left = value[JSON_ATTR_REL_FIELDSL];
         Json::Value right = value[JSON_ATTR_REL_FIELDSL];
@@ -157,6 +159,9 @@ public:
 
         jsonVal[JSON_ATTR_REL_FIELDSL] = jsonValFieldsLeft;
         jsonVal[JSON_ATTR_REL_FIELDSR] = jsonValFieldsRight;
+
+        jsonVal[JSON_ATTR_REL_CAUSE] = this->cause;
+        jsonVal[JSON_ATTR_REL_COUNT] = this->instance_count;
 
         return jsonVal;
     }
