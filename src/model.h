@@ -26,6 +26,7 @@
 #define JSON_ATTR_REL_ENTR "entity_right"
 #define JSON_ATTR_REL_FIELDSL "fields_left"
 #define JSON_ATTR_REL_FIELDSR "fields_right"
+#define JSON_ATTR_REL_CAUSE "cause"
 
 using namespace std;
 
@@ -64,6 +65,9 @@ public:
     std::string name_right;
     valpair attrs_left;
     valpair attrs_right;
+
+    std::string cause;
+    long instance_count;
 
     /** Constructor/Builder for relations  */
     Relation() {}
