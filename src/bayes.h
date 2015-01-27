@@ -14,6 +14,8 @@
 
 #include <string>
 #include <vector>
+#include <stdlib.h>     /* srand, rand */
+#include <time.h>       /* time */
 #include "index.h"
 #include <json/json.h>
 
@@ -104,15 +106,39 @@ float Bayes::computeConditional(std::string e1, std::string e2, AttributeBucket&
  *  Samples an entity from the marginal distribution with respect to the filter attributes
  **/
 Relation sampleMarginal(Entity& e, AttributeBucket& attrs) {
-    Relation j;
+    Relation r;
 
     // Find all relations with containing "e"
+    std::vector<Json::Value> relations_left = this->indexHandler->fetchRelationPrefix(e.name, "*");
+    std::vector<Json::Value> relations_right = this->indexHandler->fetchRelationPrefix("*", e.name);
 
-    // Filter relations based on "attrs"
+    // Filter on attribute conditions in AttributeBucket
+    relations_left = this->indexHandler->filterRelations(relations_left, attrs);
+    relations_right = this->indexHandler->filterRelations(relations_right, attrs);
 
     // Randomly select a sample paying attention to frequency of relations
+    long count = this->countEntityInRelations(e.name, attrs);
+    long index = 0;
+    long pivot = rand() % count + 1;
 
-    return j;
+    // Iterate through relations and pick out candidate
+    for (std::vector<Json::Value>::iterator it = relations_left.begin(); it != relations_left.end(); ++it) {
+        index += (*it)[JSON_ATTR_REL_COUNT].asInt();
+        if (index >= pivot) {
+            r.fromJSON(*it);
+            return r;
+        }
+    }
+
+    for (std::vector<Json::Value>::iterator it = relations_right.begin(); it != relations_right.end(); ++it) {
+        index += (*it)[JSON_ATTR_REL_COUNT].asInt();
+        if (index >= pivot) {
+            r.fromJSON(*it);
+            return r;
+        }
+    }
+
+    return r.fromJSON(relations_right.back());
 }
 
 /*
@@ -122,10 +148,13 @@ Relation samplePairwise(Entity& x, Entity& y, AttributeBucket& attrs) {
     Relation j;
 
     // Find all relations with containing "x" and "y"
+    std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(x.name, y.name);
 
     // Filter relations based on "attrs"
+    relations = this->indexHandler->filterRelations(relations, attrs);
 
     // Randomly select a sample paying attention to frequency of relations
+
 
     return j;
 }
@@ -139,9 +168,7 @@ Relation samplePairwiseCausal(Entity& x, Entity& y, AttributeBucket& attrs) {
     Relation j;
 
     // Find all relations with containing "x" primary and "y" secondary
-
     // Filter relations based on "attrs"
-
     // Randomly select a sample paying attention to frequency of relations
 
     return j;
