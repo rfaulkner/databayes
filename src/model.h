@@ -77,7 +77,31 @@ public:
         this->name_right = right;
         this->attrs_left = attrs_left;
         this->attrs_right = attrs_right;
+        this->cause = left;
+        this->instance_count = 1;
     }
+
+    /** Set the causal entity */
+    bool setCause(std::string cause) {
+        if (std::strcmp(cause.c_str(), this->name_left) != 0 && std::strcmp(cause.c_str(), this->name_right) != 0)
+            return false;
+        else if (std::strcmp(cause.c_str(), this->name_left) == 0) {
+            this->cause = this->name_left;
+        } else {
+            this->cause = this->name_right;
+        }
+        return true;
+    }
+
+    /** Set the instance count */
+    bool setInstanceCount(long count) {
+        if (count < 1)
+            return false;
+        else
+            this->instance_count = count;
+        return true;
+    }
+
 
     /** Build relation from Json */
     bool fromJSON(Json::Value value) {
