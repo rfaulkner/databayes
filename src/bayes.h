@@ -138,7 +138,8 @@ Relation sampleMarginal(Entity& e, AttributeBucket& attrs) {
         }
     }
 
-    return r.fromJSON(relations_right.back());
+    r.fromJSON(relations_right.back());
+    return r;
 }
 
 /*
@@ -154,9 +155,16 @@ Relation samplePairwise(Entity& x, Entity& y, AttributeBucket& attrs) {
     relations = this->indexHandler->filterRelations(relations, attrs);
 
     // Randomly select a sample paying attention to frequency of relations
+    for (std::vector<Json::Value>::iterator it = relations.begin(); it != relations.end(); ++it) {
+        index += (*it)[JSON_ATTR_REL_COUNT].asInt();
+        if (index >= pivot) {
+            r.fromJSON(*it);
+            return r;
+        }
+    }
 
-
-    return j;
+    r.fromJSON(relations.back());
+    return r;
 }
 
 /*
