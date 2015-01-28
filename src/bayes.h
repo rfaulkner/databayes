@@ -170,16 +170,30 @@ Relation samplePairwise(Entity& x, Entity& y, AttributeBucket& attrs) {
 /*
  *  Samples an entity from the pairwise distribution with respect to the filter attributes
  *
- *  TODO - there must be a way in relations to specify causality
  **/
 Relation samplePairwiseCausal(Entity& x, Entity& y, AttributeBucket& attrs) {
-    Relation j;
+    Relation r;
 
     // Find all relations with containing "x" primary and "y" secondary
-    // Filter relations based on "attrs"
-    // Randomly select a sample paying attention to frequency of relations
+    std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(x.name, y.name);
 
-    return j;
+    // Filter relations based on "attrs"
+    relations = this->indexHandler->filterRelations(relations, attrs);
+
+    // Randomly select a sample paying attention to frequency of relations
+    for (std::vector<Json::Value>::iterator it = relations.begin(); it != relations.end(); ++it) {
+
+        // only consider elements in which x is the "cause"
+        if (std::strcmp((*it)[JSON_ATTR_REL_COUNT].asCString(), x.name.c_str()) != 0)
+            continue;
+
+        index += (*it)[JSON_ATTR_REL_COUNT].asInt();
+        r.fromJSON(*it);
+        if (index >= pivot) {
+            return r;
+        }
+    }
+    return r;
 }
 
 #endif
