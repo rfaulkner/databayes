@@ -37,6 +37,7 @@ public:
     Relation samplePairwiseCausal(Entity&, Entity&, AttributeBucket&);
 
     long countEntityInRelations(std::string, AttributeBucket&);
+    long countCausalEntityInRelations(std::string, AttributeBucket&);
     long countRelations(std::string, std::string, AttributeBucket&);
 
 };
@@ -146,7 +147,7 @@ Relation Bayes::sampleMarginal(Entity& e, AttributeBucket& attrs) {
  *  Samples an entity from the pairwise distribution with respect to the filter attributes
  **/
 Relation Bayes::samplePairwise(Entity& x, Entity& y, AttributeBucket& attrs) {
-    Relation j;
+    Relation r;
 
     // Find all relations with containing "x" and "y"
     std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(x.name, y.name);
@@ -155,6 +156,11 @@ Relation Bayes::samplePairwise(Entity& x, Entity& y, AttributeBucket& attrs) {
     relations = this->indexHandler->filterRelations(relations, attrs);
 
     // Randomly select a sample paying attention to frequency of relations
+    long count = this->countRelations(x.name, y.name, attrs);
+    long index = 0;
+    long pivot = rand() % count + 1;
+
+    // Iterate through relations and pick out candidate
     for (std::vector<Json::Value>::iterator it = relations.begin(); it != relations.end(); ++it) {
         index += (*it)[JSON_ATTR_REL_COUNT].asInt();
         if (index >= pivot) {
@@ -181,6 +187,10 @@ Relation Bayes::samplePairwiseCausal(Entity& x, Entity& y, AttributeBucket& attr
     relations = this->indexHandler->filterRelations(relations, attrs);
 
     // Randomly select a sample paying attention to frequency of relations
+    long count = this->countCausalEntityInRelations(x.name, attrs);
+    long index = 0;
+    long pivot = rand() % count + 1;
+
     for (std::vector<Json::Value>::iterator it = relations.begin(); it != relations.end(); ++it) {
 
         // only consider elements in which x is the "cause"
