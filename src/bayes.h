@@ -32,9 +32,9 @@ public:
     float computeConditional(std::string, std::string, AttributeBucket&);
     float computePairwise(std::string, std::string, AttributeBucket&);
 
-    Json::Value sampleMarginal(std::string, AttributeBucket&);
-    Json::Value sampleConditional(std::string, std::string, AttributeBucket&);
-    Json::Value samplePairwise(std::string, std::string, AttributeBucket&);
+    Relation sampleMarginal(Entity&, AttributeBucket&);
+    Relation samplePairwise(Entity&, Entity&, AttributeBucket&);
+    Relation samplePairwiseCausal(Entity&, Entity&, AttributeBucket&);
 
     long countEntityInRelations(std::string, AttributeBucket&);
     long countRelations(std::string, std::string, AttributeBucket&);
@@ -105,7 +105,7 @@ float Bayes::computeConditional(std::string e1, std::string e2, AttributeBucket&
 /*
  *  Samples an entity from the marginal distribution with respect to the filter attributes
  **/
-Relation sampleMarginal(Entity& e, AttributeBucket& attrs) {
+Relation Bayes::sampleMarginal(Entity& e, AttributeBucket& attrs) {
     Relation r;
 
     // Find all relations with containing "e"
@@ -145,7 +145,7 @@ Relation sampleMarginal(Entity& e, AttributeBucket& attrs) {
 /*
  *  Samples an entity from the pairwise distribution with respect to the filter attributes
  **/
-Relation samplePairwise(Entity& x, Entity& y, AttributeBucket& attrs) {
+Relation Bayes::samplePairwise(Entity& x, Entity& y, AttributeBucket& attrs) {
     Relation j;
 
     // Find all relations with containing "x" and "y"
@@ -171,7 +171,7 @@ Relation samplePairwise(Entity& x, Entity& y, AttributeBucket& attrs) {
  *  Samples an entity from the pairwise distribution with respect to the filter attributes
  *
  **/
-Relation samplePairwiseCausal(Entity& x, Entity& y, AttributeBucket& attrs) {
+Relation Bayes::samplePairwiseCausal(Entity& x, Entity& y, AttributeBucket& attrs) {
     Relation r;
 
     // Find all relations with containing "x" primary and "y" secondary
