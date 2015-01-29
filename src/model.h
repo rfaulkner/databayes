@@ -83,9 +83,9 @@ public:
 
     /** Set the causal entity */
     bool setCause(std::string cause) {
-        if (std::strcmp(cause.c_str(), this->name_left) != 0 && std::strcmp(cause.c_str(), this->name_right) != 0)
+        if (std::strcmp(cause.c_str(), this->name_left.c_str()) != 0 && std::strcmp(cause.c_str(), this->name_right.c_str()) != 0)
             return false;
-        else if (std::strcmp(cause.c_str(), this->name_left) == 0) {
+        else if (std::strcmp(cause.c_str(), this->name_left.c_str()) == 0) {
             this->cause = this->name_left;
         } else {
             this->cause = this->name_right;
@@ -161,7 +161,7 @@ public:
         jsonVal[JSON_ATTR_REL_FIELDSR] = jsonValFieldsRight;
 
         jsonVal[JSON_ATTR_REL_CAUSE] = this->cause;
-        jsonVal[JSON_ATTR_REL_COUNT] = this->instance_count;
+        jsonVal[JSON_ATTR_REL_COUNT] = std::to_string(this->instance_count);
 
         return jsonVal;
     }
