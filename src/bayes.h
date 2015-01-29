@@ -37,7 +37,6 @@ public:
     Relation samplePairwiseCausal(Entity&, Entity&, AttributeBucket&);
 
     long countEntityInRelations(std::string, AttributeBucket&);
-    long countCausalEntityInRelations(std::string, AttributeBucket&);
     long countRelations(std::string, std::string, AttributeBucket&);
 
 };
@@ -52,7 +51,7 @@ long Bayes::countRelations(std::string e1, std::string e2, AttributeBucket& attr
 }
 
 /** Count the occurrences of an entity among relevant relations */
-long Bayes::countEntityInRelations(std::string e, AttributeBucket& attrs) {
+long Bayes::countEntityInRelations(std::string e, AttributeBucket& attrs, bool causal=false) {
     std::vector<Json::Value> relations_left = this->indexHandler->fetchRelationPrefix(e, "*");
     std::vector<Json::Value> relations_right = this->indexHandler->fetchRelationPrefix("*", e);
 
@@ -62,8 +61,15 @@ long Bayes::countEntityInRelations(std::string e, AttributeBucket& attrs) {
 
     // Count the relations
     long total_relations = 0;
-    for (std::vector<Json::Value>::iterator it = relations_left.begin(); it != relations_left.end(); ++it) total_relations += (*it)[JSON_ATTR_REL_COUNT].asInt();
-    for (std::vector<Json::Value>::iterator it = relations_right.begin(); it != relations_right.end(); ++it) total_relations+= (*it)[JSON_ATTR_REL_COUNT].asInt();
+    for (std::vector<Json::Value>::iterator it = relations_left.begin(); it != relations_left.end(); ++it) {
+        if (std::strcmp((*it)[JSON_ATTR_REL_CAUSE].asCString(), e.name.c_str()) != 0) continue;
+        total_relations += (*it)[JSON_ATTR_REL_COUNT].asInt();
+    }
+
+    for (std::vector<Json::Value>::iterator it = relations_right.begin(); it != relations_right.end(); ++it) {
+        if (std::strcmp((*it)[JSON_ATTR_REL_CAUSE].asCString(), e.name.c_str()) != 0) continue;
+        total_relations+= (*it)[JSON_ATTR_REL_COUNT].asInt();
+    }
 
     return total_relations;
 }
@@ -187,14 +193,14 @@ Relation Bayes::samplePairwiseCausal(Entity& x, Entity& y, AttributeBucket& attr
     relations = this->indexHandler->filterRelations(relations, attrs);
 
     // Randomly select a sample paying attention to frequency of relations
-    long count = this->countCausalEntityInRelations(x.name, attrs);
+    long count = this->countEntityInRelations(x.name, attrs, true);
     long index = 0;
     long pivot = rand() % count + 1;
 
     for (std::vector<Json::Value>::iterator it = relations.begin(); it != relations.end(); ++it) {
 
         // only consider elements in which x is the "cause"
-        if (std::strcmp((*it)[JSON_ATTR_REL_COUNT].asCString(), x.name.c_str()) != 0)
+        if (std::strcmp((*it)[JSON_ATTR_REL_CAUSE].asCString(), x.name.c_str()) != 0)
             continue;
 
         index += (*it)[JSON_ATTR_REL_COUNT].asInt();
