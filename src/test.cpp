@@ -372,6 +372,36 @@ void testRelation_toJson() {
     assert(std::atoi(json[JSON_ATTR_REL_FIELDSL]["x"].asCString()) == 1 && std::atoi(json[JSON_ATTR_REL_FIELDSR]["y"].asCString()) == 2);
 }
 
+/**
+ *  Ensure sample marginal returns a valid sample
+ */
+void testSampleMarginal() {
+    // Define entities and relations
+    // Generate a sample
+    // specify filter criteria
+    // test sample to ensure that it meets criteria
+}
+
+/**
+ *  Ensure sample marginal returns a valid sample
+ */
+void testSamplePairwise() {
+    // Define entities and relations
+    // Generate a sample
+    // specify filter criteria
+    // test sample to ensure that it meets criteria
+}
+
+/**
+ *  Ensure sample marginal returns a valid sample
+ */
+void testSamplePairwiseCausal() {
+    // Define entities and relations
+    // Generate a sample
+    // specify filter criteria
+    // test sample to ensure that it meets criteria
+}
+
 
 int main() {
     cout << "-- TESTS BEGIN --" << endl << endl;
