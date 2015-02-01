@@ -372,6 +372,8 @@ std::string Parser::analyze(const std::string& s) {
         } else if (this->macroState == STATE_GEN_REL) {
             // TODO - Add logic to sample relation
 
+            // Call sampling method from Bayes for relations
+
         } else if (this->macroState == STATE_LST_ENT) {
 
             std::vector<Json::Value>* entities;
