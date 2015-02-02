@@ -136,6 +136,7 @@ class Parser {
 
 public:
     Parser();
+    ~Parser();
 
     void setDebug(bool);
     void resetState();
@@ -158,6 +159,13 @@ Parser::Parser() {
     this->resetState();
 }
 
+/**
+ *  Destructor
+ */
+Parser::~Parser() {
+    delete this->bayes;
+    delete this->indexHandler;
+}
 
 /**
  * Setter for debug property

@@ -27,6 +27,7 @@ class Bayes {
 
 public:
     Bayes() { this->indexHandler = new IndexHandler(); }
+    ~Bayes() { delete this->indexHandler; }
 
     float computeMarginal(std::string, AttributeBucket&);
     float computeConditional(std::string, std::string, AttributeBucket&);
