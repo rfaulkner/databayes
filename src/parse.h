@@ -20,6 +20,7 @@
 
 #include "column_types.h"
 #include "index.h"
+#include "bayes.h"
 
 #define STR_CMD_ADD "add"
 #define STR_CMD_GEN "gen"
@@ -122,6 +123,9 @@ class Parser {
     // Index interface pointer
     IndexHandler* indexHandler;
 
+    // Index interface pointer
+    Bayes* bayes;
+
     // Parse methods
     void parseRelationPair(std::string);
     void parseEntitySymbol(std::string);
@@ -150,6 +154,7 @@ public:
 Parser::Parser() {
     this->debug = false;
     this->indexHandler = new IndexHandler();
+    this->bayes = new Bayes();
     this->resetState();
 }
 
@@ -373,6 +378,7 @@ std::string Parser::analyze(const std::string& s) {
             // TODO - Add logic to sample relation
 
             // Call sampling method from Bayes for relations
+
 
         } else if (this->macroState == STATE_LST_ENT) {
 
