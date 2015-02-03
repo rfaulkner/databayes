@@ -270,16 +270,19 @@ public:
     AttributeBucket() {}
 
     /** Constructor that converts valpair list to AttributeBucket */
-    AttributeBucket(std::string entity, valpair& vals) {
+    AttributeBucket(std::string entity, valpair& vals) { this->addAttributes(entity, vals); }
+
+    /** Insert a new atribute into the bucket */
+    void addAttribute(AttributeTuple& attr) { this->attrs.insert(std::make_pair<std::string, AttributeTuple&>(this->makeKey(attr), attr)); }
+
+    /** Insert a list of attributes */
+    void addAttributes(std::string entity, valpair& vals) {
         AttributeTuple* tuple;
         for (valpair::iterator it = vals.begin() ; it != vals.end(); ++it) {
             tuple = new AttributeTuple(entity, std::get<0>(*it), std::get<1>(*it));
             this->addAttribute(*tuple);
         }
     }
-
-    // Insert a new atribute into the bucket
-    void addAttribute(AttributeTuple& attr) { this->attrs.insert(std::make_pair<std::string, AttributeTuple&>(this->makeKey(attr), attr)); }
 
     // Remove an existing attribute from the bucket
     bool removeAttribute(AttributeTuple& attr) { return this->attrs.erase(this->makeKey(attr)) == 0; }
