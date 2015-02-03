@@ -22,7 +22,7 @@
 #include <boost/regex.hpp>
 
 #include "redis.h"
-#include "md5.h"
+#include "md5.cpp"
 #include "model.h"
 
 #define IDX_SIZE 100000
