@@ -383,10 +383,17 @@ std::string Parser::analyze(const std::string& s) {
                 cout << "DEBUG -- Adding relation." << endl;
 
         } else if (this->macroState == STATE_GEN_REL) {
-            // TODO - Add logic to sample relation
+
+            // Construct attribute bucket
+            AttributeBucket ab;
+            ab.addAttributes(this->bufferEntity, *(this->bufferValues));
+            ab.addAttributes(this->currEntity, *(this->currValues));
 
             // Call sampling method from Bayes for relations
+            Relation r = this->bayes->samplePairwise(this->bufferEntity, this->currEntity, ab);
 
+            // Print the sample
+            cout << r.toJson().asCString() << endl;
 
         } else if (this->macroState == STATE_LST_ENT) {
 
