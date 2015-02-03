@@ -112,20 +112,32 @@ float Bayes::computeConditional(std::string e1, std::string e2, AttributeBucket&
 
 /*
  *  Samples an entity from the marginal distribution with respect to the filter attributes
+ *
+ *  args:   the entity models & filter attributes
  **/
 Relation Bayes::sampleMarginal(Entity& e, AttributeBucket& attrs) {
+    return this->sampleMarginal(e.name, attrs);
+}
+
+}
+/*
+ *  Samples an entity from the marginal distribution with respect to the filter attributes
+ *
+ *  args:   the entity names & filter attributes
+ **/
+Relation Bayes::sampleMarginal(std::string e, AttributeBucket& attrs) {
     Relation r;
 
     // Find all relations with containing "e"
-    std::vector<Json::Value> relations_left = this->indexHandler->fetchRelationPrefix(e.name, "*");
-    std::vector<Json::Value> relations_right = this->indexHandler->fetchRelationPrefix("*", e.name);
+    std::vector<Json::Value> relations_left = this->indexHandler->fetchRelationPrefix(e, "*");
+    std::vector<Json::Value> relations_right = this->indexHandler->fetchRelationPrefix("*", e);
 
     // Filter on attribute conditions in AttributeBucket
     relations_left = this->indexHandler->filterRelations(relations_left, attrs);
     relations_right = this->indexHandler->filterRelations(relations_right, attrs);
 
     // Randomly select a sample paying attention to frequency of relations
-    long count = this->countEntityInRelations(e.name, attrs);
+    long count = this->countEntityInRelations(e, attrs);
     long index = 0;
     long pivot = rand() % count + 1;
 
@@ -152,18 +164,29 @@ Relation Bayes::sampleMarginal(Entity& e, AttributeBucket& attrs) {
 
 /*
  *  Samples an entity from the pairwise distribution with respect to the filter attributes
+ *
+ *  args:   the entity models & filter attributes
+ **/
+Relation Bayes::samplePairwise(Entity& x, Entity& y, AttributeBucket& attrs) {
+    return this->samplePairwise(x.name, y.name, attrs);
+}
+
+/*
+ *  Samples an entity from the pairwise distribution with respect to the filter attributes
+ *
+ *  args:   the entity names & filter attributes
  **/
 Relation Bayes::samplePairwise(Entity& x, Entity& y, AttributeBucket& attrs) {
     Relation r;
 
     // Find all relations with containing "x" and "y"
-    std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(x.name, y.name);
+    std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(x, y);
 
     // Filter relations based on "attrs"
     relations = this->indexHandler->filterRelations(relations, attrs);
 
     // Randomly select a sample paying attention to frequency of relations
-    long count = this->countRelations(x.name, y.name, attrs);
+    long count = this->countRelations(x, y, attrs);
     long index = 0;
     long pivot = rand() % count + 1;
 
@@ -183,12 +206,22 @@ Relation Bayes::samplePairwise(Entity& x, Entity& y, AttributeBucket& attrs) {
 /*
  *  Samples an entity from the pairwise distribution with respect to the filter attributes
  *
+ *  args:   the entity models & filter attributes
  **/
 Relation Bayes::samplePairwiseCausal(Entity& x, Entity& y, AttributeBucket& attrs) {
+    return this->samplePairwiseCausal(x.name, y.name, attrs);
+}
+
+/*
+ *  Samples an entity from the pairwise distribution with respect to the filter attributes
+ *
+ *  args:   the entity names & filter attributes
+ **/
+Relation Bayes::samplePairwiseCausal(std::string x, std::string y, AttributeBucket& attrs) {
     Relation r;
 
     // Find all relations with containing "x" primary and "y" secondary
-    std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(x.name, y.name);
+    std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(x, y);
 
     // Filter relations based on "attrs"
     relations = this->indexHandler->filterRelations(relations, attrs);
@@ -201,7 +234,7 @@ Relation Bayes::samplePairwiseCausal(Entity& x, Entity& y, AttributeBucket& attr
     for (std::vector<Json::Value>::iterator it = relations.begin(); it != relations.end(); ++it) {
 
         // only consider elements in which x is the "cause"
-        if (std::strcmp((*it)[JSON_ATTR_REL_CAUSE].asCString(), x.name.c_str()) != 0)
+        if (std::strcmp((*it)[JSON_ATTR_REL_CAUSE].asCString(), x.c_str()) != 0)
             continue;
 
         index += (*it)[JSON_ATTR_REL_COUNT].asInt();
