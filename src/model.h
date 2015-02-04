@@ -11,7 +11,7 @@
 #ifndef _model_h
 #define _model_h
 
-#include "md5.cpp"
+#include "md5.h"
 
 #include <string>
 #include <unordered_map>
