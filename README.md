@@ -33,9 +33,13 @@ Use the following compiler flags including the redis3m and jsoncpp libraries:
 
     -std=c++0x $(pkg-config --cflags --libs redis3m jsoncpp)
 
-For execution (link hiredis):
+In the current setup you will need create an object file for the md5 lib manually (will eventually fix this):
 
-    databayes$ g++ -std=c++0x src/client.cpp $(pkg-config --cflags --libs redis3m jsoncpp) -g -o dbcli /usr/lib/libhiredis.a /usr/lib/libboost_regex.a
+    g++ -std=c++0x -o md5.o -c src/md5.cpp
+
+For execution (link hiredis, md5, libboost_regex):
+
+    databayes$ g++ -std=c++0x src/client.cpp $(pkg-config --cflags --libs redis3m jsoncpp) -g -o dbcli /usr/lib/libhiredis.a /usr/lib/libboost_regex.a ./md5.o
     databayes$ ./dbcli
 
 
