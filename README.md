@@ -57,13 +57,14 @@ Parser
 The general parser syntax has the following definition:
 
  *      (1) ADD REL E1(x_1 [, x_2, ..]) E2(y_1 [, y_2, ..])
- *      (2) GEN E1.x_1[, E2.x_2,..] GIVEN E3.y_1[E4.y_2, ..]
- *      (3) INF E1.x_1[, E2.x_2,..] GIVEN E3.y_1[E4.y_2, ..]
+ *      (2) GEN E1[.A_E1] GIVEN E2 [ATTR Ai=Vi[, ...]]
+ *      (3) INF E1.A_E1 GIVEN E2 [ATTR Ai=Vi[, ...]]
  *      (4) DEF E1[(x_1, x_2, ...)]
  *      (5) LST REL [E1 [E2]]
  *      (6) LST ENT [E1]*
  *      (7) RM REL E1(x_1 [, x_2, ..]) E2(y_1 [, y_2, ..])
  *      (8) RM ENT [E1]*
+ *      (9) SET E.A AS V
 
 More details on how to use these to build entities, relations and how to use generative commands to sample.
 
