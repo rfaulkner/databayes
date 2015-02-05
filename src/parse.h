@@ -67,6 +67,7 @@
 #define STATE_INF 70        // Infer the expected value of an attribute
 #define STATE_GENINF_E1 31  // Process first entity
 #define STATE_GENINF_E2 32  // Process second entity
+#define STATE_GENINF_ATTR 32  // Process second entity
 
 #define STATE_SET 80        // Generate an entity given others
 #define STATE_SET_ATTR 81   // Process the attribute
@@ -321,13 +322,15 @@ std::string Parser::analyze(const std::string& s) {
     } else if (this->macroState == STATE_ADD && (this->state == STATE_P1 || this->state == STATE_P2)) {
         this->parseRelationPair(sLower);
 
-    } else if (this->state == STATE_GEN && (this->state == STATE_GENINF_E1 || this->state == STATE_GENINF_E2)) {
+    } else if (this->state == STATE_GEN && (this->state == STATE_GENINF_E1 || this->state == STATE_GENINF_E2 || this->state == STATE_GENINF_ATTR)) {
         // if E1 parse the first entity
         // if E2 parse the second entity
+        // if ATTR parse the attribute constraints
 
-    } else if (this->state == STATE_INF && (this->state == STATE_GENINF_E1 || this->state == STATE_GENINF_E2)) {
+    } else if (this->state == STATE_INF && (this->state == STATE_GENINF_E1 || this->state == STATE_GENINF_E2 || this->state == STATE_GENINF_ATTR)) {
         // if E1 parse the first entity
         // if E2 parse the second entity
+        // if ATTR parse the attribute constraints
 
     } else if (this->state == STATE_DEF) {  // DEFINING new entities
 
@@ -423,6 +426,8 @@ std::string Parser::analyze(const std::string& s) {
 
         } else if (this->macroState == STATE_GEN_INF) {
 
+            // TODO - Difference from GEN is that expected value needs to be computed instead of sampling
+
         } else if (this->macroState == STATE_LST_ENT) {
 
             std::vector<Json::Value>* entities;
@@ -472,7 +477,7 @@ std::string Parser::analyze(const std::string& s) {
             }
             cout << this->rspStr << endl;
         } else if (this->macroState == STATE_SET) {
-
+            // TODO - Set an attribute value
         }
 
         // Cleanup
