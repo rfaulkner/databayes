@@ -264,8 +264,11 @@ std::string Parser::analyze(const std::string& s) {
             this->state = STATE_ADD;
             this->macroState = STATE_ADD;
         } else if (sLower.compare(STR_CMD_GEN) == 0) {
-            this->state = STATE_GEN;
+            this->state = STATE_GENINF_E1;
             this->macroState = STATE_GEN;
+        } else if (sLower.compare(STR_CMD_INF) == 0) {
+            this->state = STATE_GENINF_E1;
+            this->macroState = STATE_INF;
         } else if (sLower.compare(STR_CMD_DEF) == 0) {
             this->state = STATE_DEF;
             this->macroState = STATE_DEF;
@@ -277,6 +280,9 @@ std::string Parser::analyze(const std::string& s) {
         } else if (sLower.compare(STR_CMD_RM) == 0) {
             this->state = STATE_RM;
             this->macroState = STATE_RM;
+        } else if (sLower.compare(STR_CMD_SET) == 0) {
+            this->state = STATE_SET;
+            this->macroState = STATE_SET;
         }
 
         cout << "DEBUG -- Setting Macro state: " << this->macroState << endl;
@@ -315,8 +321,13 @@ std::string Parser::analyze(const std::string& s) {
     } else if (this->macroState == STATE_ADD && (this->state == STATE_P1 || this->state == STATE_P2)) {
         this->parseRelationPair(sLower);
 
-    } else if (this->state == STATE_GEN_REL && (this->state == STATE_P1 || this->state == STATE_P2)) {
-        this->parseRelationPair(sLower);
+    } else if (this->state == STATE_GEN && (this->state == STATE_GENINF_E1 || this->state == STATE_GENINF_E2)) {
+        // if E1 parse the first entity
+        // if E2 parse the second entity
+
+    } else if (this->state == STATE_INF && (this->state == STATE_GENINF_E1 || this->state == STATE_GENINF_E2)) {
+        // if E1 parse the first entity
+        // if E2 parse the second entity
 
     } else if (this->state == STATE_DEF) {  // DEFINING new entities
 
@@ -410,6 +421,8 @@ std::string Parser::analyze(const std::string& s) {
             // Print the sample
             cout << r.toJson().asCString() << endl;
 
+        } else if (this->macroState == STATE_GEN_INF) {
+
         } else if (this->macroState == STATE_LST_ENT) {
 
             std::vector<Json::Value>* entities;
@@ -458,6 +471,8 @@ std::string Parser::analyze(const std::string& s) {
                 this->rspStr = ERR_RM_ENT_CMD;
             }
             cout << this->rspStr << endl;
+        } else if (this->macroState == STATE_SET) {
+
         }
 
         // Cleanup
