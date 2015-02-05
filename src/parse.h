@@ -94,18 +94,24 @@ using namespace std;
  *  Implements an SLR parser. Valid Statements:
  *
  *      (1) ADD REL E1(x_1 [, x_2, ..]) E2(y_1 [, y_2, ..])
- *      (2) GEN REL E1[(x_1=v_1, x_2=v_2, ...)] CONSTRAIN E2[, E3, ...]
- *      (3) DEF E1[(x_1, x_2, ...)]
- *      (4) LST REL [E1 [E2]]
- *      (5) LST ENT [E1]*
- *      (6) RM ENT [E1]*
- *      (6) RM REL E1(x_1 [, x_2, ..]) E2(y_1 [, y_2, ..])
+ *      (2) GEN E1[.A_E1] GIVEN E2 [ATTR Ai=Vi[, ...]]
+ *      (3) INF E1.A_E1 GIVEN E2 [ATTR Ai=Vi[, ...]]
+ *      (4) DEF E1[(x_1, x_2, ...)]
+ *      (5) LST REL [E1 [E2]]
+ *      (6) LST ENT [E1]*
+ *      (7) RM REL E1(x_1 [, x_2, ..]) E2(y_1 [, y_2, ..])
+ *      (8) RM ENT [E1]*
+ *      (9) SET E.A AS V *
  *
  *  (1) provides a facility for insertion into the system
- *  (2) generate a sample conditional on an entity
- *  (3) define a new entity
- *  (4) list relations optionally dependent relational entities
- *  (5) list entities.  Either specify them or simply list all.
+ *  (2) generate a sample conditional on a set of constraints
+ *  (3) infer an expected value for an attribute
+ *  (4) define a new entity
+ *  (5) list relations optionally dependent relational entities
+ *  (6) list entities.  Either specify them or simply list all.
+ *  (7) remove a relation
+ *  (8) remove an entity
+ *  (9) set an attribute value
  */
 class Parser {
 
