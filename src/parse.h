@@ -24,8 +24,11 @@
 
 #define STR_CMD_ADD "add"
 #define STR_CMD_GEN "gen"
-#define STR_CMD_CON "constrain"
-#define STR_CMD_REL "rel"
+#define STR_CMD_INF "inf"
+#define STR_CMD_SET "set"
+#define STR_CMD_GIV "given"
+#define STR_CMD_ATR "attr"
+#define STR_CMD_CON "given"
 #define STR_CMD_DEF "def"
 #define STR_CMD_LST "lst"
 #define STR_CMD_ENT "ent"
@@ -60,8 +63,14 @@
 #define STATE_P1 12
 #define STATE_P2 14
 
-#define STATE_GEN 30        // Generate an entity given others
-#define STATE_GEN_REL 31
+#define STATE_GEN 30        // Generate a sample entity or attribute
+#define STATE_INF 70        // Infer the expected value of an attribute
+#define STATE_GENINF_E1 31  // Process first entity
+#define STATE_GENINF_E2 32  // Process second entity
+
+#define STATE_SET 80        // Generate an entity given others
+#define STATE_SET_ATTR 81   // Process the attribute
+#define STATE_SET_VAL 82    // Process the value
 
 #define STATE_DEF 40        // Describes entity definitions
 #define STATE_DEF_PROC 41
