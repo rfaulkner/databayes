@@ -123,6 +123,7 @@ class Parser {
 
     bool entityProcessed;
     bool fieldsProcessed;
+    bool parsedIDWord;      // Flag indicating whether pending ID Syntax token has been seen
     bool debug;
 
     bool error;
@@ -208,6 +209,7 @@ void Parser::resetState() {
     this->bufferValues = NULL;
     this->fieldsProcessed = false;
     this->entityProcessed = false;
+    this->parsedIDWord = false;
     this->currEntity = "";
     this->bufferEntity = "";
     this->currAttribute = "";
@@ -328,43 +330,66 @@ std::string Parser::analyze(const std::string& s) {
     } else if (this->macroState == STATE_ADD && (this->state == STATE_P1 || this->state == STATE_P2)) {
         this->parseRelationPair(sLower);
 
-    } else if (this->state == STATE_GEN && (this->state == STATE_GENINF_E1 || this->state == STATE_GENINF_E2 || this->state == STATE_GENINF_ATTR)) {
-
+    } else if (this->state == STATE_GEN) {
         switch (this->state) {
             case STATE_GENINF_E1:   // if E1 parse the first entity
-                if (sLower.compare(STR_CMD_GEN) == 0) break;
+                if (sLower.compare(STR_CMD_GEN) == 0 && !this->parsedIDWord) {
+                    this->parsedIDWord = true;
+                    break;
+                }
                 this->parseAttributeSymbol(s);
                 this->state = STATE_GENINF_E2;
+                this->parsedIDWord = false;
                 break;
             case STATE_GENINF_E2:  // if E2 parse the first entity
-                if (sLower.compare(STR_CMD_GIV) == 0) break;
+                if (sLower.compare(STR_CMD_GIV) == 0 && !this->parsedIDWord) {
+                    this->parsedIDWord = true;
+                    break;
+                }
+
                 this->parseAttributeSymbol(s, true);
                 this->state = STATE_GENINF_ATTR;
+                this->parsedIDWord = false;
                 break;
             case STATE_GENINF_ATTR: // if ATTR parse the first entity
-                if (sLower.compare(STR_CMD_ATR) == 0) break;
+                if (sLower.compare(STR_CMD_ATR) == 0 && !this->parsedIDWord) {
+                    this->parsedIDWord = true;
+                    break;
+                }
                 this->state = STATE_FINISH;
                 this->processCommaSeparatedList(s);
+                this->parsedIDWord = false;
                 break;
         }
 
-    } else if (this->state == STATE_INF && (this->state == STATE_GENINF_E1 || this->state == STATE_GENINF_E2 || this->state == STATE_GENINF_ATTR)) {
-
+    } else if (this->state == STATE_INF) {
         switch (this->state) {
             case STATE_GENINF_E1:   // if E1 parse the first entity
-                if (sLower.compare(STR_CMD_GEN) == 0) break;
+                if (sLower.compare(STR_CMD_INF) == 0 && !this->parsedIDWord) {
+                    this->parsedIDWord = true;
+                    break;
+                }
                 this->parseAttributeSymbol(s);
                 this->state = STATE_GENINF_E2;
+                this->parsedIDWord = false;
                 break;
             case STATE_GENINF_E2:  // if E2 parse the first entity
-                if (sLower.compare(STR_CMD_GIV) == 0) break;
+                if (sLower.compare(STR_CMD_GIV) == 0 && !this->parsedIDWord) {
+                    this->parsedIDWord = true;
+                    break;
+                }
                 this->parseAttributeSymbol(s, true);
                 this->state = STATE_GENINF_ATTR;
+                this->parsedIDWord = false;
                 break;
             case STATE_GENINF_ATTR: // if ATTR parse the first entity
-                if (sLower.compare(STR_CMD_ATR) == 0) break;
+                if (sLower.compare(STR_CMD_ATR) == 0 && !this->parsedIDWord) {
+                    this->parsedIDWord = true;
+                    break;
+                }
                 this->state = STATE_FINISH;
                 this->processCommaSeparatedList(s);
+                this->parsedIDWord = false;
                 break;
         }
 
