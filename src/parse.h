@@ -34,6 +34,7 @@
 #define STR_CMD_ENT "ent"
 #define STR_CMD_RM "rm"
 #define STR_CMD_EXIT "exit"
+#define STR_CMD_AS "as"
 
 #define BAD_INPUT "ERR: Bad input symbol"
 #define BAD_EOL "ERR: Bad end of line"
@@ -411,6 +412,20 @@ std::string Parser::analyze(const std::string& s) {
 
     } else if (this->macroState == STATE_LST_REL && (this->state == STATE_P1 || this->state == STATE_P2)) {
         this->parseRelationPair(sLower);
+
+    else if (this->macroState == STATE_SET) {
+        switch (this->state) {
+            case STATE_P1:   // if E1 parse the first entity
+                if (sLower.compare(STR_CMD_SET) == 0) break;
+                this->parseAttributeSymbol(s);
+                this->state = STATE_P2;
+                break;
+            case STATE_P2:  // if E2 parse the first entity
+                if (sLower.compare(STR_CMD_AS) == 0) break;
+                // TODO - extract value
+                this->state = STATE_FINISH;
+                break;
+        }
 
     } else if (this->state == STATE_FINISH) {  // Ensure processing is complete - no symbols should be left at this point
         this->error = true;
