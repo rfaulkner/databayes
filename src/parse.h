@@ -422,7 +422,7 @@ std::string Parser::analyze(const std::string& s) {
                 break;
             case STATE_P2:  // if E2 parse the first entity
                 if (sLower.compare(STR_CMD_AS) == 0) break;
-                // TODO - extract value
+                this->parseValue(s);
                 this->state = STATE_FINISH;
                 break;
         }
@@ -638,6 +638,13 @@ void Parser::parseAttributeSymbol(std::string s, bool entityOnly=false) {
 
     this->entityProcessed = true;
 }
+
+/**
+ *  Fetches an attribute value from the input
+ *
+ *  @param s    input string - e.g. 55, "hello", 2.1
+ */
+void Parser::parseValue(std::string s) { return s; }
 
 /**
  *  Handle entity fields
