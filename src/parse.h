@@ -51,6 +51,7 @@
 #define ERR_MALFORMED_CMD "ERR: Malformed Command"
 #define ERR_RM_REL_CMD "ERR: Either relation not found or not successfully removed"
 #define ERR_RM_ENT_CMD "ERR: Either entity not found or not successfully removed"
+#define ERR_PARSE_ATTR "ERR: Could not parse entity-attribute"
 
 #define WILDCARD_CHAR '*'
 
@@ -591,10 +592,11 @@ void Parser::parseEntitySymbol(std::string s) {
 
 /**
  *  Parses a single attribute value of the form <entity>.<attribute>
+ *  Allow read of entity only to be enforced
  *
  *  @param s    input string - e.g. "car.wheels"
  */
-void Parser::parseAttributeSymbol(std::string s) {
+void Parser::parseAttributeSymbol(std::string s, bool entityOnly=false) {
 
     // Tokenize the string
     std::vector<std::string> elems;
@@ -604,17 +606,21 @@ void Parser::parseAttributeSymbol(std::string s) {
     if (elems.size() == 2) {
         this->currEntity = elems[0];
         this->currAttribute = elems[1];
+    } else if (entityOnly && elems.size() == 1) {
+        this->currEntity = elems[0];
     } else {
         this->error = true;
-        this->errStr = ERR_INVALID_FIELD_TYPE;
+        this->errStr = ERR_PARSE_ATTR;
     }
 
     // Debug output
     if (this->debug)
-        cout << "DEBUG -- Reading entity/attribute: " << this->currEntity << "." << this->currAttribute << endl; // DEBUG
+        if (entityOnly)
+            cout << "DEBUG -- Reading entity/attribute: " << this->currEntity << endl; // DEBUG
+        else
+            cout << "DEBUG -- Reading entity/attribute: " << this->currEntity << "." << this->currAttribute << endl; // DEBUG
 
     this->entityProcessed = true;
-
 }
 
 /**
