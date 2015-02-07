@@ -259,7 +259,7 @@ std::string Parser::parse(const string& s) {
 std::string Parser::analyze(const std::string& s) {
 
     // Convert to lower case to enforce case insensitivity
-    string sLower = s;
+    std::string sLower = s;
     std::transform(sLower.begin(), sLower.end(), sLower.begin(), ::tolower);
 
     cout << "DEBUG -- Current state: " << this->state << endl;
@@ -674,7 +674,22 @@ void Parser::processFieldStatement(const string &fieldStr) {
  *
  *  @param string& fieldStr     string storing a comma seperated list
  */
-void Parser::parseCommaSeparatedList(const string &fieldStr, std::string fieldDelimiter='=') {}
+void Parser::parseCommaSeparatedList(const string &fieldStr, std::string fieldDelimiter='=') {
+    std::vector<string> fields = this->tokenize(fieldStr, ',');
+    std::string field;
+
+    if (this->debug)
+        cout << "DEBUG -- Reading field: " << fieldStr << endl; // DEBUG
+
+    for (std::vector<string>::iterator it = fields.begin() ; it != fields.end(); ++it) {
+        field = *it;
+
+        // On Assignment
+        if (fieldDelimiter.compare("=") == 0)
+            this->parseEntityAssignField(field);
+    }
+    this->fieldsProcessed == true;
+}
 
 /**
  *  Logic for parsing entity definition statements
