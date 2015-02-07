@@ -135,6 +135,7 @@ class Parser {
     // Define internal state that stores entity handles
     std::string currEntity;
     std::string bufferEntity;
+    std::string currAttribute;
 
     // Index interface pointer
     IndexHandler* indexHandler;
@@ -145,6 +146,7 @@ class Parser {
     // Parse methods
     void parseRelationPair(std::string);
     void parseEntitySymbol(std::string);
+    void parseAttributeSymbol(std::string);
     void processFieldStatement(const string &source);
     void parseEntityDefinitionField(std::string);
     void parseEntityAssignField(std::string);
@@ -205,6 +207,7 @@ void Parser::resetState() {
     this->entityProcessed = false;
     this->currEntity = "";
     this->bufferEntity = "";
+    this->currAttribute = "";
 }
 
 /**
@@ -324,6 +327,8 @@ std::string Parser::analyze(const std::string& s) {
 
     } else if (this->state == STATE_GEN && (this->state == STATE_GENINF_E1 || this->state == STATE_GENINF_E2 || this->state == STATE_GENINF_ATTR)) {
         // if E1 parse the first entity
+
+
         // if E2 parse the second entity
         // if ATTR parse the attribute constraints
 
@@ -556,6 +561,33 @@ void Parser::parseEntitySymbol(std::string s) {
         this->processFieldStatement(elems[1]);
 }
 
+/**
+ *  Parses a single attribute value of the form <entity>.<attribute>
+ *
+ *  @param s    input string - e.g. "car.wheels"
+ */
+void Parser::parseAttributeSymbol(std::string s) {
+
+    // Tokenize the string
+    std::vector<std::string> elems;
+    elems = this->tokenize(s, '.');
+
+    // Ensure that there are two tokens
+    if (elems.size() == 2) {
+        this->currEntity = elems[0];
+        this->currAttribute = elems[1];
+    } else {
+        this->error = true;
+        this->errStr = ERR_INVALID_FIELD_TYPE;
+    }
+
+    // Debug output
+    if (this->debug)
+        cout << "DEBUG -- Reading entity/attribute: " << this->currEntity << "." << this->currAttribute << endl; // DEBUG
+
+    this->entityProcessed = true;
+
+}
 
 /**
  *  Handle entity fields
