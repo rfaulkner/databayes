@@ -326,16 +326,44 @@ std::string Parser::analyze(const std::string& s) {
         this->parseRelationPair(sLower);
 
     } else if (this->state == STATE_GEN && (this->state == STATE_GENINF_E1 || this->state == STATE_GENINF_E2 || this->state == STATE_GENINF_ATTR)) {
-        // if E1 parse the first entity
 
-
-        // if E2 parse the second entity
-        // if ATTR parse the attribute constraints
+        switch (this->state) {
+            case STATE_GENINF_E1:   // if E1 parse the first entity
+                if (sLower.compare(STR_CMD_GEN) == 0) break;
+                this->parseAttributeSymbol(s);
+                this->state = STATE_GENINF_E2;
+                break;
+            case STATE_GENINF_E2:  // if E2 parse the first entity
+                if (sLower.compare(STR_CMD_GIV) == 0) break;
+                this->parseAttributeSymbol(s);
+                this->state = STATE_GENINF_ATTR;
+                break;
+            case STATE_GENINF_ATTR: // if ATTR parse the first entity
+                if (sLower.compare(STR_CMD_ATR) == 0) break;
+                this->state = STATE_FINISH;
+                // TODO - process list of attribute/value pairs
+                break;
+        }
 
     } else if (this->state == STATE_INF && (this->state == STATE_GENINF_E1 || this->state == STATE_GENINF_E2 || this->state == STATE_GENINF_ATTR)) {
-        // if E1 parse the first entity
-        // if E2 parse the second entity
-        // if ATTR parse the attribute constraints
+
+        switch (this->state) {
+            case STATE_GENINF_E1:   // if E1 parse the first entity
+                if (sLower.compare(STR_CMD_GEN) == 0) break;
+                this->parseAttributeSymbol(s);
+                this->state = STATE_GENINF_E2;
+                break;
+            case STATE_GENINF_E2:  // if E2 parse the first entity
+                if (sLower.compare(STR_CMD_GIV) == 0) break;
+                this->parseAttributeSymbol(s);
+                this->state = STATE_GENINF_ATTR;
+                break;
+            case STATE_GENINF_ATTR: // if ATTR parse the first entity
+                if (sLower.compare(STR_CMD_ATR) == 0) break;
+                this->state = STATE_FINISH;
+                // TODO - process list of attribute/value pairs
+                break;
+        }
 
     } else if (this->state == STATE_DEF) {  // DEFINING new entities
 
