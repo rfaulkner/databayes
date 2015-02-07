@@ -53,6 +53,8 @@
 #define ERR_RM_REL_CMD "ERR: Either relation not found or not successfully removed"
 #define ERR_RM_ENT_CMD "ERR: Either entity not found or not successfully removed"
 #define ERR_PARSE_ATTR "ERR: Could not parse entity-attribute"
+#define ERR_MAL_GEN "ERR: Malformed GEN command"
+#define ERR_MAL_INF "ERR: Malformed INF command"
 
 #define WILDCARD_CHAR '*'
 
@@ -336,6 +338,9 @@ std::string Parser::analyze(const std::string& s) {
                 if (sLower.compare(STR_CMD_GEN) == 0 && !this->parsedIDWord) {
                     this->parsedIDWord = true;
                     break;
+                } else if (sLower.compare(STR_CMD_GEN) == 0) {
+                    this->error = true;
+                    this->errStr = ERR_MAL_GEN;
                 }
                 this->parseAttributeSymbol(s);
                 this->state = STATE_GENINF_E2;
@@ -345,9 +350,10 @@ std::string Parser::analyze(const std::string& s) {
                 if (sLower.compare(STR_CMD_GIV) == 0 && !this->parsedIDWord) {
                     this->parsedIDWord = true;
                     break;
-                }
-
-                this->parseAttributeSymbol(s, true);
+                } else if (sLower.compare(STR_CMD_GIV) == 0) {
+                    this->error = true;
+                    this->errStr = ERR_MAL_GEN;
+                }                this->parseAttributeSymbol(s, true);
                 this->state = STATE_GENINF_ATTR;
                 this->parsedIDWord = false;
                 break;
@@ -355,11 +361,17 @@ std::string Parser::analyze(const std::string& s) {
                 if (sLower.compare(STR_CMD_ATR) == 0 && !this->parsedIDWord) {
                     this->parsedIDWord = true;
                     break;
+                } else if (sLower.compare(STR_CMD_ATR) == 0) {
+                    this->error = true;
+                    this->errStr = ERR_MAL_GEN;
                 }
                 this->state = STATE_FINISH;
                 this->processCommaSeparatedList(s);
                 this->parsedIDWord = false;
                 break;
+            default:
+                this->error = true;
+                this->errStr = ERR_MAL_GEN;
         }
 
     } else if (this->state == STATE_INF) {
@@ -368,6 +380,9 @@ std::string Parser::analyze(const std::string& s) {
                 if (sLower.compare(STR_CMD_INF) == 0 && !this->parsedIDWord) {
                     this->parsedIDWord = true;
                     break;
+                } else if (sLower.compare(STR_CMD_INF) == 0) {
+                    this->error = true;
+                    this->errStr = ERR_MAL_INF;
                 }
                 this->parseAttributeSymbol(s);
                 this->state = STATE_GENINF_E2;
@@ -377,6 +392,9 @@ std::string Parser::analyze(const std::string& s) {
                 if (sLower.compare(STR_CMD_GIV) == 0 && !this->parsedIDWord) {
                     this->parsedIDWord = true;
                     break;
+                } else if (sLower.compare(STR_CMD_GIV) == 0) {
+                    this->error = true;
+                    this->errStr = ERR_MAL_INF;
                 }
                 this->parseAttributeSymbol(s, true);
                 this->state = STATE_GENINF_ATTR;
@@ -386,11 +404,17 @@ std::string Parser::analyze(const std::string& s) {
                 if (sLower.compare(STR_CMD_ATR) == 0 && !this->parsedIDWord) {
                     this->parsedIDWord = true;
                     break;
+                } else if (sLower.compare(STR_CMD_ATR) == 0) {
+                    this->error = true;
+                    this->errStr = ERR_MAL_INF;
                 }
                 this->state = STATE_FINISH;
                 this->processCommaSeparatedList(s);
                 this->parsedIDWord = false;
                 break;
+            default:
+                this->error = true;
+                this->errStr = ERR_MAL_INF;
         }
 
     } else if (this->state == STATE_DEF) {  // DEFINING new entities
