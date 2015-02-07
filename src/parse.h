@@ -147,10 +147,11 @@ class Parser {
     // Parse methods
     void parseRelationPair(std::string);
     void parseEntitySymbol(std::string);
-    void parseAttributeSymbol(std::string);
+    void parseAttributeSymbol(std::string, bool);
     void processFieldStatement(const string &source);
     void parseEntityDefinitionField(std::string);
     void parseEntityAssignField(std::string);
+    void parseCommaSeparatedList(const string&, std::string);
     void cleanup();
 
 public:
@@ -336,13 +337,13 @@ std::string Parser::analyze(const std::string& s) {
                 break;
             case STATE_GENINF_E2:  // if E2 parse the first entity
                 if (sLower.compare(STR_CMD_GIV) == 0) break;
-                this->parseAttributeSymbol(s);
+                this->parseAttributeSymbol(s, true);
                 this->state = STATE_GENINF_ATTR;
                 break;
             case STATE_GENINF_ATTR: // if ATTR parse the first entity
                 if (sLower.compare(STR_CMD_ATR) == 0) break;
                 this->state = STATE_FINISH;
-                // TODO - process list of attribute/value pairs
+                this->processCommaSeparatedList(s);
                 break;
         }
 
@@ -356,13 +357,13 @@ std::string Parser::analyze(const std::string& s) {
                 break;
             case STATE_GENINF_E2:  // if E2 parse the first entity
                 if (sLower.compare(STR_CMD_GIV) == 0) break;
-                this->parseAttributeSymbol(s);
+                this->parseAttributeSymbol(s, true);
                 this->state = STATE_GENINF_ATTR;
                 break;
             case STATE_GENINF_ATTR: // if ATTR parse the first entity
                 if (sLower.compare(STR_CMD_ATR) == 0) break;
                 this->state = STATE_FINISH;
-                // TODO - process list of attribute/value pairs
+                this->processCommaSeparatedList(s);
                 break;
         }
 
@@ -667,6 +668,13 @@ void Parser::processFieldStatement(const string &fieldStr) {
     }
 }
 
+/**
+ *  Parses a comma seperated list of attribute value pairs
+ *  Default is something like a_1=v_1,a_2=v_2,...,a_n=v_n
+ *
+ *  @param string& fieldStr     string storing a comma seperated list
+ */
+void Parser::parseCommaSeparatedList(const string &fieldStr, std::string fieldDelimiter='=') {}
 
 /**
  *  Logic for parsing entity definition statements
