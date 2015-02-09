@@ -817,6 +817,7 @@ void Parser::parseGenForm(const std::string inputToken, const std::string err) {
                 // Store the target entity and attribute
                 this->bufferEntity = this->currEntity;
                 this->bufferAttribute = this->currAttribute;
+                this->bufferValues = this->currValues;
 
                 this->parseAttributeSymbol(inputToken, true);
                 this->state = STATE_GENINF_ATTR;
@@ -843,20 +844,31 @@ void Parser::parseGenForm(const std::string inputToken, const std::string err) {
 }
 
 void Parser::processGEN() {
-//    // Construct attribute bucket
-//    AttributeBucket ab;
-//    ab.addAttributes(this->bufferEntity, *(this->bufferValues));
-//    ab.addAttributes(this->currEntity, *(this->currValues));
-//
-//    // Call sampling method from Bayes for relations
-//    Relation r = this->bayes->samplePairwise(this->bufferEntity, this->currEntity, ab);
-//
-//    // Print the sample
-//    cout << r.toJson().asCString() << endl;
+    // Construct attribute bucket
+    AttributeBucket ab;
+    ab.addAttributes(this->currEntity, *(this->currValues));
+
+    // Call sampling method from Bayes for relations
+    Relation r = this->bayes->samplePairwise(this->bufferEntity, this->currEntity, ab);
+
+    // Print the sample
+    cout << r.toJson().asCString() << endl;
 }
 
 void Parser::processINF() {
-    // TODO - Difference from GEN is that expected value needs to be computed instead of sampling
+
+    // Construct attribute bucket
+    AttributeBucket ab;
+    ab.addAttributes(this->currEntity, *(this->currValues));
+
+    // Call sampling method from Bayes for relations
+    AttributeTuple* at = new AttributeTuple(this->bufferEntity, this->bufferAttribute, "");
+    float exp = this->bayes->expectedAttribute(*at, ab);
+
+    // Print the expected value
+    cout << exp << endl;
+    delete at;
+
 }
 
 void Parser::processSET() {}
