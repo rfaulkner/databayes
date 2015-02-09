@@ -158,6 +158,8 @@ class Parser {
     void parseEntityDefinitionField(std::string);
     void parseEntityAssignField(std::string);
     void parseCommaSeparatedList(const string&, std::string);
+    void parseGenForm(std::string);
+
     void cleanup();
 
 public:
@@ -335,91 +337,11 @@ std::string Parser::analyze(const std::string& s) {
     } else if (this->macroState == STATE_ADD && (this->state == STATE_P1 || this->state == STATE_P2)) {
         this->parseRelationPair(sLower);
 
-    // TODO - refactor GEN/INF for reusable parts
     } else if (this->state == STATE_GEN) {
-        switch (this->state) {
-            case STATE_GENINF_E1:   // if E1 parse the first entity
-                if (sLower.compare(STR_CMD_GEN) == 0 && !this->parsedIDWord) {
-                    this->parsedIDWord = true;
-                    break;
-                } else if (sLower.compare(STR_CMD_GEN) == 0) {
-                    this->error = true;
-                    this->errStr = ERR_MAL_GEN;
-                }
-                this->parseAttributeSymbol(s);
-                this->state = STATE_GENINF_E2;
-                this->parsedIDWord = false;
-                break;
-            case STATE_GENINF_E2:  // if E2 parse the first entity
-                if (sLower.compare(STR_CMD_GIV) == 0 && !this->parsedIDWord) {
-                    this->parsedIDWord = true;
-                    break;
-                } else if (sLower.compare(STR_CMD_GIV) == 0) {
-                    this->error = true;
-                    this->errStr = ERR_MAL_GEN;
-                }                this->parseAttributeSymbol(s, true);
-                this->state = STATE_GENINF_ATTR;
-                this->parsedIDWord = false;
-                break;
-            case STATE_GENINF_ATTR: // if ATTR parse the first entity
-                if (sLower.compare(STR_CMD_ATR) == 0 && !this->parsedIDWord) {
-                    this->parsedIDWord = true;
-                    break;
-                } else if (sLower.compare(STR_CMD_ATR) == 0) {
-                    this->error = true;
-                    this->errStr = ERR_MAL_GEN;
-                }
-                this->state = STATE_FINISH;
-                this->processCommaSeparatedList(s);
-                this->parsedIDWord = false;
-                break;
-            default:
-                this->error = true;
-                this->errStr = ERR_MAL_GEN;
-        }
+        this->parseGenForm(ERR_MAL_GEN);
 
     } else if (this->state == STATE_INF) {
-        switch (this->state) {
-            case STATE_GENINF_E1:   // if E1 parse the first entity
-                if (sLower.compare(STR_CMD_INF) == 0 && !this->parsedIDWord) {
-                    this->parsedIDWord = true;
-                    break;
-                } else if (sLower.compare(STR_CMD_INF) == 0) {
-                    this->error = true;
-                    this->errStr = ERR_MAL_INF;
-                }
-                this->parseAttributeSymbol(s);
-                this->state = STATE_GENINF_E2;
-                this->parsedIDWord = false;
-                break;
-            case STATE_GENINF_E2:  // if E2 parse the first entity
-                if (sLower.compare(STR_CMD_GIV) == 0 && !this->parsedIDWord) {
-                    this->parsedIDWord = true;
-                    break;
-                } else if (sLower.compare(STR_CMD_GIV) == 0) {
-                    this->error = true;
-                    this->errStr = ERR_MAL_INF;
-                }
-                this->parseAttributeSymbol(s, true);
-                this->state = STATE_GENINF_ATTR;
-                this->parsedIDWord = false;
-                break;
-            case STATE_GENINF_ATTR: // if ATTR parse the first entity
-                if (sLower.compare(STR_CMD_ATR) == 0 && !this->parsedIDWord) {
-                    this->parsedIDWord = true;
-                    break;
-                } else if (sLower.compare(STR_CMD_ATR) == 0) {
-                    this->error = true;
-                    this->errStr = ERR_MAL_INF;
-                }
-                this->state = STATE_FINISH;
-                this->processCommaSeparatedList(s);
-                this->parsedIDWord = false;
-                break;
-            default:
-                this->error = true;
-                this->errStr = ERR_MAL_INF;
-        }
+        this->parseGenForm(ERR_MAL_INF);
 
     } else if (this->state == STATE_DEF) {  // DEFINING new entities
 
@@ -879,6 +801,53 @@ void Parser::parseRelationPair(std::string symbol) {
 
         } else if (this->state == STATE_P2) {
             this->state = STATE_FINISH;
+        }
+}
+
+/**
+ *  Stateless method for parsing GEN or INF Commands
+ */
+void parseGenForm(std::string err) {
+        switch (this->state) {
+            case STATE_GENINF_E1:   // if E1 parse the first entity
+                if ((sLower.compare(STR_CMD_GEN) == 0 || sLower.compare(STR_CMD_INF) == 0) && !this->parsedIDWord) {
+                    this->parsedIDWord = true;
+                    break;
+                } else if (sLower.compare(STR_CMD_GEN) == 0) {
+                    this->error = true;
+                    this->errStr = err;
+                }
+                this->parseAttributeSymbol(s);
+                this->state = STATE_GENINF_E2;
+                this->parsedIDWord = false;
+                break;
+            case STATE_GENINF_E2:  // if E2 parse the first entity
+                if (sLower.compare(STR_CMD_GIV) == 0 && !this->parsedIDWord) {
+                    this->parsedIDWord = true;
+                    break;
+                } else if (sLower.compare(STR_CMD_GIV) == 0) {
+                    this->error = true;
+                    this->errStr = err;
+                }
+                this->parseAttributeSymbol(s, true);
+                this->state = STATE_GENINF_ATTR;
+                this->parsedIDWord = false;
+                break;
+            case STATE_GENINF_ATTR: // if ATTR parse the first entity
+                if (sLower.compare(STR_CMD_ATR) == 0 && !this->parsedIDWord) {
+                    this->parsedIDWord = true;
+                    break;
+                } else if (sLower.compare(STR_CMD_ATR) == 0) {
+                    this->error = true;
+                    this->errStr = err;
+                }
+                this->state = STATE_FINISH;
+                this->processCommaSeparatedList(s);
+                this->parsedIDWord = false;
+                break;
+            default:
+                this->error = true;
+                this->errStr = err;
         }
 }
 
