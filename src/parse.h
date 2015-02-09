@@ -73,7 +73,7 @@
 #define STATE_INF 70        // Infer the expected value of an attribute
 #define STATE_GENINF_E1 31  // Process first entity
 #define STATE_GENINF_E2 32  // Process second entity
-#define STATE_GENINF_ATTR 32  // Process second entity
+#define STATE_GENINF_ATTR 33  // Process second entity
 
 #define STATE_SET 80        // Generate an entity given others
 #define STATE_SET_ATTR 81   // Process the attribute
@@ -152,14 +152,15 @@ class Parser {
     Bayes* bayes;
 
     // Parse methods
-    void parseRelationPair(std::string);
-    void parseEntitySymbol(std::string);
-    void parseAttributeSymbol(std::string, bool);
-    void processFieldStatement(const string &source);
-    void parseEntityDefinitionField(std::string);
-    void parseEntityAssignField(std::string);
-    void parseCommaSeparatedList(const string&, std::string);
-    void parseGenForm(std::string);
+    void parseRelationPair(const std::string);
+    void parseEntitySymbol(const std::string);
+    void parseAttributeSymbol(const std::string, bool = false);
+    void parseFieldStatement(const string &source);
+    void parseEntityDefinitionField(const std::string);
+    void parseEntityAssignField(const std::string);
+    void parseCommaSeparatedList(const string&, const char = '=');
+    void parseGenForm(const std::string, const std::string);
+    void parseValue(const std::string);
 
     void processGEN();
     void processINF();
@@ -336,10 +337,10 @@ std::string Parser::analyze(const std::string& s) {
         this->parseRelationPair(sLower);
 
     } else if (this->state == STATE_GEN) {
-        this->parseGenForm(ERR_MAL_GEN);
+        this->parseGenForm(sLower, ERR_MAL_GEN);
 
     } else if (this->state == STATE_INF) {
-        this->parseGenForm(ERR_MAL_INF);
+        this->parseGenForm(sLower, ERR_MAL_INF);
 
     } else if (this->state == STATE_DEF) {  // DEFINING new entities
 
@@ -366,7 +367,7 @@ std::string Parser::analyze(const std::string& s) {
             this->state = STATE_FINISH;
 
     } else if (this->state == STATE_DEF_PROC) {
-        this->processFieldStatement(sLower);
+        this->parseFieldStatement(sLower);
         if (this->fieldsProcessed)
             this->state = STATE_FINISH;
 
@@ -386,16 +387,16 @@ std::string Parser::analyze(const std::string& s) {
     } else if (this->macroState == STATE_LST_REL && (this->state == STATE_P1 || this->state == STATE_P2)) {
         this->parseRelationPair(sLower);
 
-    else if (this->macroState == STATE_SET) {
+    } else if (this->macroState == STATE_SET) {
         switch (this->state) {
             case STATE_P1:   // if E1 parse the first entity
                 if (sLower.compare(STR_CMD_SET) == 0) break;
-                this->parseAttributeSymbol(s);
+                this->parseAttributeSymbol(sLower);
                 this->state = STATE_P2;
                 break;
             case STATE_P2:  // if E2 parse the first entity
                 if (sLower.compare(STR_CMD_AS) == 0) break;
-                this->parseValue(s);
+                this->parseValue(sLower);
                 this->state = STATE_FINISH;
                 break;
         }
@@ -536,7 +537,7 @@ std::vector<std::string> Parser::tokenize(const std::string &s, const char delim
  *
  *  @param s    input string
  */
-void Parser::parseEntitySymbol(std::string s) {
+void Parser::parseEntitySymbol(const std::string s) {
 
     //   Check if s contains a left bracket .. split off the pre-string
     std::string field;
@@ -565,7 +566,7 @@ void Parser::parseEntitySymbol(std::string s) {
 
     // Process any fields
     if (!noFields)
-        this->processFieldStatement(elems[1]);
+        this->parseFieldStatement(elems[1]);
 }
 
 /**
@@ -574,7 +575,7 @@ void Parser::parseEntitySymbol(std::string s) {
  *
  *  @param s    input string - e.g. "car.wheels"
  */
-void Parser::parseAttributeSymbol(std::string s, bool entityOnly=false) {
+void Parser::parseAttributeSymbol(const std::string s, bool entityOnly) {
 
     // Tokenize the string
     std::vector<std::string> elems;
@@ -606,7 +607,7 @@ void Parser::parseAttributeSymbol(std::string s, bool entityOnly=false) {
  *
  *  @param s    input string - e.g. 55, "hello", 2.1
  */
-void Parser::parseValue(std::string s) {
+void Parser::parseValue(const std::string s) {
     // Validate Field type
     if (!this->indexHandler->validateEntityFieldType(this->currEntity, this->currAttribute, s)) {
         this->error = true;
@@ -620,7 +621,7 @@ void Parser::parseValue(std::string s) {
  *
  *  @param string& fieldStr     Consists of one or more comma separated fields possibly terminated with ')'
  */
-void Parser::processFieldStatement(const string &fieldStr) {
+void Parser::parseFieldStatement(const std::string &fieldStr) {
     std::vector<string> fields = this->tokenize(fieldStr, ',');
     std::string field;
 
@@ -665,7 +666,7 @@ void Parser::processFieldStatement(const string &fieldStr) {
  *
  *  @param string& fieldStr     string storing a comma seperated list
  */
-void Parser::parseCommaSeparatedList(const string &fieldStr, std::string fieldDelimiter='=') {
+void Parser::parseCommaSeparatedList(const string &fieldStr, const char fieldDelimiter) {
     std::vector<string> fields = this->tokenize(fieldStr, ',');
     std::string field;
 
@@ -676,7 +677,7 @@ void Parser::parseCommaSeparatedList(const string &fieldStr, std::string fieldDe
         field = *it;
 
         // On Assignment
-        if (fieldDelimiter.compare("=") == 0)
+        if (fieldDelimiter == '=')
             this->parseEntityAssignField(field);
     }
     this->fieldsProcessed == true;
@@ -687,7 +688,7 @@ void Parser::parseCommaSeparatedList(const string &fieldStr, std::string fieldDe
  *
  *  @param string& field
  */
-void Parser::parseEntityDefinitionField(std::string field) {
+void Parser::parseEntityDefinitionField(const std::string field) {
     std::vector<string> fieldItems;
     ColumnBase* fieldType;
 
@@ -719,7 +720,7 @@ void Parser::parseEntityDefinitionField(std::string field) {
  *
  *  @param string& field
  */
-void Parser::parseEntityAssignField(std::string field) {
+void Parser::parseEntityAssignField(const std::string field) {
     std::vector<std::string> fieldItems;
     fieldItems = this->tokenize(field, '=');
 
@@ -758,10 +759,10 @@ void Parser::parseEntityAssignField(std::string field) {
 /**
  *  Stateless method for parsing a pair of entity descriptors defining a relation
  */
-void Parser::parseRelationPair(std::string symbol) {
+void Parser::parseRelationPair(const std::string symbol) {
     // Determine if entity or fields need to be processed
     if (this->entityProcessed) {
-        this->processFieldStatement(symbol);
+        this->parseFieldStatement(symbol);
     } else {
         if (this->currValues != NULL) delete this->currValues;
         this->currValues = new vector<std::pair<std::string, std::string>>;
@@ -794,35 +795,35 @@ void Parser::parseRelationPair(std::string symbol) {
 /**
  *  Stateless method for parsing GEN or INF Commands
  */
-void Parser::parseGenForm(std::string err) {
+void Parser::parseGenForm(const std::string inputToken, const std::string err) {
         switch (this->state) {
             case STATE_GENINF_E1:   // if E1 parse the first entity
-                this->parseAttributeSymbol(s);
+                this->parseAttributeSymbol(inputToken);
                 this->state = STATE_GENINF_E2;
                 this->parsedIDWord = false;
                 break;
             case STATE_GENINF_E2:  // if E2 parse the first entity
-                if (sLower.compare(STR_CMD_GIV) == 0 && !this->parsedIDWord) {
+                if (inputToken.compare(STR_CMD_GIV) == 0 && !this->parsedIDWord) {
                     this->parsedIDWord = true;
                     break;
-                } else if (sLower.compare(STR_CMD_GIV) == 0) {
+                } else if (inputToken.compare(STR_CMD_GIV) == 0) {
                     this->error = true;
                     this->errStr = err;
                 }
-                this->parseAttributeSymbol(s, true);
+                this->parseAttributeSymbol(inputToken, true);
                 this->state = STATE_GENINF_ATTR;
                 this->parsedIDWord = false;
                 break;
             case STATE_GENINF_ATTR: // if ATTR parse the first entity
-                if (sLower.compare(STR_CMD_ATR) == 0 && !this->parsedIDWord) {
+                if (inputToken.compare(STR_CMD_ATR) == 0 && !this->parsedIDWord) {
                     this->parsedIDWord = true;
                     break;
-                } else if (sLower.compare(STR_CMD_ATR) == 0) {
+                } else if (inputToken.compare(STR_CMD_ATR) == 0) {
                     this->error = true;
                     this->errStr = err;
                 }
                 this->state = STATE_FINISH;
-                this->processCommaSeparatedList(s);
+                this->parseCommaSeparatedList(inputToken);
                 this->parsedIDWord = false;
                 break;
             default:
