@@ -160,6 +160,10 @@ class Parser {
     void parseCommaSeparatedList(const string&, std::string);
     void parseGenForm(std::string);
 
+    void processGEN();
+    void processINF();
+    void processSET();
+
     void cleanup();
 
 public:
@@ -437,21 +441,10 @@ std::string Parser::analyze(const std::string& s) {
                 cout << "DEBUG -- Adding relation." << endl;
 
         } else if (this->macroState == STATE_GEN) {
-
-            // Construct attribute bucket
-            AttributeBucket ab;
-            ab.addAttributes(this->bufferEntity, *(this->bufferValues));
-            ab.addAttributes(this->currEntity, *(this->currValues));
-
-            // Call sampling method from Bayes for relations
-            Relation r = this->bayes->samplePairwise(this->bufferEntity, this->currEntity, ab);
-
-            // Print the sample
-            cout << r.toJson().asCString() << endl;
+            this->processGEN();
 
         } else if (this->macroState == STATE_INF) {
-
-            // TODO - Difference from GEN is that expected value needs to be computed instead of sampling
+            this->processGEN();
 
         } else if (this->macroState == STATE_LST_ENT) {
 
@@ -502,7 +495,7 @@ std::string Parser::analyze(const std::string& s) {
             }
             cout << this->rspStr << endl;
         } else if (this->macroState == STATE_SET) {
-            // TODO - Set an attribute value
+            this->processSET();
         }
 
         // Cleanup
@@ -807,7 +800,7 @@ void Parser::parseRelationPair(std::string symbol) {
 /**
  *  Stateless method for parsing GEN or INF Commands
  */
-void parseGenForm(std::string err) {
+void Parser::parseGenForm(std::string err) {
         switch (this->state) {
             case STATE_GENINF_E1:   // if E1 parse the first entity
                 if ((sLower.compare(STR_CMD_GEN) == 0 || sLower.compare(STR_CMD_INF) == 0) && !this->parsedIDWord) {
@@ -850,5 +843,24 @@ void parseGenForm(std::string err) {
                 this->errStr = err;
         }
 }
+
+void Parser::processGEN() {
+//    // Construct attribute bucket
+//    AttributeBucket ab;
+//    ab.addAttributes(this->bufferEntity, *(this->bufferValues));
+//    ab.addAttributes(this->currEntity, *(this->currValues));
+//
+//    // Call sampling method from Bayes for relations
+//    Relation r = this->bayes->samplePairwise(this->bufferEntity, this->currEntity, ab);
+//
+//    // Print the sample
+//    cout << r.toJson().asCString() << endl;
+}
+
+void Parser::processINF() {
+    // TODO - Difference from GEN is that expected value needs to be computed instead of sampling
+}
+
+void Parser::processSET() {}
 
 #endif
