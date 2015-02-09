@@ -141,9 +141,10 @@ class Parser {
 
     // Define internal state that stores entity handles
     std::string currEntity;
+    std::string currAttribute;
     std::string currValue;
     std::string bufferEntity;
-    std::string currAttribute;
+    std::string bufferAttribute;
 
     // Index interface pointer
     IndexHandler* indexHandler;
@@ -223,9 +224,10 @@ void Parser::resetState() {
     this->entityProcessed = false;
     this->parsedIDWord = false;
     this->currEntity = "";
-    this->bufferEntity = "";
     this->currAttribute = "";
     this->currValue = "";
+    this->bufferEntity = "";
+    this->bufferAttribute = "";
 }
 
 /**
@@ -802,6 +804,7 @@ void Parser::parseGenForm(const std::string inputToken, const std::string err) {
                 this->state = STATE_GENINF_E2;
                 this->parsedIDWord = false;
                 break;
+
             case STATE_GENINF_E2:  // if E2 parse the first entity
                 if (inputToken.compare(STR_CMD_GIV) == 0 && !this->parsedIDWord) {
                     this->parsedIDWord = true;
@@ -810,10 +813,16 @@ void Parser::parseGenForm(const std::string inputToken, const std::string err) {
                     this->error = true;
                     this->errStr = err;
                 }
+
+                // Store the target entity and attribute
+                this->bufferEntity = this->currEntity;
+                this->bufferAttribute = this->currAttribute;
+
                 this->parseAttributeSymbol(inputToken, true);
                 this->state = STATE_GENINF_ATTR;
                 this->parsedIDWord = false;
                 break;
+
             case STATE_GENINF_ATTR: // if ATTR parse the first entity
                 if (inputToken.compare(STR_CMD_ATR) == 0 && !this->parsedIDWord) {
                     this->parsedIDWord = true;
@@ -826,6 +835,7 @@ void Parser::parseGenForm(const std::string inputToken, const std::string err) {
                 this->parseCommaSeparatedList(inputToken);
                 this->parsedIDWord = false;
                 break;
+
             default:
                 this->error = true;
                 this->errStr = err;
