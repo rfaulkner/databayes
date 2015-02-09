@@ -33,13 +33,17 @@ public:
     float computeConditional(std::string, std::string, AttributeBucket&);
     float computePairwise(std::string, std::string, AttributeBucket&);
 
+    // Sample relations
     Relation sampleMarginal(std::string, AttributeBucket&);
-    Relation samplePairwise(std::string, std::string, AttributeBucket&);
-    Relation samplePairwiseCausal(std::string, std::string, AttributeBucket&);
-
     Relation sampleMarginal(Entity&, AttributeBucket&);
+    Relation samplePairwise(std::string, std::string, AttributeBucket&);
     Relation samplePairwise(Entity&, Entity&, AttributeBucket&);
+    Relation samplePairwiseCausal(std::string, std::string, AttributeBucket&);
     Relation samplePairwiseCausal(Entity&, Entity&, AttributeBucket&);
+
+    // Compute expected values and mode for an attribute conditioned on filter values
+    float expectedAttribute(AttributeTuple&, AttributeBucket&);
+    std::string modeAttribute(AttributeTuple&, AttributeBucket&);
 
     long countEntityInRelations(std::string, AttributeBucket&, bool);
     long countRelations(std::string, std::string, AttributeBucket&);
