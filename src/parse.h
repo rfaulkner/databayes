@@ -47,6 +47,7 @@
 #define ERR_ENT_BAD_FORMAT "ERR: Invalid Entity assign format"
 #define ERR_ENT_FIELD_NOT_EXIST "ERR: Entity does not contain attribute"
 #define ERR_BAD_FIELD_TYPE "ERR: Bad field type on instance"
+#define ERR_BAD_VALUE_TYPE "ERR: Value does not belong to type"
 #define ERR_INVALID_DEF_FMT "ERR: Invalid Entity definition format"
 #define ERR_UNKNOWN_CMD "ERR: Unkown Command"
 #define ERR_MALFORMED_CMD "ERR: Malformed Command"
@@ -139,6 +140,7 @@ class Parser {
 
     // Define internal state that stores entity handles
     std::string currEntity;
+    std::string currValue;
     std::string bufferEntity;
     std::string currAttribute;
 
@@ -215,6 +217,7 @@ void Parser::resetState() {
     this->currEntity = "";
     this->bufferEntity = "";
     this->currAttribute = "";
+    this->currValue = "";
 }
 
 /**
@@ -332,6 +335,7 @@ std::string Parser::analyze(const std::string& s) {
     } else if (this->macroState == STATE_ADD && (this->state == STATE_P1 || this->state == STATE_P2)) {
         this->parseRelationPair(sLower);
 
+    // TODO - refactor GEN/INF for reusable parts
     } else if (this->state == STATE_GEN) {
         switch (this->state) {
             case STATE_GENINF_E1:   // if E1 parse the first entity
@@ -510,7 +514,7 @@ std::string Parser::analyze(const std::string& s) {
             if (this->debug)
                 cout << "DEBUG -- Adding relation." << endl;
 
-        } else if (this->macroState == STATE_GEN_REL) {
+        } else if (this->macroState == STATE_GEN) {
 
             // Construct attribute bucket
             AttributeBucket ab;
@@ -523,7 +527,7 @@ std::string Parser::analyze(const std::string& s) {
             // Print the sample
             cout << r.toJson().asCString() << endl;
 
-        } else if (this->macroState == STATE_GEN_INF) {
+        } else if (this->macroState == STATE_INF) {
 
             // TODO - Difference from GEN is that expected value needs to be computed instead of sampling
 
@@ -693,7 +697,14 @@ void Parser::parseAttributeSymbol(std::string s, bool entityOnly=false) {
  *
  *  @param s    input string - e.g. 55, "hello", 2.1
  */
-void Parser::parseValue(std::string s) { return s; }
+void Parser::parseValue(std::string s) {
+    // Validate Field type
+    if (!this->indexHandler->validateEntityFieldType(this->currEntity, this->currAttribute, s)) {
+        this->error = true;
+        this->errStr = ERR_BAD_VALUE_TYPE;
+    }
+    this->currValue = s;
+}
 
 /**
  *  Handle entity fields
