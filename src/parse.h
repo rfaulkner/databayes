@@ -35,6 +35,7 @@
 #define STR_CMD_RM "rm"
 #define STR_CMD_EXIT "exit"
 #define STR_CMD_AS "as"
+#define STR_CMD_REL "rel"
 
 #define BAD_INPUT "ERR: Bad input symbol"
 #define BAD_EOL "ERR: Bad end of line"
@@ -307,16 +308,9 @@ std::string Parser::analyze(const std::string& s) {
 
         cout << "DEBUG -- Setting Macro state: " << this->macroState << endl;
 
-    } else if (this->state == STATE_ADD || this->state == STATE_GEN) {
+    } else if (this->state == STATE_ADD) {
         if (sLower.compare(STR_CMD_REL) == 0)
-            switch (this->state) {
-            case STATE_ADD:
-                this->state = STATE_P1;
-                break;
-            case STATE_GEN:
-                this->state = STATE_GEN_REL;
-                break;
-            }
+            this->state = STATE_P1;
         else {
             this->error = true;
             this->errStr = BAD_INPUT;
@@ -803,13 +797,6 @@ void Parser::parseRelationPair(std::string symbol) {
 void Parser::parseGenForm(std::string err) {
         switch (this->state) {
             case STATE_GENINF_E1:   // if E1 parse the first entity
-                if ((sLower.compare(STR_CMD_GEN) == 0 || sLower.compare(STR_CMD_INF) == 0) && !this->parsedIDWord) {
-                    this->parsedIDWord = true;
-                    break;
-                } else if (sLower.compare(STR_CMD_GEN) == 0) {
-                    this->error = true;
-                    this->errStr = err;
-                }
                 this->parseAttributeSymbol(s);
                 this->state = STATE_GENINF_E2;
                 this->parsedIDWord = false;
