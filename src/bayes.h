@@ -265,9 +265,12 @@ float Bayes::expectedAttribute(AttributeTuple& attr, AttributeBucket& filter) {
     if (!json[JSON_ATTR_ENT_FIELDS].isMember(attr.attribute)) return -1.0;
     if (!json[JSON_ATTR_ENT_FIELDS][attr.attribute].asCString() != "integer" && !json[JSON_ATTR_ENT_FIELDS][attr.attribute].asCString() != "float") return -1.0;
 
-    // Filter the relevant samples
-    std::vector<Json::Value> relations;
-    relations = this->indexHandler->filterAttribute(attr, filter);
+    // Fetch all matching attributes
+    std::vector<Json::Value> relations = this->indexHandler->fetchAttribute(attr, filter);
+
+    // Filter relations based on filter bucket
+    relations = this->indexHandler->filterRelations(relations, filter);
+
     long count = 0;
     float expected = 0.0;
 
