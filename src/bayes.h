@@ -251,4 +251,42 @@ Relation Bayes::samplePairwiseCausal(std::string x, std::string y, AttributeBuck
     return r;
 }
 
+/**
+ *  Produce the expected value for an attribute given a set of filter criteria
+ *
+ *  @param attr     the attribute to compute
+ *  @param filter   filter criteria
+ **/
+float Bayes::expectedAttribute(AttributeTuple& attr, AttributeBucket& filter) {
+
+    // Ensure that the attribute is a numeric type
+    Json::Value json;
+    this->fetchEntity(attr.entity, json);
+    if (!json[JSON_ATTR_ENT_FIELDS].isMember(attr.attribute)) return -1.0;
+    if (!json[JSON_ATTR_ENT_FIELDS][attr.attribute].asCString() != "integer" && !json[JSON_ATTR_ENT_FIELDS][attr.attribute].asCString() != "float") return -1.0;
+
+    // Filter the relevant samples
+    std::vector<Json::Value> relations;
+    relations = this->indexHandler->filterAttribute(attr, filter);
+    long count = 0;
+    float expected = 0.0;
+
+    for (std::vector<Json::Value>::iterator it = relations.begin(); it != relations.end(); ++it) {
+        if ((*it)[JSON_ATTR_REL_FIELDSL].isMember(attr.attribute)
+            expected += (*it)[JSON_ATTR_REL_FIELDSL][attr.attribute].asFloat() * (*it)[JSON_ATTR_REL_COUNT].asFloat();
+        if ((*it)[JSON_ATTR_REL_FIELDSR].isMember(attr.attribute)
+            expected += (*it)[JSON_ATTR_REL_FIELDSL][attr.attribute].asFloat() * (*it)[JSON_ATTR_REL_COUNT].asFloat();
+        count += (*it)[JSON_ATTR_REL_COUNT].asInt();
+    }
+    return expected / count;
+}
+
+/**
+ *  Choose the value of an attribute corresponding to the maximum mode given a set of filter criteria
+ *
+ *  @param attr     the attribute to compute
+ *  @param filter   filter criteria
+ **/
+std::string Bayes::modeAttribute(AttributeTuple& attr, AttributeBucket& filter) { return ""; }
+
 #endif
