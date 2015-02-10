@@ -393,8 +393,10 @@ std::vector<Relation> IndexHandler::filterRelations(
             currAttr = new AttributeTuple(it->name_left, std::get<0>(*it_inner), std::get<1>(*it_inner));
             if (bucketAttr = filterAttrs.getAttribute(*currAttr)) {
                 matching = AttributeTuple::compare(*bucketAttr, *currAttr);
+                delete currAttr;
                 if (!matching) break;
             }
+            delete currAttr;
         }
 
         // Match right hand relations - only process if left hand relations matched
@@ -403,8 +405,10 @@ std::vector<Relation> IndexHandler::filterRelations(
                 currAttr = new AttributeTuple(it->name_right, std::get<0>(*it_inner), std::get<1>(*it_inner));
                 if (bucketAttr = filterAttrs.getAttribute(*currAttr)) {
                     matching = AttributeTuple::compare(*bucketAttr, *currAttr);
+                    delete currAttr;
                     if (!matching) break;
                 }
+                delete currAttr;
             }
 
         if (matching)
@@ -440,6 +444,7 @@ std::vector<Json::Value> IndexHandler::filterRelations(
                 currAttr = new AttributeTuple(it_inner->second.entity, it_inner->second.attribute,
                                                 (*it)[JSON_ATTR_REL_ENTL][it_inner->second.attribute].asCString());
                 matching = AttributeTuple::compare(it_inner->second, *currAttr);
+                delete currAttr;
                 if (!matching) break;
             }
 
@@ -450,6 +455,7 @@ std::vector<Json::Value> IndexHandler::filterRelations(
                     currAttr = new AttributeTuple(it_inner->second.entity, it_inner->second.attribute,
                                                     (*it)[JSON_ATTR_REL_ENTR][it_inner->second.attribute].asCString());
                     matching = AttributeTuple::compare(it_inner->second, *currAttr);
+                    delete currAttr;
                     if (!matching) break;
                 }
 
