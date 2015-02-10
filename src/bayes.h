@@ -256,17 +256,20 @@ Relation Bayes::samplePairwiseCausal(std::string x, std::string y, AttributeBuck
  *
  *  @param attr     the attribute to compute
  *  @param filter   filter criteria
+ *
+ *  @returns        The expected value for this attribute
+ *                  TODO - handle error modes
  **/
 float Bayes::expectedAttribute(AttributeTuple& attr, AttributeBucket& filter) {
 
     // Ensure that the attribute is a numeric type
     Json::Value json;
-    this->fetchEntity(attr.entity, json);
+    this->indexHandler->fetchEntity(attr.entity, json);
     if (!json[JSON_ATTR_ENT_FIELDS].isMember(attr.attribute)) return -1.0;
-    if (!json[JSON_ATTR_ENT_FIELDS][attr.attribute].asCString() != "integer" && !json[JSON_ATTR_ENT_FIELDS][attr.attribute].asCString() != "float") return -1.0;
+    if (std::strcmp(json[JSON_ATTR_ENT_FIELDS][attr.attribute].asCString(), "integer") != 0 && std::strcmp(json[JSON_ATTR_ENT_FIELDS][attr.attribute].asCString(), "float") != 0) return -1.0;
 
     // Fetch all matching attributes
-    std::vector<Json::Value> relations = this->indexHandler->fetchAttribute(attr, filter);
+    std::vector<Json::Value> relations = this->indexHandler->fetchAttribute(attr);
 
     // Filter relations based on filter bucket
     relations = this->indexHandler->filterRelations(relations, filter);
@@ -275,9 +278,9 @@ float Bayes::expectedAttribute(AttributeTuple& attr, AttributeBucket& filter) {
     float expected = 0.0;
 
     for (std::vector<Json::Value>::iterator it = relations.begin(); it != relations.end(); ++it) {
-        if ((*it)[JSON_ATTR_REL_FIELDSL].isMember(attr.attribute)
+        if ((*it)[JSON_ATTR_REL_FIELDSL].isMember(attr.attribute))
             expected += (*it)[JSON_ATTR_REL_FIELDSL][attr.attribute].asFloat() * (*it)[JSON_ATTR_REL_COUNT].asFloat();
-        if ((*it)[JSON_ATTR_REL_FIELDSR].isMember(attr.attribute)
+        if ((*it)[JSON_ATTR_REL_FIELDSR].isMember(attr.attribute))
             expected += (*it)[JSON_ATTR_REL_FIELDSL][attr.attribute].asFloat() * (*it)[JSON_ATTR_REL_COUNT].asFloat();
         count += (*it)[JSON_ATTR_REL_COUNT].asInt();
     }
@@ -289,16 +292,19 @@ float Bayes::expectedAttribute(AttributeTuple& attr, AttributeBucket& filter) {
  *
  *  @param attr     the attribute to compute
  *  @param filter   filter criteria
+ *
+ *  @returns        The value representing the mode for this attribute
+ *                  TODO - handle error modes
  **/
 std::string Bayes::modeAttribute(AttributeTuple& attr, AttributeBucket& filter) {
 
     // Ensure that the attribute is present in the entity
     Json::Value json, counts;
-    this->fetchEntity(attr.entity, json);
-    if (!json[JSON_ATTR_ENT_FIELDS].isMember(attr.attribute)) return -1.0;
+    this->indexHandler->fetchEntity(attr.entity, json);
+    if (!json[JSON_ATTR_ENT_FIELDS].isMember(attr.attribute)) return "";
 
     // Fetch all matching attributes
-    std::vector<Json::Value> relations = this->indexHandler->fetchAttribute(attr, filter);
+    std::vector<Json::Value> relations = this->indexHandler->fetchAttribute(attr);
 
     // Filter relations based on filter bucket
     relations = this->indexHandler->filterRelations(relations, filter);
@@ -306,17 +312,17 @@ std::string Bayes::modeAttribute(AttributeTuple& attr, AttributeBucket& filter) 
     // Check left and right field sets; if the attribute is found count the instances for that value
     const char* key;
     for (std::vector<Json::Value>::iterator it = relations.begin(); it != relations.end(); ++it) {
-        if ((*it)[JSON_ATTR_REL_FIELDSL].isMember(attr.attribute) {
+        if ((*it)[JSON_ATTR_REL_FIELDSL].isMember(attr.attribute)) {
             key = (*it)[JSON_ATTR_REL_FIELDSL][attr.attribute].asCString();
             if (counts.isMember(key))
-                counts[key] += (*it)[JSON_ATTR_REL_COUNT].asInt();
+                counts[key] = counts[key].asInt() + (*it)[JSON_ATTR_REL_COUNT].asInt();
             else
                 counts[key] = (*it)[JSON_ATTR_REL_COUNT].asInt();
         }
-        if ((*it)[JSON_ATTR_REL_FIELDSR].isMember(attr.attribute) {
+        if ((*it)[JSON_ATTR_REL_FIELDSR].isMember(attr.attribute)) {
             key = (*it)[JSON_ATTR_REL_FIELDSR][attr.attribute].asCString();
             if (counts.isMember(key))
-                counts[key] += (*it)[JSON_ATTR_REL_COUNT].asInt();
+                counts[key] = counts[key].asInt() + (*it)[JSON_ATTR_REL_COUNT].asInt();
             else
                 counts[key] = (*it)[JSON_ATTR_REL_COUNT].asInt();
         }
