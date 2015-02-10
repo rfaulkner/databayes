@@ -461,7 +461,7 @@ std::vector<Json::Value> IndexHandler::filterRelations(
 
     // Not very efficient (O(n*m)), but OK if filterAttrs is small (m << n)
     for (std::vector<Json::Value>::iterator it = relations.begin(); it != relations.end(); ++it)
-        for (std::unordered_map<std::string, AttributeTuple>::iterator it_inner = hm.begin(); it_inner != hm.end(); ++it) {
+        for (std::unordered_map<std::string, AttributeTuple>::iterator it_inner = hm.begin(); it_inner != hm.end(); ++it_inner) {
 
             // Match left hand relations
             if ((*it)[JSON_ATTR_REL_FIELDSL].isMember(it_inner->second.attribute) &&
