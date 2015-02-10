@@ -75,7 +75,7 @@ public:
 
     std::vector<Relation> filterRelations(std::vector<Relation>&, AttributeBucket&);
     std::vector<Json::Value> filterRelations(std::vector<Json::Value>&, AttributeBucket&);
-    std::vector<Json::Value> fetchAttribute(AttributeTuple&, AttributeBucket&);
+    std::vector<Json::Value> fetchAttribute(AttributeTuple&);
 
     std::string generateEntityKey(std::string);
     std::string generateRelationKey(std::string, std::string, std::string);
@@ -288,6 +288,27 @@ std::vector<Json::Value> IndexHandler::fetchRelationPrefix(std::string entityL, 
     }
     return relations;
 }
+
+/** Fetch a set of relations matching the entities */
+std::vector<Json::Value> IndexHandler::fetchAttribute(AttributeTuple& attr) {
+    this->redisHandler->connect();
+    std::vector<std::string> keysl = this->redisHandler->keys(this->generateRelationKey(attr.entity, "*", "*"));
+    std::vector<std::string> keysr = this->redisHandler->keys(this->generateRelationKey("*", attr.entity, "*"));
+    std::vector<Json::Value> relations;
+
+    for (std::vector<string>::iterator it = keysl.begin(); it != keysl.end(); ++it) {
+        Json::Value json;
+        this->composeJSON(this->redisHandler->read(*it), json);
+        relations.push_back(json);
+    }
+    for (std::vector<string>::iterator it = keysr.begin(); it != keysr.end(); ++it) {
+        Json::Value json;
+        this->composeJSON(this->redisHandler->read(*it), json);
+        relations.push_back(json);
+    }
+    return relations;
+}
+
 
 /** Check to ensure entity exists */
 bool IndexHandler::existsEntity(std::string entity) {
@@ -509,17 +530,6 @@ long IndexHandler::computeRelationsCount(std::string left_entity, std::string ri
     for (std::vector<Json::Value>::iterator it = relations.begin() ; it != relations.end(); ++it)
         totalCount += (*it)[JSON_ATTR_REL_COUNT].asInt();
     return totalCount;
-}
-
-/**
- *  Fetch and filter attribute from memory
- */
-std::vector<Json::Value> fetchAttribute(AttributeTuple&, AttributeBucket&) {
-    std::vector<Json::Value> relations;
-
-    // TODO - implement
-
-    return relations;
 }
 
 /**
