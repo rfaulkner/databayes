@@ -290,6 +290,49 @@ float Bayes::expectedAttribute(AttributeTuple& attr, AttributeBucket& filter) {
  *  @param attr     the attribute to compute
  *  @param filter   filter criteria
  **/
-std::string Bayes::modeAttribute(AttributeTuple& attr, AttributeBucket& filter) { return ""; }
+std::string Bayes::modeAttribute(AttributeTuple& attr, AttributeBucket& filter) {
+
+    // Ensure that the attribute is present in the entity
+    Json::Value json, counts;
+    this->fetchEntity(attr.entity, json);
+    if (!json[JSON_ATTR_ENT_FIELDS].isMember(attr.attribute)) return -1.0;
+
+    // Fetch all matching attributes
+    std::vector<Json::Value> relations = this->indexHandler->fetchAttribute(attr, filter);
+
+    // Filter relations based on filter bucket
+    relations = this->indexHandler->filterRelations(relations, filter);
+
+    // Check left and right field sets; if the attribute is found count the instances for that value
+    const char* key;
+    for (std::vector<Json::Value>::iterator it = relations.begin(); it != relations.end(); ++it) {
+        if ((*it)[JSON_ATTR_REL_FIELDSL].isMember(attr.attribute) {
+            key = (*it)[JSON_ATTR_REL_FIELDSL][attr.attribute].asCString();
+            if (counts.isMember(key))
+                counts[key] += (*it)[JSON_ATTR_REL_COUNT].asInt();
+            else
+                counts[key] = (*it)[JSON_ATTR_REL_COUNT].asInt();
+        }
+        if ((*it)[JSON_ATTR_REL_FIELDSR].isMember(attr.attribute) {
+            key = (*it)[JSON_ATTR_REL_FIELDSR][attr.attribute].asCString();
+            if (counts.isMember(key))
+                counts[key] += (*it)[JSON_ATTR_REL_COUNT].asInt();
+            else
+                counts[key] = (*it)[JSON_ATTR_REL_COUNT].asInt();
+        }
+    }
+
+    // Get the key with the most occurrences - the key is across the range of values for the attribute
+    std::vector<std::string> keys = counts.getMemberNames();
+    int max = 0;
+    std:string value;
+    for (std::vector<std::string>::iterator it = keys.begin(); it != keys.end(); ++it) {
+        if (counts[*it].asInt() > max) {
+            max = counts[*it].asInt();
+            value = *it;
+        }
+    }
+    return value;
+}
 
 #endif
