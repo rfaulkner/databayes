@@ -75,6 +75,7 @@ public:
 
     std::vector<Relation> filterRelations(std::vector<Relation>&, AttributeBucket&);
     std::vector<Json::Value> filterRelations(std::vector<Json::Value>&, AttributeBucket&);
+    std::vector<Json::Value> fetchAttribute(AttributeTuple&, AttributeBucket&);
 
     std::string generateEntityKey(std::string);
     std::string generateRelationKey(std::string, std::string, std::string);
@@ -508,6 +509,17 @@ long IndexHandler::computeRelationsCount(std::string left_entity, std::string ri
     for (std::vector<Json::Value>::iterator it = relations.begin() ; it != relations.end(); ++it)
         totalCount += (*it)[JSON_ATTR_REL_COUNT].asInt();
     return totalCount;
+}
+
+/**
+ *  Fetch and filter attribute from memory
+ */
+std::vector<Json::Value> fetchAttribute(AttributeTuple&, AttributeBucket&) {
+    std::vector<Json::Value> relations;
+
+    // TODO - implement
+
+    return relations;
 }
 
 /**
