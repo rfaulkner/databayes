@@ -280,6 +280,7 @@ std::vector<Json::Value> IndexHandler::fetchRelationPrefix(std::string entityL, 
     std::vector<Json::Value> relations;
     Json::Value* json;
     for (std::vector<string>::iterator it = keys.begin(); it != keys.end(); ++it) {
+        // TODO - manage this allocation
         json = new Json::Value();
         this->composeJSON(this->redisHandler->read(*it), *json);
         relations.push_back(*json);
@@ -312,6 +313,7 @@ bool IndexHandler::existsRelation(std::string entityL, std::string entityR) {
  * Returns a vector of JSON values
  */
 std::vector<Json::Value>* IndexHandler::fetchPatternJson(std::string pattern) {
+    // TODO - just return the value
     std::vector<Json::Value>* elems = new std::vector<Json::Value>();
     Json::Value inMem;
     Json::Reader reader;
@@ -336,6 +338,7 @@ std::vector<Json::Value>* IndexHandler::fetchPatternJson(std::string pattern) {
  * Returns a vector of matching keys
  */
 std::vector<string>* IndexHandler::fetchPatternKeys(std::string pattern) {
+    // TODO - just return the value
     std::vector<std::string>* elems = new std::vector<std::string>();
     std::vector<string> vec;
     this->redisHandler->connect();
@@ -483,6 +486,7 @@ std::vector<Relation> IndexHandler::Json2RelationVector(std::vector<Json::Value>
     std::vector<Relation> relations;
     Relation* relation;
     for (std::vector<Json::Value>::iterator it = fields.begin() ; it != fields.end(); ++it) {
+        // TODO - manage this allocation
         relation = new Relation();
         relation->fromJSON(*it);
         relations.push_back(*relation);
