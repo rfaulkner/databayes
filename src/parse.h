@@ -36,6 +36,7 @@
 #define STR_CMD_EXIT "exit"
 #define STR_CMD_AS "as"
 #define STR_CMD_REL "rel"
+#define STR_CMD_FOR "for"
 
 #define BAD_INPUT "ERR: Bad input symbol"
 #define BAD_EOL "ERR: Bad end of line"
@@ -67,7 +68,8 @@
 
 #define STATE_ADD 10        // Add a new relation
 #define STATE_P1 12
-#define STATE_P2 14
+#define STATE_P2 13
+#define STATE_P3 14
 
 #define STATE_GEN 30        // Generate a sample entity or attribute
 #define STATE_INF 70        // Infer the expected value of an attribute
@@ -141,9 +143,13 @@ class Parser {
 
     // Define internal state that stores entity handles
     std::string currEntity;
-    std::string currAttribute;
     std::string currValue;
     std::string bufferEntity;
+
+    // Attribute values for internal state
+    std::string currAttrEntity;
+    std::string bufferAttrEntity;
+    std::string currAttribute;
     std::string bufferAttribute;
 
     // Index interface pointer
@@ -390,18 +396,7 @@ std::string Parser::analyze(const std::string& s) {
         this->parseRelationPair(sLower);
 
     } else if (this->macroState == STATE_SET) {
-        switch (this->state) {
-            case STATE_P1:   // if E1 parse the first entity
-                if (sLower.compare(STR_CMD_SET) == 0) break;
-                this->parseAttributeSymbol(sLower);
-                this->state = STATE_P2;
-                break;
-            case STATE_P2:  // if E2 parse the first entity
-                if (sLower.compare(STR_CMD_AS) == 0) break;
-                this->parseValue(sLower);
-                this->state = STATE_FINISH;
-                break;
-        }
+        this->
 
     } else if (this->state == STATE_FINISH) {  // Ensure processing is complete - no symbols should be left at this point
         this->error = true;
@@ -585,10 +580,10 @@ void Parser::parseAttributeSymbol(const std::string s, bool entityOnly) {
 
     // Ensure that there are two tokens
     if (elems.size() == 2) {
-        this->currEntity = elems[0];
+        this->currAttrEntity = elems[0];
         this->currAttribute = elems[1];
     } else if (entityOnly && elems.size() == 1) {
-        this->currEntity = elems[0];
+        this->currAttrEntity = elems[0];
     } else {
         this->error = true;
         this->errStr = ERR_PARSE_ATTR;
@@ -597,9 +592,9 @@ void Parser::parseAttributeSymbol(const std::string s, bool entityOnly) {
     // Debug output
     if (this->debug)
         if (entityOnly)
-            cout << "DEBUG -- Reading entity/attribute: " << this->currEntity << endl; // DEBUG
+            cout << "DEBUG -- Reading entity/attribute: " << this->currAttrEntity << endl; // DEBUG
         else
-            cout << "DEBUG -- Reading entity/attribute: " << this->currEntity << "." << this->currAttribute << endl; // DEBUG
+            cout << "DEBUG -- Reading entity/attribute: " << this->currAttrEntity << "." << this->currAttribute << endl; // DEBUG
 
     this->entityProcessed = true;
 }
@@ -798,50 +793,61 @@ void Parser::parseRelationPair(const std::string symbol) {
  *  Stateless method for parsing GEN or INF Commands
  */
 void Parser::parseGenForm(const std::string inputToken, const std::string err) {
-        switch (this->state) {
-            case STATE_GENINF_E1:   // if E1 parse the first entity
-                this->parseAttributeSymbol(inputToken);
-                this->state = STATE_GENINF_E2;
-                this->parsedIDWord = false;
+    switch (this->state) {
+        case STATE_GENINF_E1:   // if E1 parse the first entity
+            this->parseAttributeSymbol(inputToken);
+            this->state = STATE_GENINF_E2;
+            this->parsedIDWord = false;
+            break;
+
+        case STATE_GENINF_E2:  // if E2 parse the first entity
+            if (inputToken.compare(STR_CMD_GIV) == 0 && !this->parsedIDWord) {
+                this->parsedIDWord = true;
                 break;
-
-            case STATE_GENINF_E2:  // if E2 parse the first entity
-                if (inputToken.compare(STR_CMD_GIV) == 0 && !this->parsedIDWord) {
-                    this->parsedIDWord = true;
-                    break;
-                } else if (inputToken.compare(STR_CMD_GIV) == 0) {
-                    this->error = true;
-                    this->errStr = err;
-                }
-
-                // Store the target entity and attribute
-                this->bufferEntity = this->currEntity;
-                this->bufferAttribute = this->currAttribute;
-                this->bufferValues = this->currValues;
-
-                this->parseAttributeSymbol(inputToken, true);
-                this->state = STATE_GENINF_ATTR;
-                this->parsedIDWord = false;
-                break;
-
-            case STATE_GENINF_ATTR: // if ATTR parse the first entity
-                if (inputToken.compare(STR_CMD_ATR) == 0 && !this->parsedIDWord) {
-                    this->parsedIDWord = true;
-                    break;
-                } else if (inputToken.compare(STR_CMD_ATR) == 0) {
-                    this->error = true;
-                    this->errStr = err;
-                }
-                this->state = STATE_FINISH;
-                this->parseCommaSeparatedList(inputToken);
-                this->parsedIDWord = false;
-                break;
-
-            default:
+            } else if (inputToken.compare(STR_CMD_GIV) == 0) {
                 this->error = true;
                 this->errStr = err;
-        }
+            }
+
+            // Store the target entity and attribute
+            this->bufferAttrEntity = this->currAttrEntity;
+            this->bufferAttribute = this->currAttribute;
+
+            this->parseAttributeSymbol(inputToken, true);
+            this->state = STATE_GENINF_ATTR;
+            this->parsedIDWord = false;
+            break;
+
+        case STATE_GENINF_ATTR: // if ATTR parse the first entity
+            if (inputToken.compare(STR_CMD_ATR) == 0 && !this->parsedIDWord) {
+                this->parsedIDWord = true;
+                break;
+            } else if (inputToken.compare(STR_CMD_ATR) == 0) {
+                this->error = true;
+                this->errStr = err;
+            }
+            this->state = STATE_FINISH;
+            this->parseCommaSeparatedList(inputToken);
+            this->parsedIDWord = false;
+            break;
+
+        default:
+            this->error = true;
+            this->errStr = err;
+    }
 }
+
+/**
+ *  Stateless method for parsing GEN or INF Commands
+ */
+void Parser::parseGenForm(const std::string inputToken, const std::string err) {
+
+}
+
+/**
+ * Methds to process commands to be executed after successful parse
+ */
+
 
 void Parser::processGEN() {
     // Construct attribute bucket
