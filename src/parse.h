@@ -874,10 +874,10 @@ void Parser::parseGenForm(const std::string inputToken, const std::string err) {
 void Parser::processGEN() {
     // Construct attribute bucket
     AttributeBucket ab;
-    ab.addAttributes(this->currEntity, *(this->currValues));
+    ab.addAttributes(this->currAttrEntity, *(this->currValues));
 
     // Call sampling method from Bayes for relations
-    Relation r = this->bayes->samplePairwise(this->bufferEntity, this->currEntity, ab);
+    Relation r = this->bayes->samplePairwise(this->bufferAttrEntity, this->currEntity, ab);
 
     // Print the sample
     cout << r.toJson().asCString() << endl;
@@ -887,21 +887,52 @@ void Parser::processINF() {
 
     // Construct attribute bucket
     AttributeBucket ab;
-    ab.addAttributes(this->currEntity, *(this->currValues));
+    ab.addAttributes(this->currAttrEntity, *(this->currValues));
 
     // Call sampling method from Bayes for relations
-    AttributeTuple* at = new AttributeTuple(this->bufferEntity, this->bufferAttribute, "");
+    AttributeTuple* at = new AttributeTuple(this->bufferAttrEntity, this->bufferAttribute, "");
     float exp = this->bayes->expectedAttribute(*at, ab);
 
     // Print the expected value
     cout << exp << endl;
     delete at;
-
 }
 
 void Parser::processSET() {
-    // fetch the relation
 
+    // FIRST DETERMINE RELATIONS TO WHICH THIS APPLIES
+
+    // Construct attribute bucket
+    AttributeBucket ab;
+    ab.addAttributes(this->currAttrEntity, *(this->currValues));
+
+    std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(this->bufferAttrEntity, this->currAttrEntity);
+    relations = this->indexHandler->filterRelations(relations, ab);
+
+    // Call sampling method from Bayes for relations
+    for (std::vector<Json::Value>::iterator it = relations->begin() ; it != relations->end(); ++it) {
+        // Each iteration should be atomic
+        removeRelation(*it);
+        if (this->bufferAttrEntity.compare((*it)[JSON_ATTR_REL_ENTL].CString()) == 0) {
+            if (!(*it)[JSON_ATTR_REL_FIELDSL].isMember(this->bufferAttribute)) {
+                // TODO - handle error mode
+                cout << "DEBUG -- Processing field definition name: " << fieldItems[0] << endl; // DEBUG
+                continue;
+            }
+            // TODO - check value against attribute type
+            (*it)[JSON_ATTR_REL_FIELDSL][this->bufferAttribute] = this->currValue;
+        } else if (this->bufferAttrEntity.compare((*it)[JSON_ATTR_REL_ENTR].CString()) == 0) {
+            if (!(*it)[JSON_ATTR_REL_FIELDSR].isMember(this->bufferAttribute)) {
+                // TODO - handle error mode
+                cout << "DEBUG -- Processing field definition name: " << fieldItems[0] << endl; // DEBUG
+                continue;
+            }
+            // TODO - check value against attribute type
+            (*it)[JSON_ATTR_REL_FIELDSR][this->bufferAttribute] = this->currValue;
+        }
+        writeRelation(*it);
+        cout << "DEBUG -- SET attribute: " << fieldItems[0] << this->bufferAttrEntity << "." << this->bufferAttribute << " to " << this->currValue << endl; // DEBUG
+    }
 }
 
 #endif
