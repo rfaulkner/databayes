@@ -167,6 +167,7 @@ class Parser {
     void parseEntityAssignField(const std::string);
     void parseCommaSeparatedList(const string&, const char = '=');
     void parseGenForm(const std::string, const std::string);
+    void parseSet(const std::string);
     void parseValue(const std::string);
 
     void processGEN();
@@ -396,7 +397,7 @@ std::string Parser::analyze(const std::string& s) {
         this->parseRelationPair(sLower);
 
     } else if (this->macroState == STATE_SET) {
-        this->
+        this->parseSet(sLower);
 
     } else if (this->state == STATE_FINISH) {  // Ensure processing is complete - no symbols should be left at this point
         this->error = true;
@@ -845,7 +846,7 @@ void Parser::parseGenForm(const std::string inputToken, const std::string err) {
  *
  *  SYNTAX: SET E.A FOR E1(x1=vx1[, x2=vx2, ..]) E2(y1=vy1[, y2=vy2, ..]) AS V *
  */
-void Parser::parseGenForm(const std::string inputToken, const std::string err) {
+void Parser::parseSet(const std::string inputToken) {
     switch (this->state) {
         case STATE_P0:  // Parse entity/attribute to set
             this->parseAttributeSymbol(sLower);
@@ -910,28 +911,28 @@ void Parser::processSET() {
     relations = this->indexHandler->filterRelations(relations, ab);
 
     // Call sampling method from Bayes for relations
-    for (std::vector<Json::Value>::iterator it = relations->begin() ; it != relations->end(); ++it) {
+    for (std::vector<Json::Value>::iterator it = relations.begin() ; it != relations.end(); ++it) {
         // Each iteration should be atomic
-        removeRelation(*it);
-        if (this->bufferAttrEntity.compare((*it)[JSON_ATTR_REL_ENTL].CString()) == 0) {
+        this->indexHandler->removeRelation(*it);
+        if (this->bufferAttrEntity.compare((*it)[JSON_ATTR_REL_ENTL].asCString()) == 0) {
             if (!(*it)[JSON_ATTR_REL_FIELDSL].isMember(this->bufferAttribute)) {
                 // TODO - handle error mode
-                cout << "DEBUG -- Processing field definition name: " << fieldItems[0] << endl; // DEBUG
+                cout << "Attribute not found in SET: " << this->bufferAttrEntity << "." << this->bufferAttribute << endl; // DEBUG
                 continue;
             }
             // TODO - check value against attribute type
             (*it)[JSON_ATTR_REL_FIELDSL][this->bufferAttribute] = this->currValue;
-        } else if (this->bufferAttrEntity.compare((*it)[JSON_ATTR_REL_ENTR].CString()) == 0) {
+        } else if (this->bufferAttrEntity.compare((*it)[JSON_ATTR_REL_ENTR].asCString()) == 0) {
             if (!(*it)[JSON_ATTR_REL_FIELDSR].isMember(this->bufferAttribute)) {
                 // TODO - handle error mode
-                cout << "DEBUG -- Processing field definition name: " << fieldItems[0] << endl; // DEBUG
+                cout << "Attribute not found in SET: " << this->bufferAttrEntity << "." << this->bufferAttribute << endl; // DEBUG
                 continue;
             }
             // TODO - check value against attribute type
             (*it)[JSON_ATTR_REL_FIELDSR][this->bufferAttribute] = this->currValue;
         }
-        writeRelation(*it);
-        cout << "DEBUG -- SET attribute: " << fieldItems[0] << this->bufferAttrEntity << "." << this->bufferAttribute << " to " << this->currValue << endl; // DEBUG
+        this->indexHandler->writeRelation(*it);
+        cout << "DEBUG -- SET attribute: " << this->bufferAttrEntity << "." << this->bufferAttribute << " to " << this->currValue << endl; // DEBUG
     }
 }
 
