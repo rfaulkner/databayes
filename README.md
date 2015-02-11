@@ -56,10 +56,10 @@ Parser
 
 The general parser syntax has the following definition:
 
- *      (1) ADD REL E1(x_1 [, x_2, ..]) E2(y_1 [, y_2, ..])
+ *      (1) ADD REL E1(x1=vx1[, x2=vx2, ..]) E2(y1=vy1[, y2=vy2, ..])
  *      (2) GEN E1[.A_E1] GIVEN E2 [ATTR Ai=Vi[, ...]]
  *      (3) INF E1.A_E1 GIVEN E2 [ATTR Ai=Vi[, ...]]
- *      (4) DEF E1[(x_1, x_2, ...)]
+ *      (4) DEF E1[(x1_type-x1, x2_type-x2, ...)]
  *      (5) LST REL [E1 [E2]]
  *      (6) LST ENT [E1]*
  *      (7) RM REL E1(x_1 [, x_2, ..]) E2(y_1 [, y_2, ..])
