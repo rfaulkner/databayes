@@ -791,6 +791,9 @@ void Parser::parseRelationPair(const std::string symbol) {
 
 /**
  *  Stateless method for parsing GEN or INF Commands
+ *
+ *  SYNTAX: GEN E1[.A_E1] GIVEN E2 [ATTR Ai=Vi[, ...]]
+ *          INF E1.A_E1 GIVEN E2 [ATTR Ai=Vi[, ...]]
  */
 void Parser::parseGenForm(const std::string inputToken, const std::string err) {
     switch (this->state) {
@@ -838,16 +841,35 @@ void Parser::parseGenForm(const std::string inputToken, const std::string err) {
 }
 
 /**
- *  Stateless method for parsing GEN or INF Commands
+ *  Stateless method for parsing SET Command
+ *
+ *  SYNTAX: SET E.A FOR E1(x1=vx1[, x2=vx2, ..]) E2(y1=vy1[, y2=vy2, ..]) AS V *
  */
 void Parser::parseGenForm(const std::string inputToken, const std::string err) {
-
+    switch (this->state) {
+        case STATE_P0:  // Parse entity/attribute to set
+            this->parseAttributeSymbol(sLower);
+            this->state = STATE_P4;
+            break;
+        case STATE_P1:   // Parse first entity attribute settings
+            if (sLower.compare(STR_CMD_FOR) == 0) break;
+            this->parseRelationPair(sLower);    // handles transition to P2
+            break;
+        case STATE_P2:   // Parse second entity attribute settings
+            this->parseRelationPair(sLower);
+            this->state = STATE_P3;
+            break;
+        case STATE_P3:  // Parse value to set
+            if (sLower.compare(STR_CMD_AS) == 0) break;
+            this->parseValue(sLower);
+            this->state = STATE_FINISH;
+            break;
+    }
 }
 
 /**
- * Methds to process commands to be executed after successful parse
+ *  Methods to process commands to be executed after successful parse
  */
-
 
 void Parser::processGEN() {
     // Construct attribute bucket
