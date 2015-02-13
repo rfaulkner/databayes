@@ -51,6 +51,7 @@ public:
 
     bool writeEntity(Entity&);
     bool writeRelation(Relation&);
+    bool writeRelation(Json::Value&);
     bool writeToDisk(int);
 
     bool removeEntity(std::string);
@@ -190,6 +191,27 @@ bool IndexHandler::removeRelation(Json::Value& jsonVal) {
     return false;
 }
 
+/**
+ * Writes relation to in memory index.
+ *
+ *  e.g. {"entity": <string:entname>, "fields": <string_array:[<f1,f2,...>]>}
+ */
+bool IndexHandler::writeRelation(Json::Value& rel) {
+    this->redisHandler->connect();
+    key = this->generateRelationKey(rel.name_left, rel.name_right, md5(jsonVal.toStyledString()));
+
+    if (this->redisHandler->exists(key)) {
+        if (this->fetchRaw(key, jsonVal)) {
+            jsonVal[JSON_ATTR_REL_COUNT] = jsonVal[JSON_ATTR_REL_COUNT].asInt() + 1;
+        } else
+            return false;
+    } else
+        jsonVal[JSON_ATTR_REL_COUNT] = 1;
+
+    this->redisHandler->incrementKey(KEY_TOTAL_RELATIONS, 1);
+    this->redisHandler->write(key, jsonVal.toStyledString());
+    return true;
+}
 
 /**
  * Writes relation to in memory index.
@@ -212,20 +234,7 @@ bool IndexHandler::writeRelation(Relation& rel) {
     jsonVal[JSON_ATTR_REL_FIELDSR] = jsonValFieldsRight;
     jsonVal[JSON_ATTR_REL_CAUSE] = rel.cause;
 
-    this->redisHandler->connect();
-    key = this->generateRelationKey(rel.name_left, rel.name_right, md5(jsonVal.toStyledString()));
-
-    if (this->redisHandler->exists(key)) {
-        if (this->fetchRaw(key, jsonVal)) {
-            jsonVal[JSON_ATTR_REL_COUNT] = jsonVal[JSON_ATTR_REL_COUNT].asInt() + 1;
-        } else
-            return false;
-    } else
-        jsonVal[JSON_ATTR_REL_COUNT] = 1;
-
-    this->redisHandler->incrementKey(KEY_TOTAL_RELATIONS, 1);
-    this->redisHandler->write(key, jsonVal.toStyledString());
-    return true;
+    return this->writeRelation(jsonVal);
 }
 
 /**
