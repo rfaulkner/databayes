@@ -196,9 +196,10 @@ bool IndexHandler::removeRelation(Json::Value& jsonVal) {
  *
  *  e.g. {"entity": <string:entname>, "fields": <string_array:[<f1,f2,...>]>}
  */
-bool IndexHandler::writeRelation(Json::Value& rel) {
+bool IndexHandler::writeRelation(Json::Value& jsonVal) {
+    std::string key;
     this->redisHandler->connect();
-    key = this->generateRelationKey(rel.name_left, rel.name_right, md5(jsonVal.toStyledString()));
+    key = this->generateRelationKey(std::string(jsonVal[JSON_ATTR_REL_ENTL].asCString()), std::string(jsonVal[JSON_ATTR_REL_ENTR].asCString()), md5(jsonVal.toStyledString()));
 
     if (this->redisHandler->exists(key)) {
         if (this->fetchRaw(key, jsonVal)) {
@@ -220,7 +221,6 @@ bool IndexHandler::writeRelation(Json::Value& rel) {
  */
 bool IndexHandler::writeRelation(Relation& rel) {
     Json::Value jsonVal;
-    std::string key;
     Json::Value jsonValFieldsLeft;
     Json::Value jsonValFieldsRight;
 
