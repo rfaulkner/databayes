@@ -67,6 +67,7 @@
 #define STATE_START 0       // Start state
 
 #define STATE_ADD 10        // Add a new relation
+#define STATE_P0 11
 #define STATE_P1 12
 #define STATE_P2 13
 #define STATE_P3 14
@@ -849,20 +850,20 @@ void Parser::parseGenForm(const std::string inputToken, const std::string err) {
 void Parser::parseSet(const std::string inputToken) {
     switch (this->state) {
         case STATE_P0:  // Parse entity/attribute to set
-            this->parseAttributeSymbol(sLower);
-            this->state = STATE_P4;
+            this->parseAttributeSymbol(inputToken);
+            this->state = STATE_P1;
             break;
         case STATE_P1:   // Parse first entity attribute settings
-            if (sLower.compare(STR_CMD_FOR) == 0) break;
-            this->parseRelationPair(sLower);    // handles transition to P2
+            if (inputToken.compare(STR_CMD_FOR) == 0) break;
+            this->parseRelationPair(inputToken);    // handles transition to P2
             break;
         case STATE_P2:   // Parse second entity attribute settings
-            this->parseRelationPair(sLower);
+            this->parseRelationPair(inputToken);
             this->state = STATE_P3;
             break;
         case STATE_P3:  // Parse value to set
-            if (sLower.compare(STR_CMD_AS) == 0) break;
-            this->parseValue(sLower);
+            if (inputToken.compare(STR_CMD_AS) == 0) break;
+            this->parseValue(inputToken);
             this->state = STATE_FINISH;
             break;
     }
