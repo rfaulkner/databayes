@@ -346,10 +346,10 @@ std::string Parser::analyze(const std::string& s) {
     } else if (this->macroState == STATE_ADD && (this->state == STATE_P1 || this->state == STATE_P2)) {
         this->parseRelationPair(sLower);
 
-    } else if (this->state == STATE_GEN) {
+    } else if (this->macroState == STATE_GEN) {
         this->parseGenForm(sLower, ERR_MAL_GEN);
 
-    } else if (this->state == STATE_INF) {
+    } else if (this->macroState == STATE_INF) {
         this->parseGenForm(sLower, ERR_MAL_INF);
 
     } else if (this->state == STATE_DEF) {  // DEFINING new entities
