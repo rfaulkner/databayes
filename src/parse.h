@@ -438,7 +438,7 @@ std::string Parser::analyze(const std::string& s) {
             this->processGEN();
 
         } else if (this->macroState == STATE_INF) {
-            this->processGEN();
+            this->processINF();
 
         } else if (this->macroState == STATE_LST_ENT) {
 
@@ -504,6 +504,8 @@ std::string Parser::analyze(const std::string& s) {
  * Performs cleanup of state containers after statement processing
  */
 void Parser::cleanup() {
+    if (this->debug)
+        cout << "DEBUG -- cleanup. freeing out statement allocation." << endl;
     if (this->currFields != NULL) { delete this->currFields; this->currFields = NULL; }
     if (this->currValues != NULL) { delete this->currValues; this->currValues = NULL; }
     if (this->bufferValues != NULL) { delete this->bufferValues; this->bufferValues = NULL; }
@@ -726,7 +728,7 @@ void Parser::parseEntityAssignField(const std::string field) {
     // Verify that the entity has been defined
     if (!this->indexHandler->existsEntity(this->currEntity)) {
         this->error = true;
-        this->errStr = std::string(ERR_ENT_NOT_EXISTS) + std::string(" -> \"") + this->currEntity +std::string("\"");
+        this->errStr = std::string(ERR_ENT_NOT_EXISTS) + std::string(" -> \"") + this->currEntity + std::string("\"");
         return;
     }
 
@@ -819,11 +821,17 @@ void Parser::parseGenForm(const std::string inputToken, const std::string err) {
             this->bufferAttribute = this->currAttribute;
 
             this->parseAttributeSymbol(inputToken, true);
+            this->currEntity = this->currAttrEntity;
             this->state = STATE_GENINF_ATTR;
             this->parsedIDWord = false;
             break;
 
         case STATE_GENINF_ATTR: // if ATTR parse the first entity
+
+            // Initialize current value list
+            if (this->currValues != NULL) delete this->currValues;
+            this->currValues = new vector<std::pair<std::string, std::string>>;
+
             if (inputToken.compare(STR_CMD_ATR) == 0 && !this->parsedIDWord) {
                 this->parsedIDWord = true;
                 break;
@@ -874,7 +882,6 @@ void Parser::parseSet(const std::string inputToken) {
  */
 
 void Parser::processGEN() {
-
     // Construct attribute bucket
     AttributeBucket ab;
     ab.addAttributes(this->currAttrEntity, *(this->currValues));
