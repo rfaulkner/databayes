@@ -726,7 +726,7 @@ void Parser::parseEntityAssignField(const std::string field) {
     // Verify that the entity has been defined
     if (!this->indexHandler->existsEntity(this->currEntity)) {
         this->error = true;
-        this->errStr = ERR_ENT_NOT_EXISTS;
+        this->errStr = std::string(ERR_ENT_NOT_EXISTS) + std::string(" -> \"") + this->currEntity +std::string("\"");
         return;
     }
 
@@ -771,7 +771,7 @@ void Parser::parseRelationPair(const std::string symbol) {
         if (this->macroState == STATE_ADD)
             if (!this->indexHandler->existsEntity(this->currEntity)) {
                 this->error = true;
-                this->errStr = ERR_ENT_NOT_EXISTS;
+                this->errStr = std::string(ERR_ENT_NOT_EXISTS) + std::string(" -> \"") + this->currEntity +std::string("\"");
                 return;
             }
     }
@@ -874,6 +874,7 @@ void Parser::parseSet(const std::string inputToken) {
  */
 
 void Parser::processGEN() {
+
     // Construct attribute bucket
     AttributeBucket ab;
     ab.addAttributes(this->currAttrEntity, *(this->currValues));
