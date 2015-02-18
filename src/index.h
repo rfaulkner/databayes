@@ -68,7 +68,7 @@ public:
     bool fetchEntity(std::string, Json::Value&);
     std::vector<Json::Value> fetchRelationPrefix(std::string, std::string);
     std::vector<Json::Value> fetchPatternJson(std::string);
-    std::vector<std::string>* fetchPatternKeys(std::string);
+    std::vector<std::string> fetchPatternKeys(std::string);
     bool fetchFromDisk(int);   // Loads disk
 
     std::vector<Relation> Json2RelationVector(std::vector<Json::Value>);
@@ -343,7 +343,6 @@ bool IndexHandler::existsRelation(std::string entityL, std::string entityR) {
  * Returns a vector of JSON values
  */
 std::vector<Json::Value> IndexHandler::fetchPatternJson(std::string pattern) {
-    // TODO - just return the value
     std::vector<Json::Value> elems = std::vector<Json::Value>();
     Json::Value inMem;
     Json::Reader reader;
@@ -367,14 +366,13 @@ std::vector<Json::Value> IndexHandler::fetchPatternJson(std::string pattern) {
  *
  * Returns a vector of matching keys
  */
-std::vector<string>* IndexHandler::fetchPatternKeys(std::string pattern) {
-    // TODO - just return the value
-    std::vector<std::string>* elems = new std::vector<std::string>();
+std::vector<string> IndexHandler::fetchPatternKeys(std::string pattern) {
+    std::vector<std::string> elems = std::vector<std::string>();
     std::vector<string> vec;
     this->redisHandler->connect();
     vec = this->redisHandler->keys(pattern);
     for (std::vector<std::string>::iterator it = vec.begin() ; it != vec.end(); ++it)
-        elems->push_back((*it).substr(4, (*it).length()));
+        elems.push_back((*it).substr(4, (*it).length()));
     return elems;
 }
 
@@ -514,12 +512,11 @@ void IndexHandler::setRelationCountTotal(long value) {
 /** Takes a list of relations represented as a json vector and returns a relation vector */
 std::vector<Relation> IndexHandler::Json2RelationVector(std::vector<Json::Value> fields) {
     std::vector<Relation> relations;
-    Relation* relation;
+    Relation r;
     for (std::vector<Json::Value>::iterator it = fields.begin() ; it != fields.end(); ++it) {
-        // TODO - manage this allocation
-        relation = new Relation();
-        relation->fromJSON(*it);
-        relations.push_back(*relation);
+        r = Relation();
+        r.fromJSON(*it);
+        relations.push_back(Relation());
     }
     return relations;
 }
