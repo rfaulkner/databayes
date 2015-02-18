@@ -442,11 +442,11 @@ std::string Parser::analyze(const std::string& s) {
 
         } else if (this->macroState == STATE_LST_ENT) {
 
-            std::vector<Json::Value>* entities;
+            std::vector<Json::Value> entities;
             cout << "Current Matched Entities for \"" << this->currEntity << "\""<< endl;
             entities = this->indexHandler->fetchPatternJson(this->indexHandler->generateEntityKey(this->currEntity));
-            if (entities != NULL)
-                for (std::vector<Json::Value>::iterator it = entities->begin() ; it != entities->end(); ++it)
+            if (entities.size() != 0)
+                for (std::vector<Json::Value>::iterator it = entities.begin() ; it != entities.end(); ++it)
                     this->rspStr += std::string((*it).toStyledString());
             else
                 this->rspStr = "Not found";

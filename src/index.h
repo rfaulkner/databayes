@@ -67,7 +67,7 @@ public:
     bool fetchRaw(std::string, Json::Value&);
     bool fetchEntity(std::string, Json::Value&);
     std::vector<Json::Value> fetchRelationPrefix(std::string, std::string);
-    std::vector<Json::Value>* fetchPatternJson(std::string);
+    std::vector<Json::Value> fetchPatternJson(std::string);
     std::vector<std::string>* fetchPatternKeys(std::string);
     bool fetchFromDisk(int);   // Loads disk
 
@@ -288,12 +288,11 @@ std::vector<Json::Value> IndexHandler::fetchRelationPrefix(std::string entityL, 
     this->redisHandler->connect();
     std::vector<std::string> keys = this->redisHandler->keys(this->generateRelationKey(entityL, entityR, "*"));
     std::vector<Json::Value> relations;
-    Json::Value* json;
+    Json::Value json;
     for (std::vector<string>::iterator it = keys.begin(); it != keys.end(); ++it) {
-        // TODO - manage this allocation
-        json = new Json::Value();
-        this->composeJSON(this->redisHandler->read(*it), *json);
-        relations.push_back(*json);
+        json = Json::Value();
+        this->composeJSON(this->redisHandler->read(*it), json);
+        relations.push_back(json);
     }
     return relations;
 }
@@ -343,9 +342,9 @@ bool IndexHandler::existsRelation(std::string entityL, std::string entityR) {
  *
  * Returns a vector of JSON values
  */
-std::vector<Json::Value>* IndexHandler::fetchPatternJson(std::string pattern) {
+std::vector<Json::Value> IndexHandler::fetchPatternJson(std::string pattern) {
     // TODO - just return the value
-    std::vector<Json::Value>* elems = new std::vector<Json::Value>();
+    std::vector<Json::Value> elems = std::vector<Json::Value>();
     Json::Value inMem;
     Json::Reader reader;
     bool parsedSuccess;
@@ -358,7 +357,7 @@ std::vector<Json::Value>* IndexHandler::fetchPatternJson(std::string pattern) {
     for (std::vector<std::string>::iterator it = vec.begin() ; it != vec.end(); ++it) {
         parsedSuccess = reader.parse(this->redisHandler->read(*it), inMem, false);
         if (parsedSuccess)
-            elems->push_back(inMem);
+            elems.push_back(inMem);
     }
     return elems;
 }
