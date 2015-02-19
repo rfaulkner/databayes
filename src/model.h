@@ -193,6 +193,32 @@ public:
 
     ~AttributeTuple() { delete type; }
 
+    /** Format object as string */
+    std::string toString() {
+        Json::value json;
+        json['entity'] = this->entity;
+        json['attribute'] = this->attribute;
+        json['value'] = this->value;
+        json['comparator'] = this->comparator;
+        return json.toStyledString();
+    }
+
+    /** From string compose object attributes */
+    void fromString(std::string formattedJson) {
+        Json::Reader reader;
+        Json::Value json;
+        bool parsedSuccess;
+        parsedSuccess = reader.parse(formattedJson, json, false);
+
+        if (parsedSuccess) {
+            this->entity = json['entity'];
+            this->attribute = json['attribute'];
+            this->value = json['value'];
+            this->comparator = json['comparator'];
+         } else ;
+            // TODO - handle error
+    }
+
     /** Switching logic for attribute tuples */
     static bool compare(AttributeTuple& lhs, AttributeTuple& rhs) {
         if (std::strcmp(lhs.comparator.c_str(), "<"))
@@ -273,14 +299,14 @@ public:
     AttributeBucket(std::string entity, valpair& vals) { this->addAttributes(entity, vals); }
 
     /** Insert a new atribute into the bucket */
-    void addAttribute(AttributeTuple& attr) { this->attrs.insert(std::make_pair<std::string, AttributeTuple&>(this->makeKey(attr), attr)); }
+    void addAttribute(AttributeTuple attr) { this->attrs.insert(std::make_pair(this->makeKey(attr), attr.toString())); }
 
     /** Insert a list of attributes */
     void addAttributes(std::string entity, valpair& vals) {
-        AttributeTuple* tuple;
+        AttributeTuple tuple;
         for (valpair::iterator it = vals.begin() ; it != vals.end(); ++it) {
-            tuple = new AttributeTuple(entity, std::get<0>(*it), std::get<1>(*it));
-            this->addAttribute(*tuple);
+            tuple = AttributeTuple(entity, std::get<0>(*it), std::get<1>(*it));
+            this->addAttribute(tuple);
         }
     }
 
