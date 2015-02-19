@@ -414,32 +414,28 @@ std::vector<Relation> IndexHandler::filterRelations(
     bool matching = true;
     std::string key, value;
     std::vector<Relation> filtered_relations;
-    AttributeTuple *currAttr, *bucketAttr;
+    AttributeTuple currAttr, bucketAttr;
 
     // Iterate over relations
     for (std::vector<Relation>::iterator it = relations.begin(); it != relations.end(); ++it) {
 
         // Match left hand relations
         for (valpair::iterator it_inner = it->attrs_left.begin(); it_inner != it->attrs_left.end(); ++it_inner) {
-            currAttr = new AttributeTuple(it->name_left, std::get<0>(*it_inner), std::get<1>(*it_inner));
-            if (bucketAttr = filterAttrs.getAttribute(*currAttr)) {
-                matching = AttributeTuple::compare(*bucketAttr, *currAttr);
-                delete currAttr;
+            currAttr = AttributeTuple(it->name_left, std::get<0>(*it_inner), std::get<1>(*it_inner));
+            if (bucketAttr = filterAttrs.getAttribute(currAttr)) {
+                matching = AttributeTuple::compare(bucketAttr, currAttr);
                 if (!matching) break;
             }
-            delete currAttr;
         }
 
         // Match right hand relations - only process if left hand relations matched
         if (matching)
             for (valpair::iterator it_inner = it->attrs_right.begin(); it_inner != it->attrs_right.end(); ++it_inner) {
-                currAttr = new AttributeTuple(it->name_right, std::get<0>(*it_inner), std::get<1>(*it_inner));
-                if (bucketAttr = filterAttrs.getAttribute(*currAttr)) {
-                    matching = AttributeTuple::compare(*bucketAttr, *currAttr);
-                    delete currAttr;
+                currAttr = AttributeTuple(it->name_right, std::get<0>(*it_inner), std::get<1>(*it_inner));
+                if (bucketAttr = filterAttrs.getAttribute(currAttr)) {
+                    matching = AttributeTuple::compare(bucketAttr, currAttr);
                     if (!matching) break;
                 }
-                delete currAttr;
             }
 
         if (matching)
