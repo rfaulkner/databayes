@@ -211,10 +211,10 @@ public:
         parsedSuccess = reader.parse(formattedJson, json, false);
 
         if (parsedSuccess) {
-            this->entity = json['entity'].asCString();
-            this->attribute = json['attribute'].asCString();
-            this->value = json['value'].asCString();
-            this->comparator = json['comparator'].asCString();
+            this->entity = json["entity"].asCString();
+            this->attribute = json["attribute"].asCString();
+            this->value = json["value"].asCString();
+            this->comparator = json["comparator"].asCString();
          } else ;
             // TODO - handle error
     }
@@ -314,15 +314,18 @@ public:
     bool removeAttribute(AttributeTuple& attr) { return this->attrs.erase(this->makeKey(attr)) == 0; }
 
     // Get hashmap copy
-    std::unordered_map<std::string, AttributeTuple> getAttributeHash() { return attrs; }
+    std::unordered_map<std::string, std::string> getAttributeHash() { return attrs; }
 
     // Does the attribute exist in this bucket?
-    AttributeTuple* getAttribute(AttributeTuple& attr) {
+    AttributeTuple getAttribute(AttributeTuple& attr) {
+        AttributeTuple attr;
         std::string key = this->makeKey(attr);
         if (this->isAttribute(attr))
-            return &(this->attrs[key]);
-        else
-            return NULL;
+            return attr.fromJSON(this->attrs[key]);
+        else {
+            if (this->debug) cout << "DEBUG -- Couldn't find attribute in bucket." << endl;
+            return attr;
+        }
     }
 
     // Does the attribute exist in this bucket?
