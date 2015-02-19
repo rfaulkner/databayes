@@ -289,7 +289,7 @@ public:
 class AttributeBucket {
 
     // Hashmap storing attribute instances in this bucket
-    std::unordered_map<std::string, AttributeTuple> attrs;
+    std::unordered_map<std::string, std::string> attrs;
 
 public:
 

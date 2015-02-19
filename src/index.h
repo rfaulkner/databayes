@@ -462,31 +462,33 @@ std::vector<Json::Value> IndexHandler::filterRelations(
     bool matching = true;
     std::string key, value;
     std::vector<Json::Value> filtered_relations;
-    AttributeTuple *currAttr;
+    AttributeTuple currAttr, filterAttr;
     std::unordered_map<std::string, AttributeTuple> hm = filterAttrs.getAttributeHash();
 
     // Not very efficient (O(n*m)), but OK if filterAttrs is small (m << n)
     for (std::vector<Json::Value>::iterator it = relations.begin(); it != relations.end(); ++it)
-        for (std::unordered_map<std::string, AttributeTuple>::iterator it_inner = hm.begin(); it_inner != hm.end(); ++it_inner) {
+        for (std::unordered_map<std::string, std::string>::iterator it_inner = hm.begin(); it_inner != hm.end(); ++it_inner) {
+
+            // Get filter attribute from hashmap values from bucket
+            filterAttr = AttributeTuple();
+            filterAttr.fromJSON(it_inner->second);
 
             // Match left hand relations
-            if ((*it)[JSON_ATTR_REL_FIELDSL].isMember(it_inner->second.attribute) &&
-                    std::strcmp((*it)[JSON_ATTR_REL_ENTL].asCString(), it_inner->second.entity.c_str()) == 0) {
-                currAttr = new AttributeTuple(it_inner->second.entity, it_inner->second.attribute,
-                                                (*it)[JSON_ATTR_REL_ENTL][it_inner->second.attribute].asCString());
-                matching = AttributeTuple::compare(it_inner->second, *currAttr);
-                delete currAttr;
+            if ((*it)[JSON_ATTR_REL_FIELDSL].isMember(filterAttr.attribute) &&
+                    std::strcmp((*it)[JSON_ATTR_REL_ENTL].asCString(), filterAttr.entity.c_str()) == 0) {
+
+                currAttr = AttributeTuple(filterAttr.entity, filterAttr.attribute, (*it)[JSON_ATTR_REL_ENTL][filterAttr.attribute].asCString());
+                matching = AttributeTuple::compare(filterAttr, currAttr);
                 if (!matching) break;
             }
 
             // Match right hand relations - only process if left hand relations matched
             if (matching)
-                if ((*it)[JSON_ATTR_REL_FIELDSL].isMember(it_inner->second.attribute) &&
-                        std::strcmp((*it)[JSON_ATTR_REL_ENTR].asCString(), it_inner->second.entity.c_str()) == 0) {
-                    currAttr = new AttributeTuple(it_inner->second.entity, it_inner->second.attribute,
-                                                    (*it)[JSON_ATTR_REL_ENTR][it_inner->second.attribute].asCString());
-                    matching = AttributeTuple::compare(it_inner->second, *currAttr);
-                    delete currAttr;
+                if ((*it)[JSON_ATTR_REL_FIELDSR].isMember(filterAttr.attribute) &&
+                        std::strcmp((*it)[JSON_ATTR_REL_ENTR].asCString(), filterAttr.entity.c_str()) == 0) {
+
+                    currAttr = AttributeTuple(filterAttr.entity, filterAttr.attribute, (*it)[JSON_ATTR_REL_ENTR][filterAttr.attribute].asCString());
+                    matching = AttributeTuple::compare(filterAttr, currAttr);
                     if (!matching) break;
                 }
 
