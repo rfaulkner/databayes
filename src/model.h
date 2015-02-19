@@ -195,11 +195,11 @@ public:
 
     /** Format object as string */
     std::string toString() {
-        Json::value json;
-        json['entity'] = this->entity;
-        json['attribute'] = this->attribute;
-        json['value'] = this->value;
-        json['comparator'] = this->comparator;
+        Json::Value json;
+        json["entity"] = this->entity;
+        json["attribute"] = this->attribute;
+        json["value"] = this->value;
+        json["comparator"] = this->comparator;
         return json.toStyledString();
     }
 
@@ -211,10 +211,10 @@ public:
         parsedSuccess = reader.parse(formattedJson, json, false);
 
         if (parsedSuccess) {
-            this->entity = json['entity'];
-            this->attribute = json['attribute'];
-            this->value = json['value'];
-            this->comparator = json['comparator'];
+            this->entity = json['entity'].asCString();
+            this->attribute = json['attribute'].asCString();
+            this->value = json['value'].asCString();
+            this->comparator = json['comparator'].asCString();
          } else ;
             // TODO - handle error
     }
