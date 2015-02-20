@@ -318,13 +318,11 @@ public:
 
     // Does the attribute exist in this bucket?
     AttributeTuple getAttribute(AttributeTuple& attr) {
-        AttributeTuple attr;
-        std::string key = this->makeKey(attr);
         if (this->isAttribute(attr))
-            return attr.fromJSON(this->attrs[key]);
+            return attr.fromString(this->attrs[this->makeKey(attr)]);
         else {
-            if (this->debug) cout << "DEBUG -- Couldn't find attribute in bucket." << endl;
-            return attr;
+            cout << "DEBUG -- Couldn't find attribute in bucket." << endl;
+            return AttributeTuple();
         }
     }
 
