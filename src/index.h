@@ -423,7 +423,7 @@ std::vector<Relation> IndexHandler::filterRelations(
         for (valpair::iterator it_inner = it->attrs_left.begin(); it_inner != it->attrs_left.end(); ++it_inner) {
             currAttr = AttributeTuple(it->name_left, std::get<0>(*it_inner), std::get<1>(*it_inner));
             bucketAttr = filterAttrs.getAttribute(currAttr);
-            if (std::strcmp(bucketAttr.entity, std::string("")) == 0) {
+            if (std::strcmp(bucketAttr.entity.c_str()., "") == 0) {
                 matching = AttributeTuple::compare(bucketAttr, currAttr);
                 if (!matching) break;
             }
@@ -434,7 +434,7 @@ std::vector<Relation> IndexHandler::filterRelations(
             for (valpair::iterator it_inner = it->attrs_right.begin(); it_inner != it->attrs_right.end(); ++it_inner) {
                 currAttr = AttributeTuple(it->name_right, std::get<0>(*it_inner), std::get<1>(*it_inner));
                 bucketAttr = filterAttrs.getAttribute(currAttr);
-                if (std::strcmp(bucketAttr.entity, std::string("")) == 0) {
+                if (std::strcmp(bucketAttr.entity.c_str(), "") == 0) {
                     matching = AttributeTuple::compare(bucketAttr, currAttr);
                     if (!matching) break;
                 }
@@ -469,7 +469,7 @@ std::vector<Json::Value> IndexHandler::filterRelations(
 
             // Get filter attribute from hashmap values from bucket
             filterAttr = AttributeTuple();
-            filterAttr.fromJSON(it_inner->second);
+            filterAttr.fromString(it_inner->second);
 
             // Match left hand relations
             if ((*it)[JSON_ATTR_REL_FIELDSL].isMember(filterAttr.attribute) &&
