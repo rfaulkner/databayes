@@ -318,10 +318,10 @@ public:
 
     // Does the attribute exist in this bucket?
     AttributeTuple getAttribute(AttributeTuple& attr) {
-        if (this->isAttribute(attr))
+        if (this->isAttribute(attr)) {
             attr.fromString(this->attrs[this->makeKey(attr)]);
             return attr;
-        else {
+        } else {
             cout << "DEBUG -- Couldn't find attribute in bucket." << endl;
             return AttributeTuple();
         }
