@@ -423,7 +423,7 @@ std::vector<Relation> IndexHandler::filterRelations(
         for (valpair::iterator it_inner = it->attrs_left.begin(); it_inner != it->attrs_left.end(); ++it_inner) {
             currAttr = AttributeTuple(it->name_left, std::get<0>(*it_inner), std::get<1>(*it_inner));
             bucketAttr = filterAttrs.getAttribute(currAttr);
-            if (std::strcmp(bucketAttr.entity, "") == 0) {
+            if (std::strcmp(bucketAttr.entity, std::string("")) == 0) {
                 matching = AttributeTuple::compare(bucketAttr, currAttr);
                 if (!matching) break;
             }
@@ -434,7 +434,7 @@ std::vector<Relation> IndexHandler::filterRelations(
             for (valpair::iterator it_inner = it->attrs_right.begin(); it_inner != it->attrs_right.end(); ++it_inner) {
                 currAttr = AttributeTuple(it->name_right, std::get<0>(*it_inner), std::get<1>(*it_inner));
                 bucketAttr = filterAttrs.getAttribute(currAttr);
-                if (std::strcmp(bucketAttr.entity, "") == 0) {
+                if (std::strcmp(bucketAttr.entity, std::string("")) == 0) {
                     matching = AttributeTuple::compare(bucketAttr, currAttr);
                     if (!matching) break;
                 }
@@ -461,7 +461,7 @@ std::vector<Json::Value> IndexHandler::filterRelations(
     std::string key, value;
     std::vector<Json::Value> filtered_relations;
     AttributeTuple currAttr, filterAttr;
-    std::unordered_map<std::string, AttributeTuple> hm = filterAttrs.getAttributeHash();
+    std::unordered_map<std::string, std::string> hm = filterAttrs.getAttributeHash();
 
     // Not very efficient (O(n*m)), but OK if filterAttrs is small (m << n)
     for (std::vector<Json::Value>::iterator it = relations.begin(); it != relations.end(); ++it)
