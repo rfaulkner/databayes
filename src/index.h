@@ -423,7 +423,7 @@ std::vector<Relation> IndexHandler::filterRelations(
         for (valpair::iterator it_inner = it->attrs_left.begin(); it_inner != it->attrs_left.end(); ++it_inner) {
             currAttr = AttributeTuple(it->name_left, std::get<0>(*it_inner), std::get<1>(*it_inner));
             bucketAttr = filterAttrs.getAttribute(currAttr);
-            if (std::strcmp(bucketAttr.entity.c_str()., "") == 0) {
+            if (std::strcmp(bucketAttr.entity.c_str(), "") == 0) {
                 matching = AttributeTuple::compare(bucketAttr, currAttr);
                 if (!matching) break;
             }
