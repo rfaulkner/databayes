@@ -122,3 +122,14 @@ Allows client to remove relations from the database - WARNING, this will remove 
     databayes > rm rel x(a=1, b=2.1) y(c=22, d=0.3)
 
 This will remove all relations whose attributes match the assignments.
+
+
+Development
+-----------
+
+All contributions are certainly welcome!  In fact I'd love to have some partners on this work at this point especially those
+that have interest in schemaless relational systems and bayesian statistics.
+
+To get going simply follow the instructions in "Setup" above (or even fork your own repo) and use the push.sh script to
+push your changes to your local vagrant instance for testing.
+
