@@ -116,7 +116,7 @@ public:
         this->instance_count = value[JSON_ATTR_REL_COUNT].asInt();
 
         Json::Value left = value[JSON_ATTR_REL_FIELDSL];
-        Json::Value right = value[JSON_ATTR_REL_FIELDSL];
+        Json::Value right = value[JSON_ATTR_REL_FIELDSR];
 
         // Extract the left-hand & right-hand fields
         Json::Value::Members members = value[JSON_ATTR_REL_FIELDSL].getMemberNames();
@@ -128,7 +128,7 @@ public:
         members = value[JSON_ATTR_REL_FIELDSR].getMemberNames();
         for (Json::Value::Members::iterator it = members.begin(); it != members.end(); ++it)
             if (std::strcmp(JSON_ATTR_FIELDS_COUNT, it->c_str()) != 0)
-                attrs_left.push_back(
+                attrs_right.push_back(
                     std::make_pair(*it, value[JSON_ATTR_REL_FIELDSR][*it].asCString()));
         return true;
     }
