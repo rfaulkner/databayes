@@ -516,7 +516,7 @@ std::vector<Relation> IndexHandler::Json2RelationVector(std::vector<Json::Value>
     for (std::vector<Json::Value>::iterator it = fields.begin() ; it != fields.end(); ++it) {
         r = Relation();
         r.fromJSON(*it);
-        relations.push_back(Relation());
+        relations.push_back(r);
     }
     return relations;
 }
