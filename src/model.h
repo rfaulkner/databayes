@@ -303,10 +303,11 @@ public:
 
     /** Insert a list of attributes */
     void addAttributes(std::string entity, valpair& vals) {
-        AttributeTuple tuple;
+        AttributeTuple* tuple;
         for (valpair::iterator it = vals.begin() ; it != vals.end(); ++it) {
-            tuple = AttributeTuple(entity, std::get<0>(*it), std::get<1>(*it));
-            this->addAttribute(tuple);
+            // TODO - handle cleanup here... I think this may be freed once the object falls out of scope
+            tuple = new AttributeTuple(entity, std::get<0>(*it), std::get<1>(*it));
+            this->addAttribute(*tuple);
         }
     }
 
