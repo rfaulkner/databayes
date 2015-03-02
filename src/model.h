@@ -219,7 +219,7 @@ public:
             // TODO - handle error
     }
 
-    /** Switching logic for attribute tuples */
+    /** Switching logic for attribute tuples - defaults to true in absence of a defined comparator */
     static bool compare(AttributeTuple& lhs, AttributeTuple& rhs) {
         if (std::strcmp(lhs.comparator.c_str(), "<") == 0)
             return lhs < rhs;
@@ -233,8 +233,8 @@ public:
             return lhs != rhs;
         else if (std::strcmp(lhs.comparator.c_str(), "=") == 0)
             return lhs == rhs;
-        else    // Error - unrecogmized operator
-            return false;
+        else    // Error - unrecognized operator
+            return true;
     }
 
     bool operator>(const AttributeTuple &rhs) const {
