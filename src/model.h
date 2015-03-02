@@ -221,17 +221,17 @@ public:
 
     /** Switching logic for attribute tuples */
     static bool compare(AttributeTuple& lhs, AttributeTuple& rhs) {
-        if (std::strcmp(lhs.comparator.c_str(), "<"))
+        if (std::strcmp(lhs.comparator.c_str(), "<") == 0)
             return lhs < rhs;
-        else if (std::strcmp(lhs.comparator.c_str(), ">"))
+        else if (std::strcmp(lhs.comparator.c_str(), ">") == 0)
             return lhs > rhs;
-        else if (std::strcmp(lhs.comparator.c_str(), "<="))
+        else if (std::strcmp(lhs.comparator.c_str(), "<=") == 0)
             return lhs <= rhs;
-        else if (std::strcmp(lhs.comparator.c_str(), ">="))
+        else if (std::strcmp(lhs.comparator.c_str(), ">=") == 0)
             return lhs >= rhs;
-        else if (std::strcmp(lhs.comparator.c_str(), "!="))
+        else if (std::strcmp(lhs.comparator.c_str(), "!=") == 0)
             return lhs != rhs;
-        else if (std::strcmp(lhs.comparator.c_str(), "="))
+        else if (std::strcmp(lhs.comparator.c_str(), "=") == 0)
             return lhs == rhs;
         else    // Error - unrecogmized operator
             return false;
