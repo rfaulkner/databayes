@@ -74,8 +74,8 @@ public:
     std::vector<Relation> Json2RelationVector(std::vector<Json::Value>);
     std::vector<Json::Value> Relation2JsonVector(std::vector<Relation>);
 
-    std::vector<Relation> filterRelations(std::vector<Relation>&, AttributeBucket&);
-    std::vector<Json::Value> filterRelations(std::vector<Json::Value>&, AttributeBucket&);
+    void filterRelations(std::vector<Relation>&, AttributeBucket&);
+    void filterRelations(std::vector<Json::Value>&, AttributeBucket&);
     std::vector<Json::Value> fetchAttribute(AttributeTuple&);
 
     std::string generateEntityKey(std::string);

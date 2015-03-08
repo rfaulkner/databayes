@@ -463,7 +463,7 @@ std::string Parser::analyze(const std::string& s) {
             // Fetch relations and filter on attribute criteria
             std::vector<Json::Value> relationsJson = this->indexHandler->fetchRelationPrefix(this->bufferEntity, this->currEntity);
             std::vector<Relation> relations = this->indexHandler->Json2RelationVector(relationsJson);
-            relations = this->indexHandler->filterRelations(relations, *(new AttributeBucket(this->currEntity, *(this->currValues))));
+            this->indexHandler->filterRelations(relations, *(new AttributeBucket(this->currEntity, *(this->currValues))));
 
             // for each relation determine if they match the condition criteria
             for (std::vector<Relation>::iterator it = relations.begin() ; it != relations.end(); ++it)
@@ -917,7 +917,7 @@ void Parser::processSET() {
     ab.addAttributes(this->currAttrEntity, *(this->currValues));
 
     std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(this->bufferAttrEntity, this->currAttrEntity);
-    relations = this->indexHandler->filterRelations(relations, ab);
+    this->indexHandler->filterRelations(relations, ab);
 
     // Call sampling method from Bayes for relations
     for (std::vector<Json::Value>::iterator it = relations.begin() ; it != relations.end(); ++it) {
