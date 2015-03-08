@@ -406,14 +406,12 @@ std::string IndexHandler::orderPairAlphaNumeric(std::string s1, std::string s2) 
  *  Filter matching relations based on contents attrs.  All of a relations attributes must match those
  *  in the bucket to be included
  */
-std::vector<Relation> IndexHandler::filterRelations(
-                            std::vector<Relation>& relations, AttributeBucket& filterAttrs) {
+void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBucket& filterAttrs) {
 
     if (filterAttrs.getAttributeHash().size() == 0) return relations;
 
     bool matching = true;
     std::string key, value;
-    std::vector<Relation> filtered_relations;
     AttributeTuple currAttr, bucketAttr;
 
     // Iterate over relations
@@ -440,10 +438,9 @@ std::vector<Relation> IndexHandler::filterRelations(
                 }
             }
 
-        if (matching)
-            filtered_relations.push_back(*it);
+        if (!matching)
+            relations.erase(it - relations.begin());
     }
-    return filtered_relations;
 }
 
 /**
@@ -452,19 +449,17 @@ std::vector<Relation> IndexHandler::filterRelations(
  *  Filter matching relations based on contents attrs.  All of a relations attributes must match those
  *  in the bucket to be included
  */
-std::vector<Json::Value> IndexHandler::filterRelations(
-                            std::vector<Json::Value>& relations, AttributeBucket& filterAttrs) {
+void IndexHandler::filterRelations(std::vector<Json::Value>& relations, AttributeBucket& filterAttrs) {
 
     if (filterAttrs.getAttributeHash().size() == 0) return relations;
 
     bool matching = true;
     std::string key, value;
-    std::vector<Json::Value> filtered_relations;
     AttributeTuple currAttr, filterAttr;
     std::unordered_map<std::string, std::string> hm = filterAttrs.getAttributeHash();
 
     // Not very efficient (O(n*m)), but OK if filterAttrs is small (m << n)
-    for (std::vector<Json::Value>::iterator it = relations.begin(); it != relations.end(); ++it)
+    for (std::vector<Json::Value>::iterator it = relations.begin(); it != relations.end(); ++it) {
         for (std::unordered_map<std::string, std::string>::iterator it_inner = hm.begin(); it_inner != hm.end(); ++it_inner) {
 
             // Get filter attribute from hashmap values from bucket
@@ -488,12 +483,11 @@ std::vector<Json::Value> IndexHandler::filterRelations(
                     matching = AttributeTuple::compare(filterAttr, currAttr);
                     if (!matching) break;
                 }
+        }
 
-            if (matching)
-                filtered_relations.push_back(*it);
-       }
-
-    return filtered_relations;
+        if (!matching)
+            relations.erase(it - relations.begin());
+    }
 }
 
 /** Fetch the number of relations existing */
