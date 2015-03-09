@@ -102,7 +102,6 @@ public:
         return true;
     }
 
-
     /** Build relation from Json */
     bool fromJSON(Json::Value value) {
 
@@ -179,6 +178,11 @@ public:
     std::string attribute;
     std::string value;
     std::string comparator;
+
+    AttributeTuple(const AttributeTuple& other){
+        type = new NullColumn();
+        memcpy( type, other.type, 1 );
+    }
 
     AttributeTuple() {
         this->type = new NullColumn();
