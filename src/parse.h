@@ -28,7 +28,6 @@
 #define STR_CMD_SET "set"
 #define STR_CMD_GIV "given"
 #define STR_CMD_ATR "attr"
-#define STR_CMD_CON "given"
 #define STR_CMD_DEF "def"
 #define STR_CMD_LST "lst"
 #define STR_CMD_ENT "ent"
@@ -463,7 +462,8 @@ std::string Parser::analyze(const std::string& s) {
             // Fetch relations and filter on attribute criteria
             std::vector<Json::Value> relationsJson = this->indexHandler->fetchRelationPrefix(this->bufferEntity, this->currEntity);
             std::vector<Relation> relations = this->indexHandler->Json2RelationVector(relationsJson);
-            this->indexHandler->filterRelations(relations, *(new AttributeBucket(this->currEntity, *(this->currValues))));
+            AttributeBucket ab = AttributeBucket(this->currEntity, *(this->currValues));
+            this->indexHandler->filterRelations(relations, ab);
 
             // for each relation determine if they match the condition criteria
             for (std::vector<Relation>::iterator it = relations.begin() ; it != relations.end(); ++it)
