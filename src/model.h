@@ -56,7 +56,7 @@ public:
 };
 
 /**
- *  Models relations which consist of
+ *  Models relations which consist of two entity and a variable number of attribute assignments
  */
 class Relation {
 public:
@@ -179,7 +179,8 @@ public:
     std::string value;
     std::string comparator;
 
-    AttributeTuple(const AttributeTuple& other){
+    /** Copy Constructor */
+    AttributeTuple(const AttributeTuple& other) {
         type = new NullColumn();
         memcpy( type, other.type, 1 );
     }
@@ -285,6 +286,14 @@ public:
     bool operator!=(const AttributeTuple &other) const {
         return !(*this==other);
     }
+
+    /** Ensure that value copying is handled correctly on assignment */
+    AttributeTuple& operator= (const AttributeTuple& other) {
+        if (this != &other) {
+            memcpy( type, other.type, 1 );
+        }
+        return *this;
+    }
 };
 
 /**
@@ -307,11 +316,10 @@ public:
 
     /** Insert a list of attributes */
     void addAttributes(std::string entity, valpair& vals) {
-        AttributeTuple* tuple;
+        AttributeTuple tuple;
         for (valpair::iterator it = vals.begin() ; it != vals.end(); ++it) {
-            // TODO - handle cleanup here... I think this may be freed once the object falls out of scope
-            tuple = new AttributeTuple(entity, std::get<0>(*it), std::get<1>(*it));
-            this->addAttribute(*tuple);
+            tuple = AttributeTuple(entity, std::get<0>(*it), std::get<1>(*it));
+            this->addAttribute(tuple);
         }
     }
 
