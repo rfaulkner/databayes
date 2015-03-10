@@ -131,7 +131,6 @@ Relation Bayes::sampleMarginal(Entity& e, AttributeBucket& attrs) { return this-
  *  args:   the entity names & filter attributes
  **/
 Relation Bayes::sampleMarginal(std::string e, AttributeBucket& attrs) {
-    Relation r;
 
     // Find all relations with containing "e"
     std::vector<Json::Value> relations_left = this->indexHandler->fetchRelationPrefix(e, "*");
@@ -150,7 +149,7 @@ Relation Bayes::sampleMarginal(std::string e, AttributeBucket& attrs) {
     for (std::vector<Json::Value>::iterator it = relations_left.begin(); it != relations_left.end(); ++it) {
         index += (*it)[JSON_ATTR_REL_COUNT].asInt();
         if (index >= pivot) {
-            r.fromJSON(*it);
+            Relation r = Relation(*it);
             return r;
         }
     }
@@ -158,13 +157,12 @@ Relation Bayes::sampleMarginal(std::string e, AttributeBucket& attrs) {
     for (std::vector<Json::Value>::iterator it = relations_right.begin(); it != relations_right.end(); ++it) {
         index += (*it)[JSON_ATTR_REL_COUNT].asInt();
         if (index >= pivot) {
-            r.fromJSON(*it);
+            Relation r = Relation(*it);
             return r;
         }
     }
 
-    r.fromJSON(relations_right.back());
-    return r;
+    return Relation(relations_right.back());
 }
 
 /*
@@ -182,7 +180,6 @@ Relation Bayes::samplePairwise(Entity& x, Entity& y, AttributeBucket& attrs) {
  *  args:   the entity names & filter attributes
  **/
 Relation Bayes::samplePairwise(std::string x, std::string y, AttributeBucket& attrs) {
-    Relation r;
 
     // Find all relations with containing "x" and "y"
     std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(x, y);
@@ -199,13 +196,12 @@ Relation Bayes::samplePairwise(std::string x, std::string y, AttributeBucket& at
     for (std::vector<Json::Value>::iterator it = relations.begin(); it != relations.end(); ++it) {
         index += (*it)[JSON_ATTR_REL_COUNT].asInt();
         if (index >= pivot) {
-            r.fromJSON(*it);
+            Relation r = Relation(*it);
             return r;
         }
     }
 
-    r.fromJSON(relations.back());
-    return r;
+    return Relation(relations.back());
 }
 
 /*
@@ -223,7 +219,6 @@ Relation Bayes::samplePairwiseCausal(Entity& x, Entity& y, AttributeBucket& attr
  *  args:   the entity names & filter attributes
  **/
 Relation Bayes::samplePairwiseCausal(std::string x, std::string y, AttributeBucket& attrs) {
-    Relation r;
 
     // Find all relations with containing "x" primary and "y" secondary
     std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(x, y);
@@ -237,18 +232,18 @@ Relation Bayes::samplePairwiseCausal(std::string x, std::string y, AttributeBuck
     long pivot = rand() % count + 1;
 
     for (std::vector<Json::Value>::iterator it = relations.begin(); it != relations.end(); ++it) {
+        Relation r = Relation(*it);
 
         // only consider elements in which x is the "cause"
         if (std::strcmp((*it)[JSON_ATTR_REL_CAUSE].asCString(), x.c_str()) != 0)
             continue;
 
         index += (*it)[JSON_ATTR_REL_COUNT].asInt();
-        r.fromJSON(*it);
         if (index >= pivot) {
             return r;
         }
     }
-    return r;
+    return Relation(relations.back());
 }
 
 /**

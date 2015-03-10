@@ -69,9 +69,12 @@ public:
     std::string cause;
     long instance_count;
 
-    /** Constructor/Builder for relations  */
-    Relation() {}
+    /** Constructors/Builders for relations  */
 
+    // From Json
+    Relation(Json::Value val) { this->fromJSON(val); }
+
+    // Explicit
     Relation(std::string left, std::string right, valpair& attrs_left, valpair& attrs_right) {
         this->name_left = left;
         this->name_right = right;

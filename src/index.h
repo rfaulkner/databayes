@@ -408,7 +408,7 @@ std::string IndexHandler::orderPairAlphaNumeric(std::string s1, std::string s2) 
  */
 void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBucket& filterAttrs) {
 
-    if (filterAttrs.getAttributeHash().size() == 0) return relations;
+    if (filterAttrs.getAttributeHash().size() == 0) return;
 
     bool matching = true;
     std::string key, value;
@@ -439,7 +439,7 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
             }
 
         if (!matching)
-            relations.erase(it - relations.begin());
+            relations.erase(relations.begin() + std::distance(relations.begin(), it));
     }
 }
 
@@ -451,7 +451,7 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
  */
 void IndexHandler::filterRelations(std::vector<Json::Value>& relations, AttributeBucket& filterAttrs) {
 
-    if (filterAttrs.getAttributeHash().size() == 0) return relations;
+    if (filterAttrs.getAttributeHash().size() == 0) return;
 
     bool matching = true;
     std::string key, value;
@@ -486,7 +486,7 @@ void IndexHandler::filterRelations(std::vector<Json::Value>& relations, Attribut
         }
 
         if (!matching)
-            relations.erase(it - relations.begin());
+            relations.erase(relations.begin() + std::distance(relations.begin(),it));
     }
 }
 
@@ -505,10 +505,8 @@ void IndexHandler::setRelationCountTotal(long value) {
 /** Takes a list of relations represented as a json vector and returns a relation vector */
 std::vector<Relation> IndexHandler::Json2RelationVector(std::vector<Json::Value> fields) {
     std::vector<Relation> relations;
-    Relation r;
     for (std::vector<Json::Value>::iterator it = fields.begin() ; it != fields.end(); ++it) {
-        r = Relation();
-        r.fromJSON(*it);
+        Relation r = Relation(*it);
         relations.push_back(r);
     }
     return relations;
