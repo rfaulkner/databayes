@@ -195,10 +195,8 @@ Relation Bayes::samplePairwise(std::string x, std::string y, AttributeBucket& at
     // Iterate through relations and pick out candidate
     for (std::vector<Json::Value>::iterator it = relations.begin(); it != relations.end(); ++it) {
         index += (*it)[JSON_ATTR_REL_COUNT].asInt();
-        if (index >= pivot) {
-            Relation r = Relation(*it);
-            return r;
-        }
+        if (index >= pivot)
+            return Relation(*it);
     }
 
     return Relation(relations.back());
