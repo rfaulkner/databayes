@@ -27,6 +27,7 @@
 #define JSON_ATTR_REL_FIELDSL "fields_left"
 #define JSON_ATTR_REL_FIELDSR "fields_right"
 #define JSON_ATTR_REL_CAUSE "cause"
+#define JSON_ATTR_REL_TYPE_PREFIX "#"
 
 using namespace std;
 
@@ -245,6 +246,8 @@ public:
             return true;
     }
 
+
+    // TODO - properly handle types here
     bool operator>(const AttributeTuple &rhs) const {
         // convert value to column type and make comparison
         if (strcmp(rhs.type->getType().c_str(), COLTYPE_NAME_INT) == 0) {
@@ -271,6 +274,7 @@ public:
         return *this < rhs || *this == rhs;
     }
 
+    // TODO - properly handle types here
     bool operator==(const AttributeTuple &other) const {
 
         // convert value to column type and make comparison
