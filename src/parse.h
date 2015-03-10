@@ -890,7 +890,7 @@ void Parser::processGEN() {
     Relation r = this->bayes->samplePairwise(this->bufferAttrEntity, this->currEntity, ab);
 
     // Print the sample
-    cout << r.toJson().asCString() << endl;
+    cout << r.toJson().toStyledString() << endl;
 }
 
 void Parser::processINF() {
