@@ -707,7 +707,7 @@ void Parser::parseEntityDefinitionField(const std::string field) {
     }
 
     fieldType = getColumnType(fieldItems[1]);
-    if (!fieldType) {
+    if (std::strcmp(fieldType.getType(), COLTYPE_NAME_NULL) == 0 {
         this->error = true;
         this->errStr = ERR_INVALID_FIELD_TYPE;
         return;

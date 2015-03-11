@@ -103,19 +103,18 @@ public:
     }
 };
 
-
 /**
  *  Control for returning a column type by string
  */
-ColumnBase* getColumnType(string columnType) {
+ColumnBase getColumnType(string columnType) {
     if (columnType.compare(COLTYPE_NAME_INT) == 0) {
-        return new IntegerColumn();
+        return IntegerColumn();
     } else if (columnType.compare(COLTYPE_NAME_FLOAT) == 0) {
-        return new FloatColumn();
+        return FloatColumn();
     } else if (columnType.compare(COLTYPE_NAME_STR) == 0) {
-        return new StringColumn();
+        return StringColumn();
     } else {
-        return NULL;
+        return NullColumn();
     }
 }
 
