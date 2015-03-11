@@ -140,6 +140,8 @@ class Parser {
     defpair* currFields;
     valpair* currValues;
     valpair* bufferValues;
+    std::unordered_map<std::string, std::string>* currTypes,
+    std::unordered_map<std::string, std::string>* bufferTypes,
 
     // Define internal state that stores entity handles
     std::string currEntity;
@@ -227,6 +229,8 @@ void Parser::resetState() {
     this->currFields = NULL;
     this->currValues = NULL;
     this->bufferValues = NULL;
+    this->currTypes = NULL;
+    this->bufferTypes = NULL;
     this->fieldsProcessed = false;
     this->entityProcessed = false;
     this->parsedIDWord = false;
@@ -426,7 +430,7 @@ std::string Parser::analyze(const std::string& s) {
                 cout << "DEBUG -- Writing definition of entity." << endl;
 
         } else if (this->macroState == STATE_ADD) {
-            Relation r(this->bufferEntity, this->currEntity, *(this->bufferValues), *(this->currValues));
+            Relation r(this->bufferEntity, this->currEntity, *(this->bufferValues), *(this->currValues), *(this->bufferTypes), *(this->currTypes));
             this->indexHandler->writeRelation(r);
             this->rspStr = "Relation successfully added";
 
@@ -472,7 +476,7 @@ std::string Parser::analyze(const std::string& s) {
 
         } else if (this->macroState == STATE_RM_REL) {
             // Handle the logic for the removal of matching relations
-            Relation r(this->bufferEntity, this->currEntity, *(this->bufferValues), *(this->currValues));
+            Relation r(this->bufferEntity, this->currEntity, *(this->bufferValues), *(this->currValues), *(this->bufferTypes), *(this->currTypes));
             if (this->indexHandler->removeRelation(r)) {
                 this->rspStr = "Relation removed";
             } else {
@@ -509,6 +513,8 @@ void Parser::cleanup() {
     if (this->currFields != NULL) { delete this->currFields; this->currFields = NULL; }
     if (this->currValues != NULL) { delete this->currValues; this->currValues = NULL; }
     if (this->bufferValues != NULL) { delete this->bufferValues; this->bufferValues = NULL; }
+    if (this->currTypes != NULL) { delete this->currTypes; this->currTypes = NULL; }
+    if (this->bufferTypes != NULL) { delete this->bufferTypes; this->bufferTypes = NULL; }
 }
 
 /**
@@ -753,7 +759,19 @@ void Parser::parseEntityAssignField(const std::string field) {
         return;
     }
 
+    // Push the current value
     this->currValues->push_back(std::make_pair(fieldItems[0], fieldItems[1]));
+
+    // Fetch the field type from the entity - it must not be null type
+    std::string type = this->indexHandler->fetchEntityFieldType(this->currEntity, fieldItems[0]);
+    if (std::strcmp(type, COLTYPE_NAME_NULL) != 0)
+        // Push the current field type
+        this->currTypes->insert(std::make_pair(fieldItems[0], type));
+    else {
+        this->error = true;
+        this->errStr = ERR_BAD_FIELD_TYPE;
+        return;
+    }
 }
 
 
@@ -766,7 +784,9 @@ void Parser::parseRelationPair(const std::string symbol) {
         this->parseFieldStatement(symbol);
     } else {
         if (this->currValues != NULL) delete this->currValues;
+        if (this->currTypes != NULL) delete this->currTypes;
         this->currValues = new vector<std::pair<std::string, std::string>>;
+        this->currTypes = new std::unordered_map<std::string, std::string>;
         this->parseEntitySymbol(symbol);
 
         // Ensure that entities exist if we are adding a new relation
@@ -784,7 +804,9 @@ void Parser::parseRelationPair(const std::string symbol) {
             this->state = STATE_P2;
             this->bufferEntity = this->currEntity;
             this->bufferValues = this->currValues;
+            this->bufferTypes = this->currTypes;
             this->currValues = new vector<std::pair<std::string, std::string>>;
+            this->currTypes = new std::unordered_map<std::string, std::string>;
             this->fieldsProcessed = false;
             this->entityProcessed = false;
 

@@ -62,8 +62,8 @@ public:
 class Relation {
 public:
 
-    std::unordered_map<std::string, ColumnBase> types_left;
-    std::unordered_map<std::string, ColumnBase> types_right;
+    std::unordered_map<std::string, std::string> types_left;
+    std::unordered_map<std::string, std::string> types_right;
 
     std::string name_left;
     std::string name_right;
@@ -80,7 +80,16 @@ public:
     Relation(Json::Value val) { this->fromJSON(val); }
 
     // Explicit
-    Relation(std::string left, std::string right, valpair& attrs_left, valpair& attrs_right) {
+    Relation(
+        std::string left,
+        std::string right,
+        valpair& attrs_left,
+        valpair& attrs_right,
+        std::unordered_map<std::string, std::string> types_left,
+        std::unordered_map<std::string, std::string> types_right) {
+
+        this->types_left = left;
+        this->types_right = right;
         this->name_left = left;
         this->name_right = right;
         this->attrs_left = attrs_left;
