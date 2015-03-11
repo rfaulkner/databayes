@@ -226,16 +226,17 @@ void testCountRelations() {
     std::vector<Json::Value> ret;
     std::vector<std::pair<ColumnBase*, std::string>> fields_ent;
     std::vector<std::pair<std::string, std::string>> fields_rel;
+    std::unordered_map<std::string, std::string> types;
 
     // declare three entities
     Entity e1("_w", fields_ent), e2("_x", fields_ent), e3("_y", fields_ent), e4("_z", fields_ent);
 
     // construct a number of relations
-    Relation r1("_x", "_y", fields_rel, fields_rel);
-    Relation r2("_x", "_y", fields_rel, fields_rel);
-    Relation r3("_x", "_z", fields_rel, fields_rel);
-    Relation r4("_x", "_z", fields_rel, fields_rel);
-    Relation r5("_w", "_y", fields_rel, fields_rel);
+    Relation r1("_x", "_y", fields_rel, fields_rel, types, types);
+    Relation r2("_x", "_y", fields_rel, fields_rel, types, types);
+    Relation r3("_x", "_z", fields_rel, fields_rel, types, types);
+    Relation r4("_x", "_z", fields_rel, fields_rel, types, types);
+    Relation r5("_w", "_y", fields_rel, fields_rel, types, types);
 
     ih.removeEntity("_w");
     ih.removeEntity("_x");
@@ -284,6 +285,7 @@ void testComputeMarginal() {
     std::vector<Json::Value> ret;
     std::vector<std::pair<ColumnBase*, std::string>> fields_ent;
     std::vector<std::pair<std::string, std::string>> fields_rel;
+    std::unordered_map<std::string, std::string> types;
 
     ih.setRelationCountTotal(0);
 
@@ -291,11 +293,11 @@ void testComputeMarginal() {
     Entity e1("_w", fields_ent), e2("_x", fields_ent), e3("_y", fields_ent), e4("_z", fields_ent);
 
     // construct a number of relations
-    Relation r1("_x", "_y", fields_rel, fields_rel);
-    Relation r2("_x", "_y", fields_rel, fields_rel);
-    Relation r3("_x", "_z", fields_rel, fields_rel);
-    Relation r4("_x", "_z", fields_rel, fields_rel);
-    Relation r5("_w", "_y", fields_rel, fields_rel);
+    Relation r1("_x", "_y", fields_rel, fields_rel, types, types);
+    Relation r2("_x", "_y", fields_rel, fields_rel, types, types);
+    Relation r3("_x", "_z", fields_rel, fields_rel, types, types);
+    Relation r4("_x", "_z", fields_rel, fields_rel, types, types);
+    Relation r5("_w", "_y", fields_rel, fields_rel, types, types);
 
     ih.removeEntity("_w");
     ih.removeEntity("_x");
@@ -365,8 +367,12 @@ void testRelationFiltering() {
  */
 void testRelation_toJson() {
     valpair left, right;
+    std::unordered_map<std::string, std::string> typesL, typesR;
+
     left.push_back(std::make_pair("x", "1"));
     right.push_back(std::make_pair("y", "2"));
+    typesL.insert(std::make_pair("x", COLTYPE_NAME_INT));
+    typesR.insert(std::make_pair("y", COLTYPE_NAME_INT));
     Relation rel("x", "y", left, right);
     Json::Value json = rel.toJson();
     assert(std::atoi(json[JSON_ATTR_REL_FIELDSL]["x"].asCString()) == 1 && std::atoi(json[JSON_ATTR_REL_FIELDSR]["y"].asCString()) == 2);
