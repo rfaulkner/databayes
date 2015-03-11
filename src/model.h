@@ -32,7 +32,7 @@
 using namespace std;
 
 // Vector type that defines entities
-typedef std::vector<std::pair<ColumnBase*, std::string>> defpair;
+typedef std::vector<std::pair<ColumnBase, std::string>> defpair;
 
 // Vector type that defines a set of assignment pairs
 typedef std::vector<std::pair<std::string, std::string>> valpair;
@@ -62,8 +62,12 @@ public:
 class Relation {
 public:
 
+    std::unordered_map<std::string, ColumnBase> types_left;
+    std::unordered_map<std::string, ColumnBase> types_right;
+
     std::string name_left;
     std::string name_right;
+
     valpair attrs_left;
     valpair attrs_right;
 

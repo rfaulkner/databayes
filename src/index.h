@@ -109,7 +109,7 @@ std::string IndexHandler::generateRelationKey(std::string entityL, std::string e
 void IndexHandler::buildFieldJSONDefinition(Json::Value& value, defpair& fields) {
     int count = 0;
     for (defpair::iterator it = fields.begin() ; it != fields.end(); ++it) {
-        value[(*it).second] = (*it).first->getType();
+        value[(*it).second] = (*it).first.getType();
         count++;
     }
     value[JSON_ATTR_FIELDS_COUNT] = count;

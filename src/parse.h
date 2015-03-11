@@ -353,7 +353,7 @@ std::string Parser::analyze(const std::string& s) {
 
     } else if (this->state == STATE_DEF) {  // DEFINING new entities
 
-        this->currFields = new vector<std::pair<ColumnBase*, std::string>>;
+        this->currFields = new vector<std::pair<ColumnBase, std::string>>;
         this->state == STATE_DEF_PROC;
         this->parseEntitySymbol(sLower);
 
