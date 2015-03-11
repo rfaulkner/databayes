@@ -66,6 +66,7 @@ public:
 
     bool fetchRaw(std::string, Json::Value&);
     bool fetchEntity(std::string, Json::Value&);
+    std::string fetchEntityFieldType(std::string, std::string);
     std::vector<Json::Value> fetchRelationPrefix(std::string, std::string);
     std::vector<Json::Value> fetchPatternJson(std::string);
     std::vector<std::string> fetchPatternKeys(std::string);
@@ -534,5 +535,17 @@ long IndexHandler::computeRelationsCount(std::string left_entity, std::string ri
  *  TODO - currently null
  */
 bool IndexHandler::fetchFromDisk(int type) { return false; }
+
+/** Fetches the Column Type of a particular entity field */
+std::string IndexHandler::fetchEntityFieldType(std::string entity, std::string field) {
+    Json::Value val;
+    this->fetchEntity(entity, val);
+    std::vector<std::string> keys = val[JSON_ATTR_ENT_FIELDS].getMemberNames();
+    for (std::vector<std::string>::iterator it = keys.begin(); it != keys.end(); ++it) {
+        if (std::strcmp(val[JSON_ATTR_ENT_FIELDS][*it].asCString(), field.c_str()) == 0)
+            return getColumnType(std::string(val[JSON_ATTR_ENT_FIELDS][*it].asCString()))->getType();
+    }
+    return NullColumn().getType();
+}
 
 #endif
