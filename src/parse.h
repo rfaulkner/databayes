@@ -697,7 +697,7 @@ void Parser::parseCommaSeparatedList(const string &fieldStr, const char fieldDel
  */
 void Parser::parseEntityDefinitionField(const std::string field) {
     std::vector<string> fieldItems;
-    ColumnBase* fieldType;
+    ColumnBase fieldType;
 
     fieldItems = this->tokenize(field, '_');
 
@@ -713,7 +713,7 @@ void Parser::parseEntityDefinitionField(const std::string field) {
     }
 
     fieldType = getColumnType(fieldItems[1]);
-    if (std::strcmp(fieldType.getType(), COLTYPE_NAME_NULL) == 0 {
+    if (std::strcmp(fieldType.getType().c_str(), COLTYPE_NAME_NULL) == 0) {
         this->error = true;
         this->errStr = ERR_INVALID_FIELD_TYPE;
         return;
@@ -764,7 +764,7 @@ void Parser::parseEntityAssignField(const std::string field) {
 
     // Fetch the field type from the entity - it must not be null type
     std::string type = this->indexHandler->fetchEntityFieldType(this->currEntity, fieldItems[0]);
-    if (std::strcmp(type, COLTYPE_NAME_NULL) != 0)
+    if (std::strcmp(type.c_str(), COLTYPE_NAME_NULL) != 0)
         // Push the current field type
         this->currTypes->insert(std::make_pair(fieldItems[0], type));
     else {
