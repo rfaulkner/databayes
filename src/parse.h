@@ -140,8 +140,8 @@ class Parser {
     defpair* currFields;
     valpair* currValues;
     valpair* bufferValues;
-    std::unordered_map<std::string, std::string>* currTypes,
-    std::unordered_map<std::string, std::string>* bufferTypes,
+    std::unordered_map<std::string, std::string>* currTypes;
+    std::unordered_map<std::string, std::string>* bufferTypes;
 
     // Define internal state that stores entity handles
     std::string currEntity;
