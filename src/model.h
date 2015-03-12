@@ -88,8 +88,8 @@ public:
         std::unordered_map<std::string, std::string> types_left,
         std::unordered_map<std::string, std::string> types_right) {
 
-        this->types_left = left;
-        this->types_right = right;
+        this->types_left = types_left;
+        this->types_right = types_right;
         this->name_left = left;
         this->name_right = right;
         this->attrs_left = attrs_left;
