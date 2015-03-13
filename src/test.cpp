@@ -100,7 +100,7 @@ void testJSONEntityEncoding() {
     Json::Value json;
     std::vector<std::pair<ColumnBase, std::string>> fields_ent;
 
-    fields_ent.push_back(std::make_pair(getColumnType("integer"), "a"));   // Create fields
+    fields_ent.push_back(std::make_pair(IntegerColumn(), "a"));   // Create fields
     Entity e("test", fields_ent);
     ih.writeEntity(e);     // Create the entity
     ih.fetchEntity("test", json);           // Fetch the entity representation
@@ -127,8 +127,8 @@ void testJSONRelationEncoding() {
     std::vector<std::pair<std::string, std::string>> fields_rel_2;
 
     // Popualate fields
-    fields_ent_1.push_back(std::make_pair(getColumnType("integer"), "a"));
-    fields_ent_2.push_back(std::make_pair(getColumnType("string"), "b"));
+    fields_ent_1.push_back(std::make_pair(IntegerColumn(), "a"));
+    fields_ent_2.push_back(std::make_pair(StringColumn(), "b"));
     fields_rel_1.push_back(std::make_pair("a", "1"));
     fields_rel_2.push_back(std::make_pair("b", "hello"));
 
@@ -167,7 +167,7 @@ void testFieldAssignTypeMismatchInteger() {
     IndexHandler ih;
     Json::Value json;
     std::vector<std::pair<ColumnBase, std::string>> fields_ent;
-    fields_ent.push_back(std::make_pair(getColumnType("integer"), "a"));   // Create fields
+    fields_ent.push_back(std::make_pair(IntegerColumn(), "a"));   // Create fields
     Entity e("test", fields_ent);
 
     ih.writeEntity(e);     // Create the entity
@@ -187,7 +187,7 @@ void testFieldAssignTypeMismatchFloat() {
     IndexHandler ih;
     Json::Value json;
     std::vector<std::pair<ColumnBase, std::string>> fields_ent;
-    fields_ent.push_back(std::make_pair(getColumnType("float"), "a"));   // Create fields
+    fields_ent.push_back(std::make_pair(FloatColumn(), "a"));   // Create fields
     Entity e("test", fields_ent);     // Create the entity
 
     ih.writeEntity(e);     // Create the entity
@@ -206,7 +206,7 @@ void testFieldAssignTypeMismatchString() {
     IndexHandler ih;
     Json::Value json;
     std::vector<std::pair<ColumnBase, std::string>> fields_ent;
-    fields_ent.push_back(std::make_pair(getColumnType("string"), "a"));   // Create fields
+    fields_ent.push_back(std::make_pair(StringColumn(), "a"));   // Create fields
     Entity e("test", fields_ent);
     ih.writeEntity(e);     // Create the entity
     assert(

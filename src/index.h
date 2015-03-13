@@ -383,7 +383,7 @@ bool IndexHandler::validateEntityFieldType(std::string entity, std::string field
     Json::Value json;
     valid = valid && this->fetchEntity(entity, json);
     if (valid) valid = valid && (json[JSON_ATTR_ENT_FIELDS].isMember(field.c_str())); // ensure field exists
-    if (valid) valid = valid && getColumnType(json[JSON_ATTR_ENT_FIELDS][field].asCString()).validate(value); // ensure the value is a valid instance of the type
+    if (valid) valid = valid && validateType(json[JSON_ATTR_ENT_FIELDS][field].asCString(), value); // ensure the value is a valid instance of the type
     return valid;
 }
 
@@ -541,11 +541,13 @@ std::string IndexHandler::fetchEntityFieldType(std::string entity, std::string f
     Json::Value val;
     this->fetchEntity(entity, val);
     std::vector<std::string> keys = val[JSON_ATTR_ENT_FIELDS].getMemberNames();
-    for (std::vector<std::string>::iterator it = keys.begin(); it != keys.end(); ++it) {
+    for (std::vector<std::string>::iterator it = keys.begin(); it != keys.end(); ++it)
         if (val[JSON_ATTR_ENT_FIELDS][*it].isString() && std::strcmp(it->c_str(), field.c_str()) == 0)
-            return getColumnType(std::string(val[JSON_ATTR_ENT_FIELDS][*it].asCString())).getType();
-    }
-    return NullColumn().getType();
+            if (isValidType(val[JSON_ATTR_ENT_FIELDS][*it].asCString()))
+                return val[JSON_ATTR_ENT_FIELDS][*it].asCString();
+            else
+                return std::string(COLTYPE_NAME_NULL);
+    return std::string(COLTYPE_NAME_NULL);
 }
 
 #endif
