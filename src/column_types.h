@@ -103,18 +103,24 @@ public:
     }
 };
 
-/**
- *  Control for returning a column type by string
- */
-ColumnBase getColumnType(string columnType) {
+/** Determines whether a string value is a valid type indicator */
+bool isValidType(std::string typeStr) {
+    if (columnType.compare(COLTYPE_NAME_INT) == 0 || columnType.compare(COLTYPE_NAME_FLOAT) || columnType.compare(COLTYPE_NAME_STR) == 0)
+        return true;
+    else
+        return false;
+}
+
+/** Perform validation of a type value given the type indicator and the value */
+bool validateType(std::string typeStr, std::string value) {
     if (columnType.compare(COLTYPE_NAME_INT) == 0) {
-        return IntegerColumn();
+        return IntegerColumn().validate(value);
     } else if (columnType.compare(COLTYPE_NAME_FLOAT) == 0) {
-        return FloatColumn();
+        return FloatColumn().validate(value);
     } else if (columnType.compare(COLTYPE_NAME_STR) == 0) {
-        return StringColumn();
+        return StringColumn().validate(value);
     } else {
-        return NullColumn();
+        return false;
     }
 }
 
