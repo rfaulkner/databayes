@@ -140,20 +140,32 @@ public:
             if (std::strcmp(JSON_ATTR_FIELDS_COUNT, it->c_str()) != 0)
                 attrs_left.push_back(
                     std::make_pair(*it, value[JSON_ATTR_REL_FIELDSL][*it].asCString()));
+                // Check if the type for this element exists and add it to the model if so
+                if (value[JSON_ATTR_REL_FIELDSL].isMember(std::string(JSON_ATTR_REL_TYPE_PREFIX) + (*it)))
+                    types_left.insert(std::make_pair(*it, value[JSON_ATTR_REL_FIELDSL][std::string(JSON_ATTR_REL_TYPE_PREFIX) + (*it)].asCString()));
 
         members = value[JSON_ATTR_REL_FIELDSR].getMemberNames();
         for (Json::Value::Members::iterator it = members.begin(); it != members.end(); ++it)
             if (std::strcmp(JSON_ATTR_FIELDS_COUNT, it->c_str()) != 0)
                 attrs_right.push_back(
                     std::make_pair(*it, value[JSON_ATTR_REL_FIELDSR][*it].asCString()));
+                // Check if the type for this element exists and add it to the model if so
+                if (value[JSON_ATTR_REL_FIELDSR].isMember(std::string(JSON_ATTR_REL_TYPE_PREFIX) + (*it)))
+                    types_left.insert(std::make_pair(*it, value[JSON_ATTR_REL_FIELDSR][std::string(JSON_ATTR_REL_TYPE_PREFIX) + (*it)].asCString()));
+
         return true;
     }
 
     /** Handles forming the json for field vectors in the index */
-    void getJSONValue(Json::Value& value, valpair& fields) {
+    void getJSONValue(Json::Value& value, valpair& fields, std::unordered_map<std::string, std::string>& types) {
         int count = 0;
         for (valpair::iterator it = fields.begin() ; it != fields.end(); ++it) {
             value[(*it).first] = (*it).second;
+            // Determine if the type is present and add it if so
+            if (types.find((*it).first) != types.end())
+                value[std::string(JSON_ATTR_REL_TYPE_PREFIX) + (*it).first] = types[(*it).first];
+            else
+                value[std::string(JSON_ATTR_REL_TYPE_PREFIX) + (*it).first] = "null"
             count++;
         }
         value[JSON_ATTR_FIELDS_COUNT] = count;
@@ -170,8 +182,8 @@ public:
         jsonVal[JSON_ATTR_REL_ENTL] = this->name_left;
         jsonVal[JSON_ATTR_REL_ENTR] = this->name_right;
 
-        this->getJSONValue(jsonValFieldsLeft, this->attrs_left);
-        this->getJSONValue(jsonValFieldsRight, this->attrs_right);
+        this->getJSONValue(jsonValFieldsLeft, this->attrs_left, this->types_left);
+        this->getJSONValue(jsonValFieldsRight, this->attrs_right, this->types_right);
 
         jsonVal[JSON_ATTR_REL_FIELDSL] = jsonValFieldsLeft;
         jsonVal[JSON_ATTR_REL_FIELDSR] = jsonValFieldsRight;
