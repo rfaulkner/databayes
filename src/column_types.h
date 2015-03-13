@@ -105,7 +105,7 @@ public:
 
 /** Determines whether a string value is a valid type indicator */
 bool isValidType(std::string typeStr) {
-    if (columnType.compare(COLTYPE_NAME_INT) == 0 || columnType.compare(COLTYPE_NAME_FLOAT) || columnType.compare(COLTYPE_NAME_STR) == 0)
+    if (typeStr.compare(COLTYPE_NAME_INT) == 0 || typeStr.compare(COLTYPE_NAME_FLOAT) || typeStr.compare(COLTYPE_NAME_STR) == 0)
         return true;
     else
         return false;
@@ -113,11 +113,11 @@ bool isValidType(std::string typeStr) {
 
 /** Perform validation of a type value given the type indicator and the value */
 bool validateType(std::string typeStr, std::string value) {
-    if (columnType.compare(COLTYPE_NAME_INT) == 0) {
+    if (typeStr.compare(COLTYPE_NAME_INT) == 0) {
         return IntegerColumn().validate(value);
-    } else if (columnType.compare(COLTYPE_NAME_FLOAT) == 0) {
+    } else if (typeStr.compare(COLTYPE_NAME_FLOAT) == 0) {
         return FloatColumn().validate(value);
-    } else if (columnType.compare(COLTYPE_NAME_STR) == 0) {
+    } else if (typeStr.compare(COLTYPE_NAME_STR) == 0) {
         return StringColumn().validate(value);
     } else {
         return false;
