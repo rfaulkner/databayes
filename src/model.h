@@ -203,30 +203,20 @@ class AttributeTuple {
 
 public:
 
-    ColumnBase* type;
+    std::string type;
     std::string entity;
     std::string attribute;
     std::string value;
     std::string comparator;
 
-    /** Copy Constructor */
-    AttributeTuple(const AttributeTuple& other) {
-        type = new NullColumn();
-        memcpy( type, other.type, 1 );
-    }
+    AttributeTuple() {}
 
-    AttributeTuple() {
-        this->type = new NullColumn();
-    }
-
-    AttributeTuple(std::string entity, std::string attribute, std::string value) {
+    AttributeTuple(std::string entity, std::string attribute, std::string value, std::string type) {
         this->entity = entity;
         this->attribute = attribute;
         this->value = value;
-        this->type = new NullColumn();
+        this->type = type;
     }
-
-    ~AttributeTuple() { delete type; }
 
     /** Format object as string */
     std::string toString() {
@@ -276,11 +266,11 @@ public:
     // TODO - properly handle types here
     bool operator>(const AttributeTuple &rhs) const {
         // convert value to column type and make comparison
-        if (strcmp(rhs.type->getType().c_str(), COLTYPE_NAME_INT) == 0) {
+        if (strcmp(rhs.type.c_str(), COLTYPE_NAME_INT) == 0) {
             return atoi(this->value.c_str()) > atoi(rhs.value.c_str());
-        } else if (strcmp(rhs.type->getType().c_str(), COLTYPE_NAME_FLOAT) == 0) {
+        } else if (strcmp(rhs.type.c_str(), COLTYPE_NAME_FLOAT) == 0) {
             return atof(this->value.c_str()) > atof(rhs.value.c_str());
-        } else if (strcmp(rhs.type->getType().c_str(), COLTYPE_NAME_STR) == 0) {
+        } else if (strcmp(rhs.type.c_str(), COLTYPE_NAME_STR) == 0) {
             return this->value.c_str()[0] > rhs.value.c_str()[0];
         }
 
@@ -304,11 +294,11 @@ public:
     bool operator==(const AttributeTuple &other) const {
 
         // convert value to column type and make comparison
-        if (strcmp(other.type->getType().c_str(), COLTYPE_NAME_INT) == 0) {
+        if (strcmp(other.type.c_str(), COLTYPE_NAME_INT) == 0) {
             return atoi(this->value.c_str()) == atoi(other.value.c_str());
-        } else if (strcmp(other.type->getType().c_str(), COLTYPE_NAME_FLOAT) == 0) {
+        } else if (strcmp(other.type.c_str(), COLTYPE_NAME_FLOAT) == 0) {
             return atof(this->value.c_str()) == atof(other.value.c_str());
-        } else if (strcmp(other.type->getType().c_str(), COLTYPE_NAME_STR)) {
+        } else if (strcmp(other.type.c_str(), COLTYPE_NAME_STR)) {
             return strcmp(this->value.c_str(), other.value.c_str()) == 0;
         }
 
@@ -320,13 +310,6 @@ public:
         return !(*this==other);
     }
 
-    /** Ensure that value copying is handled correctly on assignment */
-    AttributeTuple& operator= (const AttributeTuple& other) {
-        if (this != &other) {
-            memcpy( type, other.type, 1 );
-        }
-        return *this;
-    }
 };
 
 /**
@@ -342,16 +325,16 @@ public:
     AttributeBucket() {}
 
     /** Constructor that converts valpair list to AttributeBucket */
-    AttributeBucket(std::string entity, valpair& vals) { this->addAttributes(entity, vals); }
+    AttributeBucket(std::string entity, valpair& vals, std::unordered_map<std::string, std::string>& types) { this->addAttributes(entity, vals, types); }
 
     /** Insert a new atribute into the bucket */
     void addAttribute(AttributeTuple attr) { this->attrs.insert(std::make_pair(this->makeKey(attr), attr.toString())); }
 
     /** Insert a list of attributes */
-    void addAttributes(std::string entity, valpair& vals) {
+    void addAttributes(std::string entity, valpair& vals, std::unordered_map<std::string, std::string>& types) {
         AttributeTuple tuple;
         for (valpair::iterator it = vals.begin() ; it != vals.end(); ++it) {
-            tuple = AttributeTuple(entity, std::get<0>(*it), std::get<1>(*it));
+            tuple = AttributeTuple(entity, std::get<0>(*it), std::get<1>(*it), types[std::get<0>(*it)]);
             this->addAttribute(tuple);
         }
     }

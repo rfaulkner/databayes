@@ -420,7 +420,7 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
 
         // Match left hand relations
         for (valpair::iterator it_inner = it->attrs_left.begin(); it_inner != it->attrs_left.end(); ++it_inner) {
-            currAttr = AttributeTuple(it->name_left, std::get<0>(*it_inner), std::get<1>(*it_inner));
+            currAttr = AttributeTuple(it->name_left, std::get<0>(*it_inner), std::get<1>(*it_inner), it->types_left[std::get<0>(*it_inner)]);
             bucketAttr = filterAttrs.getAttribute(currAttr);
             if (std::strcmp(bucketAttr.entity.c_str(), "") == 0) {
                 matching = AttributeTuple::compare(bucketAttr, currAttr);
@@ -431,7 +431,7 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
         // Match right hand relations - only process if left hand relations matched
         if (matching)
             for (valpair::iterator it_inner = it->attrs_right.begin(); it_inner != it->attrs_right.end(); ++it_inner) {
-                currAttr = AttributeTuple(it->name_right, std::get<0>(*it_inner), std::get<1>(*it_inner));
+                currAttr = AttributeTuple(it->name_right, std::get<0>(*it_inner), std::get<1>(*it_inner), it->types_right[std::get<0>(*it_inner)]);
                 bucketAttr = filterAttrs.getAttribute(currAttr);
                 if (std::strcmp(bucketAttr.entity.c_str(), "") == 0) {
                     matching = AttributeTuple::compare(bucketAttr, currAttr);
@@ -471,7 +471,10 @@ void IndexHandler::filterRelations(std::vector<Json::Value>& relations, Attribut
             if ((*it)[JSON_ATTR_REL_FIELDSL].isMember(filterAttr.attribute) &&
                     std::strcmp((*it)[JSON_ATTR_REL_ENTL].asCString(), filterAttr.entity.c_str()) == 0) {
 
-                currAttr = AttributeTuple(filterAttr.entity, filterAttr.attribute, (*it)[JSON_ATTR_REL_FIELDSL][filterAttr.attribute].asCString());
+                currAttr = AttributeTuple(filterAttr.entity, filterAttr.attribute,
+                            (*it)[JSON_ATTR_REL_FIELDSL][filterAttr.attribute].asCString(),
+                            std::string(JSON_ATTR_REL_TYPE_PREFIX) + std::string((*it)[JSON_ATTR_REL_FIELDSL][filterAttr.attribute].asCString())
+                            );
                 matching = AttributeTuple::compare(filterAttr, currAttr);
                 if (!matching) break;
             }
@@ -480,7 +483,10 @@ void IndexHandler::filterRelations(std::vector<Json::Value>& relations, Attribut
             if (matching)
                 if ((*it)[JSON_ATTR_REL_FIELDSR].isMember(filterAttr.attribute) &&
                         std::strcmp((*it)[JSON_ATTR_REL_ENTR].asCString(), filterAttr.entity.c_str()) == 0) {
-                    currAttr = AttributeTuple(filterAttr.entity, filterAttr.attribute, (*it)[JSON_ATTR_REL_FIELDSR][filterAttr.attribute].asCString());
+                    currAttr = AttributeTuple(filterAttr.entity, filterAttr.attribute,
+                                (*it)[JSON_ATTR_REL_FIELDSR][filterAttr.attribute].asCString(),
+                                std::string(JSON_ATTR_REL_TYPE_PREFIX) + std::string((*it)[JSON_ATTR_REL_FIELDSR][filterAttr.attribute].asCString())
+                                );
                     matching = AttributeTuple::compare(filterAttr, currAttr);
                     if (!matching) break;
                 }

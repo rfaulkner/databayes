@@ -466,7 +466,7 @@ std::string Parser::analyze(const std::string& s) {
             // Fetch relations and filter on attribute criteria
             std::vector<Json::Value> relationsJson = this->indexHandler->fetchRelationPrefix(this->bufferEntity, this->currEntity);
             std::vector<Relation> relations = this->indexHandler->Json2RelationVector(relationsJson);
-            AttributeBucket ab = AttributeBucket(this->currEntity, *(this->currValues));
+            AttributeBucket ab = AttributeBucket(this->currEntity, *(this->currValues), *(this->currTypes));
             this->indexHandler->filterRelations(relations, ab);
 
             // for each relation determine if they match the condition criteria
@@ -918,7 +918,7 @@ void Parser::parseSet(const std::string inputToken) {
 void Parser::processGEN() {
     // Construct attribute bucket
     AttributeBucket ab;
-    ab.addAttributes(this->currAttrEntity, *(this->currValues));
+    ab.addAttributes(this->currAttrEntity, *(this->currValues), *(this->currTypes));
 
     // Call sampling method from Bayes for relations
     Relation r = this->bayes->samplePairwise(this->bufferAttrEntity, this->currEntity, ab);
@@ -931,10 +931,10 @@ void Parser::processINF() {
 
     // Construct attribute bucket
     AttributeBucket ab;
-    ab.addAttributes(this->currAttrEntity, *(this->currValues));
+    ab.addAttributes(this->currAttrEntity, *(this->currValues), *(this->currTypes));
 
     // Call sampling method from Bayes for relations
-    AttributeTuple* at = new AttributeTuple(this->bufferAttrEntity, this->bufferAttribute, "");
+    AttributeTuple* at = new AttributeTuple(this->bufferAttrEntity, this->bufferAttribute, "", "");
     float exp = this->bayes->expectedAttribute(*at, ab);
 
     // Print the expected value
@@ -948,7 +948,7 @@ void Parser::processSET() {
 
     // Construct attribute bucket
     AttributeBucket ab;
-    ab.addAttributes(this->currAttrEntity, *(this->currValues));
+    ab.addAttributes(this->currAttrEntity, *(this->currValues), *(this->currTypes));
 
     std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(this->bufferAttrEntity, this->currAttrEntity);
     this->indexHandler->filterRelations(relations, ab);
