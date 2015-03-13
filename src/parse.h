@@ -697,7 +697,7 @@ void Parser::parseCommaSeparatedList(const string &fieldStr, const char fieldDel
  */
 void Parser::parseEntityDefinitionField(const std::string field) {
     std::vector<string> fieldItems;
-    ColumnBase fieldType;
+    std::string fieldType;
 
     fieldItems = this->tokenize(field, '_');
 
@@ -718,9 +718,21 @@ void Parser::parseEntityDefinitionField(const std::string field) {
         this->errStr = ERR_INVALID_FIELD_TYPE;
         return;
     }
-    this->currFields->push_back(std::make_pair(fieldType, fieldItems[0]));
-}
 
+    // Assign the appropriate column
+    // TODO - fold this into column_types lib
+    if (fieldType.compare(COLTYPE_NAME_INT) == 0)
+        this->currFields->push_back(std::make_pair(IntegerColumn(), fieldItems[0]));
+    else if (fieldType.compare(COLTYPE_NAME_FLOAT) == 0)
+        this->currFields->push_back(std::make_pair(FloatColumn(), fieldItems[0]));
+    else if (fieldType.compare(COLTYPE_NAME_STR) == 0)
+        this->currFields->push_back(std::make_pair(StringColumn(), fieldItems[0]));
+    else {
+        this->error = true;
+        this->errStr = ERR_INVALID_FIELD_TYPE;
+        return;
+    }
+}
 
 /**
  *  Logic for parsing entity assignment statements
