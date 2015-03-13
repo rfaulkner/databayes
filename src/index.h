@@ -542,7 +542,7 @@ std::string IndexHandler::fetchEntityFieldType(std::string entity, std::string f
     this->fetchEntity(entity, val);
     std::vector<std::string> keys = val[JSON_ATTR_ENT_FIELDS].getMemberNames();
     for (std::vector<std::string>::iterator it = keys.begin(); it != keys.end(); ++it) {
-        if (std::strcmp(val[JSON_ATTR_ENT_FIELDS][*it].asCString(), field.c_str()) == 0)
+        if (val[JSON_ATTR_ENT_FIELDS][*it].isString() && std::strcmp(it->c_str(), field.c_str()) == 0)
             return getColumnType(std::string(val[JSON_ATTR_ENT_FIELDS][*it].asCString())).getType();
     }
     return NullColumn().getType();
