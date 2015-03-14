@@ -40,7 +40,7 @@ class IndexHandler {
     RedisHandler* redisHandler;
 
     void buildFieldJSONDefinition(Json::Value&, defpair&);
-    void buildFieldJSONValue(Json::Value&, valpair&);
+    void buildFieldJSONValue(Json::Value&, valpair&, std::unordered_map<std::string, std::string>&);
 
 public:
     /**
@@ -116,10 +116,12 @@ void IndexHandler::buildFieldJSONDefinition(Json::Value& value, defpair& fields)
 }
 
 /** Handles forming the json for field vectors in the index */
-void IndexHandler::buildFieldJSONValue(Json::Value& value, valpair& fields) {
+void IndexHandler::buildFieldJSONValue(Json::Value& value, valpair& fields, std::unordered_map<std::string, std::string>& types) {
     int count = 0;
     for (valpair::iterator it = fields.begin() ; it != fields.end(); ++it) {
-        value[(*it).first] = (*it).second;
+        value[it->first] = it->second;
+        if (types.find(it->first) != types.end())
+            value[std::string(JSON_ATTR_REL_TYPE_PREFIX) + it->first] = types[it->first];
         count++;
     }
     value[JSON_ATTR_FIELDS_COUNT] = count;
@@ -168,8 +170,8 @@ bool IndexHandler::removeRelation(Relation& rel) {
 
     jsonVal[JSON_ATTR_REL_ENTL] = rel.name_left;
     jsonVal[JSON_ATTR_REL_ENTR] = rel.name_right;
-    this->buildFieldJSONValue(jsonValFieldsLeft, rel.attrs_left);
-    this->buildFieldJSONValue(jsonValFieldsRight, rel.attrs_right);
+    this->buildFieldJSONValue(jsonValFieldsLeft, rel.attrs_left, rel.types_left);
+    this->buildFieldJSONValue(jsonValFieldsRight, rel.attrs_right, rel.types_right);
     jsonVal[JSON_ATTR_REL_FIELDSL] = jsonValFieldsLeft;
     jsonVal[JSON_ATTR_REL_FIELDSR] = jsonValFieldsRight;
 
@@ -228,8 +230,8 @@ bool IndexHandler::writeRelation(Relation& rel) {
     jsonVal[JSON_ATTR_REL_ENTL] = rel.name_left;
     jsonVal[JSON_ATTR_REL_ENTR] = rel.name_right;
 
-    this->buildFieldJSONValue(jsonValFieldsLeft, rel.attrs_left);
-    this->buildFieldJSONValue(jsonValFieldsRight, rel.attrs_right);
+    this->buildFieldJSONValue(jsonValFieldsLeft, rel.attrs_left, rel.types_left);
+    this->buildFieldJSONValue(jsonValFieldsRight, rel.attrs_right, rel.types_right);
 
     jsonVal[JSON_ATTR_REL_FIELDSL] = jsonValFieldsLeft;
     jsonVal[JSON_ATTR_REL_FIELDSR] = jsonValFieldsRight;
