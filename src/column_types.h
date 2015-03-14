@@ -105,7 +105,7 @@ public:
 
 /** Determines whether a string value is a valid type indicator */
 bool isValidType(std::string typeStr) {
-    if (typeStr.compare(COLTYPE_NAME_INT) == 0 || typeStr.compare(COLTYPE_NAME_FLOAT) || typeStr.compare(COLTYPE_NAME_STR) == 0)
+    if (typeStr.compare(COLTYPE_NAME_INT) == 0 || typeStr.compare(COLTYPE_NAME_FLOAT) == 0 || typeStr.compare(COLTYPE_NAME_STR) == 0)
         return true;
     else
         return false;
