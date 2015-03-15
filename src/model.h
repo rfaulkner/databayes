@@ -72,7 +72,7 @@ public:
     valpair attrs_right;
 
     std::string cause;
-    long instance_count;
+    int instance_count;
 
     /** Constructors/Builders for relations  */
 
@@ -124,7 +124,7 @@ public:
     }
 
     /** Set the instance count */
-    bool setInstanceCount(long count) {
+    bool setInstanceCount(int count) {
         if (count < 1)
             return false;
         else
@@ -202,7 +202,7 @@ public:
         jsonVal[JSON_ATTR_REL_FIELDSL] = jsonValFieldsLeft;
         jsonVal[JSON_ATTR_REL_FIELDSR] = jsonValFieldsRight;
         jsonVal[JSON_ATTR_REL_CAUSE] = this->cause;
-        // jsonVal[JSON_ATTR_REL_COUNT] = this->instance_count;
+        jsonVal[JSON_ATTR_REL_COUNT] = this->instance_count;
 
         return jsonVal;
     }
