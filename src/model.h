@@ -137,23 +137,24 @@ public:
         // Extract the left-hand & right-hand fields
         Json::Value::Members members = value[JSON_ATTR_REL_FIELDSL].getMemberNames();
         for (Json::Value::Members::iterator it = members.begin(); it != members.end(); ++it)
+            // Determine whether a type is being added or an element
             if (std::strcmp(JSON_ATTR_FIELDS_COUNT, it->c_str()) != 0) {
-                attrs_left.push_back(
-                    std::make_pair(*it, value[JSON_ATTR_REL_FIELDSL][*it].asCString()));
-                // Check if the type for this element exists and add it to the model if so
-                if (value[JSON_ATTR_REL_FIELDSL].isMember(std::string(JSON_ATTR_REL_TYPE_PREFIX) + (*it)))
-                    types_left.insert(std::make_pair(*it, value[JSON_ATTR_REL_FIELDSL][std::string(JSON_ATTR_REL_TYPE_PREFIX) + (*it)].asCString()));
+                if (it->find(JSON_ATTR_REL_TYPE_PREFIX) == 0) {
+                    types_left.insert(std::make_pair(it->substr(1, it->length()), value[JSON_ATTR_REL_FIELDSL][*it].asCString()));
+                } else {
+                    attrs_left.push_back(std::make_pair(*it, value[JSON_ATTR_REL_FIELDSL][*it].asCString()));
+                }
             }
-
         members = value[JSON_ATTR_REL_FIELDSR].getMemberNames();
         for (Json::Value::Members::iterator it = members.begin(); it != members.end(); ++it)
-            if (std::strcmp(JSON_ATTR_FIELDS_COUNT, it->c_str()) != 0) {
-                attrs_right.push_back(
-                    std::make_pair(*it, value[JSON_ATTR_REL_FIELDSR][*it].asCString()));
-                // Check if the type for this element exists and add it to the model if so
-                if (value[JSON_ATTR_REL_FIELDSR].isMember(std::string(JSON_ATTR_REL_TYPE_PREFIX) + (*it)))
-                    types_left.insert(std::make_pair(*it, value[JSON_ATTR_REL_FIELDSR][std::string(JSON_ATTR_REL_TYPE_PREFIX) + (*it)].asCString()));
-            }
+            if (std::strcmp(JSON_ATTR_FIELDS_COUNT, it->c_str()) != 0)
+                // Determine whether a type is being added or an element
+                if (it->find(JSON_ATTR_REL_TYPE_PREFIX) == 0) {
+                    types_right.insert(std::make_pair(it->substr(1, it->length()), value[JSON_ATTR_REL_FIELDSR][*it].asCString()));
+                } else {
+                    attrs_right.push_back(
+                        std::make_pair(*it, value[JSON_ATTR_REL_FIELDSR][*it].asCString()));
+                }
         return true;
     }
 
@@ -161,10 +162,12 @@ public:
     void getJSONValue(Json::Value& value, valpair& fields, std::unordered_map<std::string, std::string>& types) {
         int count = 0;
         for (valpair::iterator it = fields.begin() ; it != fields.end(); ++it) {
+            // Add the value element
             value[(*it).first] = (*it).second;
-            // Determine if the type is present and add it if so
-            if (types.find((*it).first) != types.end())
-                value[std::string(JSON_ATTR_REL_TYPE_PREFIX) + (*it).first] = types[(*it).first];
+
+            // Add the type element
+            if (types.find(it->first) != types.end())
+                value[std::string(JSON_ATTR_REL_TYPE_PREFIX) + it->first] = types[it->first];
             else
                 value[std::string(JSON_ATTR_REL_TYPE_PREFIX) + (*it).first] = "null";
             count++;
