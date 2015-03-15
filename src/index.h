@@ -163,17 +163,19 @@ bool IndexHandler::removeEntity(std::string entity) {
 
 /** Wraps removeRelation(Json::Value&) */
 bool IndexHandler::removeRelation(Relation& rel) {
-
     Json::Value jsonVal;
     Json::Value jsonValFieldsLeft;
     Json::Value jsonValFieldsRight;
 
     jsonVal[JSON_ATTR_REL_ENTL] = rel.name_left;
     jsonVal[JSON_ATTR_REL_ENTR] = rel.name_right;
+
     this->buildFieldJSONValue(jsonValFieldsLeft, rel.attrs_left, rel.types_left);
     this->buildFieldJSONValue(jsonValFieldsRight, rel.attrs_right, rel.types_right);
+
     jsonVal[JSON_ATTR_REL_FIELDSL] = jsonValFieldsLeft;
     jsonVal[JSON_ATTR_REL_FIELDSR] = jsonValFieldsRight;
+    jsonVal[JSON_ATTR_REL_CAUSE] = rel.cause;
 
     return this->removeRelation(jsonVal);
 }

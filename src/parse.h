@@ -661,7 +661,7 @@ void Parser::parseFieldStatement(const std::string &fieldStr) {
 
         // PROCESS FIELD STATEMENT
         if (this->macroState == STATE_DEF) { this->parseEntityDefinitionField(field); }
-        if (this->macroState == STATE_ADD) { this->parseEntityAssignField(field); }
+        if (this->macroState == STATE_ADD || this->macroState == STATE_RM_REL) { this->parseEntityAssignField(field); }
 
         // this->error = this->error || this->indexHandler->fetch(IDX_TYPE_FIELD, field);
     }
@@ -801,8 +801,8 @@ void Parser::parseRelationPair(const std::string symbol) {
         this->currTypes = new std::unordered_map<std::string, std::string>;
         this->parseEntitySymbol(symbol);
 
-        // Ensure that entities exist if we are adding a new relation
-        if (this->macroState == STATE_ADD)
+        // Ensure that entities exist if we are adding/removing  a new relation
+        if (this->macroState == STATE_ADD || this->macroState == STATE_RM_REL)
             if (!this->indexHandler->existsEntity(this->currEntity)) {
                 this->error = true;
                 this->errStr = std::string(ERR_ENT_NOT_EXISTS) + std::string(" -> \"") + this->currEntity +std::string("\"");
