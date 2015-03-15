@@ -98,6 +98,19 @@ public:
         this->instance_count = 1;
     }
 
+    /** Render the relation state as a string */
+    std::string stringify() {
+        std::string s;
+        s +=  this->name_left + std::string(" / ") + this->name_right + std::string("; ");
+        s += std::string(" L ");
+        for (valpair::iterator it = attrs_left.begin() ; it != attrs_left.end(); ++it)
+            s += it->first + std::string(":") + types_left[it->first] + std::string(":") + it->second;
+        s += std::string("; R ");
+        for (valpair::iterator it = attrs_right.begin() ; it != attrs_right.end(); ++it)
+            s += it->first + std::string(":") + types_right[it->first] + std::string(":") + it->second;
+        return s;
+    }
+
     /** Set the causal entity */
     bool setCause(std::string cause) {
         if (std::strcmp(cause.c_str(), this->name_left.c_str()) != 0 && std::strcmp(cause.c_str(), this->name_right.c_str()) != 0)
