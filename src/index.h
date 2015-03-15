@@ -40,7 +40,6 @@ class IndexHandler {
     RedisHandler* redisHandler;
 
     void buildFieldJSONDefinition(Json::Value&, defpair&);
-    void buildFieldJSONValue(Json::Value&, valpair&, std::unordered_map<std::string, std::string>&);
 
 public:
     /**
@@ -115,18 +114,6 @@ void IndexHandler::buildFieldJSONDefinition(Json::Value& value, defpair& fields)
     value[JSON_ATTR_FIELDS_COUNT] = count;
 }
 
-/** Handles forming the json for field vectors in the index */
-void IndexHandler::buildFieldJSONValue(Json::Value& value, valpair& fields, std::unordered_map<std::string, std::string>& types) {
-    int count = 0;
-    for (valpair::iterator it = fields.begin() ; it != fields.end(); ++it) {
-        value[it->first] = it->second;
-        if (types.find(it->first) != types.end())
-            value[std::string(JSON_ATTR_REL_TYPE_PREFIX) + it->first] = types[it->first];
-        count++;
-    }
-    value[JSON_ATTR_FIELDS_COUNT] = count;
-}
-
 /**
  * Writes of entities to in memory index.
  *
@@ -163,21 +150,8 @@ bool IndexHandler::removeEntity(std::string entity) {
 
 /** Wraps removeRelation(Json::Value&) */
 bool IndexHandler::removeRelation(Relation& rel) {
-    Json::Value jsonVal;
-    Json::Value jsonValFieldsLeft;
-    Json::Value jsonValFieldsRight;
-
-    jsonVal[JSON_ATTR_REL_ENTL] = rel.name_left;
-    jsonVal[JSON_ATTR_REL_ENTR] = rel.name_right;
-
-    this->buildFieldJSONValue(jsonValFieldsLeft, rel.attrs_left, rel.types_left);
-    this->buildFieldJSONValue(jsonValFieldsRight, rel.attrs_right, rel.types_right);
-
-    jsonVal[JSON_ATTR_REL_FIELDSL] = jsonValFieldsLeft;
-    jsonVal[JSON_ATTR_REL_FIELDSR] = jsonValFieldsRight;
-    jsonVal[JSON_ATTR_REL_CAUSE] = rel.cause;
-
-    return this->removeRelation(jsonVal);
+    Json::Value val = rel.toJson();
+    return this->removeRelation(val);
 }
 
 /** Removes a relation from redis that is defined as a json object */
@@ -201,6 +175,16 @@ bool IndexHandler::removeRelation(Json::Value& jsonVal) {
  *
  *  e.g. {"entity": <string:entname>, "fields": <string_array:[<f1,f2,...>]>}
  */
+bool IndexHandler::writeRelation(Relation& rel) {
+    Json::Value val = rel.toJson();
+    return this->writeRelation(val);
+}
+
+/**
+ * Writes relation to in memory index.
+ *
+ *  e.g. {"entity": <string:entname>, "fields": <string_array:[<f1,f2,...>]>}
+ */
 bool IndexHandler::writeRelation(Json::Value& jsonVal) {
     std::string key;
     this->redisHandler->connect();
@@ -217,29 +201,6 @@ bool IndexHandler::writeRelation(Json::Value& jsonVal) {
     this->redisHandler->incrementKey(KEY_TOTAL_RELATIONS, 1);
     this->redisHandler->write(key, jsonVal.toStyledString());
     return true;
-}
-
-/**
- * Writes relation to in memory index.
- *
- *  e.g. {"entity": <string:entname>, "fields": <string_array:[<f1,f2,...>]>}
- */
-bool IndexHandler::writeRelation(Relation& rel) {
-    Json::Value jsonVal;
-    Json::Value jsonValFieldsLeft;
-    Json::Value jsonValFieldsRight;
-
-    jsonVal[JSON_ATTR_REL_ENTL] = rel.name_left;
-    jsonVal[JSON_ATTR_REL_ENTR] = rel.name_right;
-
-    this->buildFieldJSONValue(jsonValFieldsLeft, rel.attrs_left, rel.types_left);
-    this->buildFieldJSONValue(jsonValFieldsRight, rel.attrs_right, rel.types_right);
-
-    jsonVal[JSON_ATTR_REL_FIELDSL] = jsonValFieldsLeft;
-    jsonVal[JSON_ATTR_REL_FIELDSR] = jsonValFieldsRight;
-    jsonVal[JSON_ATTR_REL_CAUSE] = rel.cause;
-
-    return this->writeRelation(jsonVal);
 }
 
 /**

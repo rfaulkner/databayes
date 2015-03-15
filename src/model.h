@@ -172,17 +172,15 @@ public:
     }
 
     /** Handles forming the json for field vectors in the index */
-    void getJSONValue(Json::Value& value, valpair& fields, std::unordered_map<std::string, std::string>& types) {
+    void buildFieldJSONValue(Json::Value& value, valpair& fields, std::unordered_map<std::string, std::string>& types) {
         int count = 0;
         for (valpair::iterator it = fields.begin() ; it != fields.end(); ++it) {
-            // Add the value element
-            value[(*it).first] = (*it).second;
-
-            // Add the type element
+            value[it->first] = it->second;
             if (types.find(it->first) != types.end())
                 value[std::string(JSON_ATTR_REL_TYPE_PREFIX) + it->first] = types[it->first];
             else
-                value[std::string(JSON_ATTR_REL_TYPE_PREFIX) + (*it).first] = "null";
+                value[std::string(JSON_ATTR_REL_TYPE_PREFIX) + (*it).first] = COLTYPE_NAME_NULL;
+
             count++;
         }
         value[JSON_ATTR_FIELDS_COUNT] = count;
@@ -192,21 +190,19 @@ public:
     Json::Value toJson() {
 
         Json::Value jsonVal;
-        std::string key;
         Json::Value jsonValFieldsLeft;
         Json::Value jsonValFieldsRight;
 
         jsonVal[JSON_ATTR_REL_ENTL] = this->name_left;
         jsonVal[JSON_ATTR_REL_ENTR] = this->name_right;
 
-        this->getJSONValue(jsonValFieldsLeft, this->attrs_left, this->types_left);
-        this->getJSONValue(jsonValFieldsRight, this->attrs_right, this->types_right);
+        this->buildFieldJSONValue(jsonValFieldsLeft, this->attrs_left, this->types_left);
+        this->buildFieldJSONValue(jsonValFieldsRight, this->attrs_right, this->types_right);
 
         jsonVal[JSON_ATTR_REL_FIELDSL] = jsonValFieldsLeft;
         jsonVal[JSON_ATTR_REL_FIELDSR] = jsonValFieldsRight;
-
         jsonVal[JSON_ATTR_REL_CAUSE] = this->cause;
-        jsonVal[JSON_ATTR_REL_COUNT] = std::to_string(this->instance_count);
+        // jsonVal[JSON_ATTR_REL_COUNT] = this->instance_count;
 
         return jsonVal;
     }
