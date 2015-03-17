@@ -616,7 +616,7 @@ void Parser::parseAttributeSymbol(const std::string s, bool entityOnly) {
  */
 void Parser::parseValue(const std::string s) {
     // Validate Field type
-    if (!this->indexHandler->validateEntityFieldType(this->currEntity, this->currAttribute, s)) {
+    if (!this->indexHandler->validateEntityFieldType(this->currAttrEntity, this->currAttribute, s)) {
         this->error = true;
         this->errStr = ERR_BAD_VALUE_TYPE;
     }
@@ -661,7 +661,7 @@ void Parser::parseFieldStatement(const std::string &fieldStr) {
 
         // PROCESS FIELD STATEMENT
         if (this->macroState == STATE_DEF) { this->parseEntityDefinitionField(field); }
-        if (this->macroState == STATE_ADD || this->macroState == STATE_RM_REL) { this->parseEntityAssignField(field); }
+        if (this->macroState == STATE_ADD || this->macroState == STATE_RM_REL || this->macroState == STATE_SET) { this->parseEntityAssignField(field); }
 
         // this->error = this->error || this->indexHandler->fetch(IDX_TYPE_FIELD, field);
     }
@@ -802,7 +802,7 @@ void Parser::parseRelationPair(const std::string symbol) {
         this->parseEntitySymbol(symbol);
 
         // Ensure that entities exist if we are adding/removing  a new relation
-        if (this->macroState == STATE_ADD || this->macroState == STATE_RM_REL)
+        if (this->macroState == STATE_ADD || this->macroState == STATE_RM_REL || this->macroState == STATE_SET)
             if (!this->indexHandler->existsEntity(this->currEntity)) {
                 this->error = true;
                 this->errStr = std::string(ERR_ENT_NOT_EXISTS) + std::string(" -> \"") + this->currEntity +std::string("\"");
@@ -948,7 +948,7 @@ void Parser::processSET() {
 
     // Construct attribute bucket
     AttributeBucket ab;
-    ab.addAttributes(this->currAttrEntity, *(this->currValues), *(this->currTypes));
+    ab.addAttributes(this->currAttrEntity, *(this->bufferValues), *(this->bufferTypes));
 
     std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(this->bufferAttrEntity, this->currAttrEntity);
     this->indexHandler->filterRelations(relations, ab);
