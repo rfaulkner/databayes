@@ -78,8 +78,6 @@
 #define STATE_GENINF_ATTR 33  // Process second entity
 
 #define STATE_SET 80        // Generate an entity given others
-#define STATE_SET_ATTR 81   // Process the attribute
-#define STATE_SET_VAL 82    // Process the value
 
 #define STATE_DEF 40        // Describes entity definitions
 #define STATE_DEF_PROC 41
@@ -401,6 +399,8 @@ std::string Parser::analyze(const std::string& s) {
         this->parseRelationPair(sLower);
 
     } else if (this->macroState == STATE_SET) {
+        if (this->state == STATE_SET)
+            this->state = STATE_P0;
         this->parseSet(sLower);
 
     } else if (this->state == STATE_FINISH) {  // Ensure processing is complete - no symbols should be left at this point
