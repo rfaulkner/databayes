@@ -896,6 +896,7 @@ void Parser::parseSet(const std::string inputToken) {
             this->state = STATE_P1;
             break;
         case STATE_P1:   // Parse first entity attribute settings
+            this->entityProcessed = false;
             if (inputToken.compare(STR_CMD_FOR) == 0) break;
             this->parseRelationPair(inputToken);    // handles transition to P2
             break;
