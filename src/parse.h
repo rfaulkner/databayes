@@ -57,6 +57,7 @@
 #define ERR_PARSE_ATTR "ERR: Could not parse entity-attribute"
 #define ERR_MAL_GEN "ERR: Malformed GEN command"
 #define ERR_MAL_INF "ERR: Malformed INF command"
+#define ERR_BAD_SET "ERR: Some or all relations could not be updated."
 
 #define WILDCARD_CHAR '*'
 
@@ -945,47 +946,76 @@ void Parser::processINF() {
 
 void Parser::processSET() {
 
-    // FIRST DETERMINE RELATIONS TO WHICH THIS APPLIES
-
     // Construct attribute bucket
     AttributeBucket ab;
+    bool goodSet = false;
     ab.addAttributes(this->currAttrEntity, *(this->bufferValues), *(this->bufferTypes));
 
+    // Filter out candidate relations
     std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(this->bufferEntity, this->currEntity);
     this->indexHandler->filterRelations(relations, ab);
 
-    // Call sampling method from Bayes for relations
+    // Iterate through relations to be set
     for (std::vector<Json::Value>::iterator it = relations.begin() ; it != relations.end(); ++it) {
 
         // Each iteration should be atomic
-        if (!this->indexHandler->removeRelation(r)) {
+        if (!this->indexHandler->removeRelation(*it)) {
             this->error = true;
-            this->errStr = ERR_RM_REL_CMD;
-            return;
+            this->errStr = ERR_BAD_SET;
+            cout << "Could not remove relation, aborting SET: " << this->currAttrEntity << "." << this->currAttribute << endl;
+            continue;
         }
 
         // Does the update entity match the left hand entity?
         if (this->currAttrEntity.compare((*it)[JSON_ATTR_REL_ENTL].asCString()) == 0) {
+
+            // First ensure that the attribute in fact exists for the specified entity
             if (!(*it)[JSON_ATTR_REL_FIELDSL].isMember(this->currAttribute)) {
                 this->indexHandler->writeRelation(r);   // Write back the original relation
-                cout << "Attribute not found in SET: " << this->currAttrEntity << "." << this->currAttribute << endl; // DEBUG
+                cout << "Attribute not found in SET: " << this->currAttrEntity << "." << this->currAttribute << endl;
                 continue;
             }
-            // TODO - check value against attribute type
-            (*it)[JSON_ATTR_REL_FIELDSL][this->currAttribute] = this->currValue;
+
+            // Finally ensure that the field type matches the value before writing
+            if (this->indexHandler->validateEntityFieldType(this->currAttrEntity, this->currAttribute, this->currValue))
+                (*it)[JSON_ATTR_REL_FIELDSL][this->currAttribute] = this->currValue;
+                goodSet = true;
+            else {
+                this->error = true;
+                this->errStr = ERR_BAD_SET;
+                cout << "Invalid type: " << this->currAttrEntity << "." << this->currAttribute << " to " << this->currValue << endl;
+            }
 
         // Does it match the right-hand entity?
         } else if (this->currAttrEntity.compare((*it)[JSON_ATTR_REL_ENTR].asCString()) == 0) {
+
+            // First ensure that the attribute in fact exists for the specified entity
             if (!(*it)[JSON_ATTR_REL_FIELDSR].isMember(this->currAttribute)) {
                 this->indexHandler->writeRelation(r);   // Write back the original relation
-                cout << "Attribute not found in SET: " << this->bufferAttrEntity << "." << this->currAttribute << endl; // DEBUG
+                cout << "Attribute not found in SET: " << this->bufferAttrEntity << "." << this->currAttribute << endl;
                 continue;
             }
-            // TODO - check value against attribute type
-            (*it)[JSON_ATTR_REL_FIELDSR][this->currAttribute] = this->currValue;
+
+            // Finally ensure that the field type matches the value before writing
+            if (this->indexHandler->validateEntityFieldType(this->currAttrEntity, this->currAttribute, this->currValue))
+                (*it)[JSON_ATTR_REL_FIELDSR][this->currAttribute] = this->currValue;
+                goodSet = true;
+            else {
+                this->error = true;
+                this->errStr = ERR_BAD_SET;
+                cout << "Invalid type: " << this->currAttrEntity << "." << this->currAttribute << " to " << this->currValue << endl;
+            }
         }
-        this->indexHandler->writeRelation(r);
-        cout << "DEBUG -- SET attribute: " << this->currAttrEntity << "." << this->currAttribute << " to " << this->currValue << endl; // DEBUG
+
+        if (this->indexHandler->writeRelation(*it) && goodSet) {
+            cout << "SET attribute: " << this->currAttrEntity << "." << this->currAttribute << " to " << this->currValue << endl;
+        } else {
+            this->error = true;
+            this->errStr = ERR_BAD_SET;
+            cout << "Could not write back relation: " << this->currAttrEntity << "." << this->currAttribute << " to " << this->currValue << endl;
+        }
+
+        goodSet = false;
     }
 }
 
