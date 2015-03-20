@@ -981,7 +981,7 @@ void Parser::processSET() {
             (*it)[JSON_ATTR_REL_FIELDSR][this->currAttribute] = this->currValue;
         }
         this->indexHandler->writeRelation(*it);
-        cout << "DEBUG -- SET attribute: " << this->bufferAttrEntity << "." << this->bufferAttribute << " to " << this->currValue << endl; // DEBUG
+        cout << "DEBUG -- SET attribute: " << this->currAttrEntity << "." << this->currAttribute << " to " << this->currValue << endl; // DEBUG
     }
 }
 
