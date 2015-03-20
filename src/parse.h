@@ -951,29 +951,34 @@ void Parser::processSET() {
     AttributeBucket ab;
     ab.addAttributes(this->currAttrEntity, *(this->bufferValues), *(this->bufferTypes));
 
-    std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(this->bufferAttrEntity, this->currAttrEntity);
+    std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(this->bufferEntity, this->currEntity);
     this->indexHandler->filterRelations(relations, ab);
 
     // Call sampling method from Bayes for relations
     for (std::vector<Json::Value>::iterator it = relations.begin() ; it != relations.end(); ++it) {
+
         // Each iteration should be atomic
         this->indexHandler->removeRelation(*it);
-        if (this->bufferAttrEntity.compare((*it)[JSON_ATTR_REL_ENTL].asCString()) == 0) {
-            if (!(*it)[JSON_ATTR_REL_FIELDSL].isMember(this->bufferAttribute)) {
+
+        // Does the update entity match the left hand entity?
+        if (this->currAttrEntity.compare((*it)[JSON_ATTR_REL_ENTL].asCString()) == 0) {
+            if (!(*it)[JSON_ATTR_REL_FIELDSL].isMember(this->currAttribute)) {
                 // TODO - handle error mode
-                cout << "Attribute not found in SET: " << this->bufferAttrEntity << "." << this->bufferAttribute << endl; // DEBUG
+                cout << "Attribute not found in SET: " << this->currAttrEntity << "." << this->currAttribute << endl; // DEBUG
                 continue;
             }
             // TODO - check value against attribute type
-            (*it)[JSON_ATTR_REL_FIELDSL][this->bufferAttribute] = this->currValue;
-        } else if (this->bufferAttrEntity.compare((*it)[JSON_ATTR_REL_ENTR].asCString()) == 0) {
-            if (!(*it)[JSON_ATTR_REL_FIELDSR].isMember(this->bufferAttribute)) {
+            (*it)[JSON_ATTR_REL_FIELDSL][this->currAttribute] = this->currValue;
+
+        // Does it match the right-hand entity?
+        } else if (this->currAttrEntity.compare((*it)[JSON_ATTR_REL_ENTR].asCString()) == 0) {
+            if (!(*it)[JSON_ATTR_REL_FIELDSR].isMember(this->currAttribute)) {
                 // TODO - handle error mode
-                cout << "Attribute not found in SET: " << this->bufferAttrEntity << "." << this->bufferAttribute << endl; // DEBUG
+                cout << "Attribute not found in SET: " << this->bufferAttrEntity << "." << this->currAttribute << endl; // DEBUG
                 continue;
             }
             // TODO - check value against attribute type
-            (*it)[JSON_ATTR_REL_FIELDSR][this->bufferAttribute] = this->currValue;
+            (*it)[JSON_ATTR_REL_FIELDSR][this->currAttribute] = this->currValue;
         }
         this->indexHandler->writeRelation(*it);
         cout << "DEBUG -- SET attribute: " << this->bufferAttrEntity << "." << this->bufferAttribute << " to " << this->currValue << endl; // DEBUG
