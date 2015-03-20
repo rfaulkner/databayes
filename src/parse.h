@@ -958,12 +958,16 @@ void Parser::processSET() {
     for (std::vector<Json::Value>::iterator it = relations.begin() ; it != relations.end(); ++it) {
 
         // Each iteration should be atomic
-        this->indexHandler->removeRelation(*it);
+        if (!this->indexHandler->removeRelation(r)) {
+            this->error = true;
+            this->errStr = ERR_RM_REL_CMD;
+            return;
+        }
 
         // Does the update entity match the left hand entity?
         if (this->currAttrEntity.compare((*it)[JSON_ATTR_REL_ENTL].asCString()) == 0) {
             if (!(*it)[JSON_ATTR_REL_FIELDSL].isMember(this->currAttribute)) {
-                // TODO - handle error mode
+                this->indexHandler->writeRelation(r);   // Write back the original relation
                 cout << "Attribute not found in SET: " << this->currAttrEntity << "." << this->currAttribute << endl; // DEBUG
                 continue;
             }
@@ -973,14 +977,14 @@ void Parser::processSET() {
         // Does it match the right-hand entity?
         } else if (this->currAttrEntity.compare((*it)[JSON_ATTR_REL_ENTR].asCString()) == 0) {
             if (!(*it)[JSON_ATTR_REL_FIELDSR].isMember(this->currAttribute)) {
-                // TODO - handle error mode
+                this->indexHandler->writeRelation(r);   // Write back the original relation
                 cout << "Attribute not found in SET: " << this->bufferAttrEntity << "." << this->currAttribute << endl; // DEBUG
                 continue;
             }
             // TODO - check value against attribute type
             (*it)[JSON_ATTR_REL_FIELDSR][this->currAttribute] = this->currValue;
         }
-        this->indexHandler->writeRelation(*it);
+        this->indexHandler->writeRelation(r);
         cout << "DEBUG -- SET attribute: " << this->currAttrEntity << "." << this->currAttribute << " to " << this->currValue << endl; // DEBUG
     }
 }
