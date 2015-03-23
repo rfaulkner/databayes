@@ -80,6 +80,7 @@ public:
 
     std::string generateEntityKey(std::string);
     std::string generateRelationKey(std::string, std::string, std::string);
+    std::string generateRelationHash(Json::Value);
 
     bool validateEntityFieldType(std::string, std::string, std::string);
     std::string orderPairAlphaNumeric(std::string, std::string);
@@ -103,6 +104,9 @@ std::string IndexHandler::generateRelationKey(std::string entityL, std::string e
     std::string delim(KEY_DELIMETER);
     return rel + delim + this->orderPairAlphaNumeric(entityL, entityR) + delim + hash;
 }
+
+/** Generates a hash from the JSON representation of a relation */
+std::string generateRelationHash(Json::Value val) { return val.toStyledString(); }
 
 /** Handles forming the json for field vectors in the index */
 void IndexHandler::buildFieldJSONDefinition(Json::Value& value, defpair& fields) {
