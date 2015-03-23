@@ -971,16 +971,16 @@ void Parser::processSET() {
 
             // First ensure that the attribute in fact exists for the specified entity
             if (!(*it)[JSON_ATTR_REL_FIELDSL].isMember(this->currAttribute)) {
-                this->indexHandler->writeRelation(r);   // Write back the original relation
+                this->indexHandler->writeRelation(*it);   // Write back the original relation
                 cout << "Attribute not found in SET: " << this->currAttrEntity << "." << this->currAttribute << endl;
                 continue;
             }
 
             // Finally ensure that the field type matches the value before writing
-            if (this->indexHandler->validateEntityFieldType(this->currAttrEntity, this->currAttribute, this->currValue))
+            if (this->indexHandler->validateEntityFieldType(this->currAttrEntity, this->currAttribute, this->currValue)) {
                 (*it)[JSON_ATTR_REL_FIELDSL][this->currAttribute] = this->currValue;
                 goodSet = true;
-            else {
+            } else {
                 this->error = true;
                 this->errStr = ERR_BAD_SET;
                 cout << "Invalid type: " << this->currAttrEntity << "." << this->currAttribute << " to " << this->currValue << endl;
@@ -991,16 +991,16 @@ void Parser::processSET() {
 
             // First ensure that the attribute in fact exists for the specified entity
             if (!(*it)[JSON_ATTR_REL_FIELDSR].isMember(this->currAttribute)) {
-                this->indexHandler->writeRelation(r);   // Write back the original relation
+                this->indexHandler->writeRelation(*it);   // Write back the original relation
                 cout << "Attribute not found in SET: " << this->bufferAttrEntity << "." << this->currAttribute << endl;
                 continue;
             }
 
             // Finally ensure that the field type matches the value before writing
-            if (this->indexHandler->validateEntityFieldType(this->currAttrEntity, this->currAttribute, this->currValue))
+            if (this->indexHandler->validateEntityFieldType(this->currAttrEntity, this->currAttribute, this->currValue)) {
                 (*it)[JSON_ATTR_REL_FIELDSR][this->currAttribute] = this->currValue;
                 goodSet = true;
-            else {
+            } else {
                 this->error = true;
                 this->errStr = ERR_BAD_SET;
                 cout << "Invalid type: " << this->currAttrEntity << "." << this->currAttribute << " to " << this->currValue << endl;
