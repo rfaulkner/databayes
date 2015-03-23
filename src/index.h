@@ -106,7 +106,7 @@ std::string IndexHandler::generateRelationKey(std::string entityL, std::string e
 }
 
 /** Generates a hash from the JSON representation of a relation */
-std::string generateRelationHash(Json::Value val) { return val.toStyledString(); }
+std::string generateRelationHash(Json::Value val) { return md5(val.toStyledString()); }
 
 /** Handles forming the json for field vectors in the index */
 void IndexHandler::buildFieldJSONDefinition(Json::Value& value, defpair& fields) {
@@ -162,7 +162,7 @@ bool IndexHandler::removeRelation(Relation& rel) {
 bool IndexHandler::removeRelation(Json::Value& jsonVal) {
 
     this->redisHandler->connect();
-    std::string key = this->generateRelationKey(jsonVal[JSON_ATTR_REL_ENTL].asCString(), jsonVal[JSON_ATTR_REL_ENTR].asCString(), md5(jsonVal.toStyledString()));
+    std::string key = this->generateRelationKey(jsonVal[JSON_ATTR_REL_ENTL].asCString(), jsonVal[JSON_ATTR_REL_ENTR].asCString(), generateRelationHash(jsonVal));
     Json::Value jsonValReal;
     this->fetchRaw(key, jsonValReal);   // Fetch the actual entry being removed
 
@@ -192,7 +192,7 @@ bool IndexHandler::writeRelation(Relation& rel) {
 bool IndexHandler::writeRelation(Json::Value& jsonVal) {
     std::string key;
     this->redisHandler->connect();
-    key = this->generateRelationKey(std::string(jsonVal[JSON_ATTR_REL_ENTL].asCString()), std::string(jsonVal[JSON_ATTR_REL_ENTR].asCString()), md5(jsonVal.toStyledString()));
+    key = this->generateRelationKey(std::string(jsonVal[JSON_ATTR_REL_ENTL].asCString()), std::string(jsonVal[JSON_ATTR_REL_ENTR].asCString()), generateRelationHash(jsonVal));
 
     if (this->redisHandler->exists(key)) {
         if (this->fetchRaw(key, jsonVal)) {
