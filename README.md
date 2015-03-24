@@ -56,6 +56,8 @@ Parser
 
 The general parser syntax has the following definition:
 
+ *  Implements an SLR parser. Valid Statements:
+ *
  *      (1) ADD REL E1(x1=vx1[, x2=vx2, ..]) E2(y1=vy1[, y2=vy2, ..])
  *      (2) GEN E1[.A_E1] GIVEN E2 [ATTR Ai=Vi[, ...]]
  *      (3) INF E1.A_E1 GIVEN E2 [ATTR Ai=Vi[, ...]]
@@ -64,7 +66,18 @@ The general parser syntax has the following definition:
  *      (6) LST ENT [E1]*
  *      (7) RM REL E1(x_1 [, x_2, ..]) E2(y_1 [, y_2, ..])
  *      (8) RM ENT [E1]*
- *      (9) SET E.A AS V
+ *      (9) SET E.A FOR E1(x1=vx1[, x2=vx2, ..]) E2(y1=vy1[, y2=vy2, ..]) AS V
+ *
+ *  (1) provides a facility for insertion into the system
+ *  (2) generate a sample conditional on a set of constraints
+ *  (3) infer an expected value for an attribute
+ *  (4) define a new entity
+ *  (5) list relations optionally dependent relational entities
+ *  (6) list entities.  Either specify them or simply list all.
+ *  (7) remove a relation
+ *  (8) remove an entity
+ *  (9) set an attribute value
+
 
 More details on how to use these to build entities, relations and how to use generative commands to sample.
 
