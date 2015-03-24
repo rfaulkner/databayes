@@ -106,7 +106,31 @@ std::string IndexHandler::generateRelationKey(std::string entityL, std::string e
 }
 
 /** Generates a hash from the JSON representation of a relation */
-std::string generateRelationHash(Json::Value val) { return md5(val.toStyledString()); }
+std::string IndexHandler::generateRelationHash(Json::Value val) {
+    std::string out;
+    std::vector<std::string> keys;
+
+    out += std::string(val[JSON_ATTR_REL_ENTL].asCString());
+    out += std::string(val[JSON_ATTR_REL_ENTR].asCString());
+    out += std::string(val[JSON_ATTR_REL_CAUSE].asCString());
+
+    // Concat left field types and values
+    keys = val[JSON_ATTR_REL_FIELDSL].getMemberNames();
+    for (std::vector<std::string>::iterator it = keys.begin(); it != keys.end(); ++it) {
+        out += std::string(val[JSON_ATTR_REL_FIELDSL][std::string(JSON_ATTR_REL_TYPE_PREFIX) + *it].asCString());
+        out += std::string(val[JSON_ATTR_REL_FIELDSL][*it].asCString());
+    }
+
+    // Concat right field types and values
+    keys = val[JSON_ATTR_REL_FIELDSR].getMemberNames();
+    for (std::vector<std::string>::iterator it = keys.begin(); it != keys.end(); ++it) {
+        out += std::string(val[JSON_ATTR_REL_FIELDSR][std::string(JSON_ATTR_REL_TYPE_PREFIX) + *it].asCString());
+        out += std::string(val[JSON_ATTR_REL_FIELDSR][*it].asCString());
+
+    }
+
+    return md5(out);
+}
 
 /** Handles forming the json for field vectors in the index */
 void IndexHandler::buildFieldJSONDefinition(Json::Value& value, defpair& fields) {
