@@ -82,6 +82,44 @@ The general parser syntax has the following definition:
 More details on how to use these to build entities, relations and how to use generative commands to sample.
 
 
+Implemented Functionality
+-------------------------
+
+ - [ ] Parser Command: Defining Entities
+ - [ ] Parser Command: Adding Relations
+ - [ ] Parser Command: Removing Entities
+ - [ ] Parser Command: Removing Relations
+ - [ ] Parser Command: Setting Attribute Values
+ - [ ] Parser Command: Listing Existing Entities
+ - [ ] Parser Command: Listing Existing Relations
+ - [ ] Parser Command: Generating Relation Samples
+ - [ ] Parser Command: Inferring Expeceted Value of Relation Samples
+ - [ ] Object Modeling: Entities
+ - [ ] Object Modeling: Relations
+ - [ ] Object Modeling: Attributes
+ - [ ] Object Modeling: Attribute based collections
+ - [ ] Object Modeling: JSON Representation of Entities
+ - [ ] Object Modeling: JSON Representation of Relations
+ - [ ] Object Modeling: JSON Representation of Relations with type data
+ - [ ] Object Modeling: Mapping among JSON and object model representations for entities
+ - [ ] Object Modeling: Mapping among JSON and object model representations for relations
+ - [ ] Object Modeling: Define attribute types
+ - [ ] Object Modeling: Attribute type validation
+ - [ ] Object Modeling: Counts for relations
+ - [ ] Storage Modeling: Entity Storage
+ - [ ] Storage Modeling: Relation Storage
+ - [ ] Storage Modeling: Type Storage
+ - [ ] Probabilistic Modeling: Generate Marginal Distributions
+ - [ ] Probabilistic Modeling: Generate Joint Distributions
+ - [ ] Probabilistic Modeling: Generate Conditional Distributions
+ - [ ] Probabilistic Modeling: Sampling Marginal Distributions
+ - [ ] Probabilistic Modeling: Sampling Joint Distributions
+ - [ ] Probabilistic Modeling: Sampling Joint Distributions given causality
+ - [ ] Probabilistic Modeling: Expectation of attribute values across a relation set
+ - [ ] Probabilistic Modeling: Counting Relations
+ - [ ] Probabilistic Modeling: Counting Entity occurrences in Relation sets
+
+
 Examples
 --------
 
