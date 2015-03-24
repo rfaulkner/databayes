@@ -68,15 +68,24 @@ The general parser syntax has the following definition:
     (8) RM ENT [E1]*
     (9) SET E.A FOR E1(x1=vx1[, x2=vx2, ..]) E2(y1=vy1[, y2=vy2, ..]) AS V
 
- (1) provides a facility for insertion into the system
- (2) generate a sample conditional on a set of constraints
- (3) infer an expected value for an attribute
- (4) define a new entity
- (5) list relations optionally dependent relational entities
- (6) list entities.  Either specify them or simply list all.
- (7) remove a relation
- (8) remove an entity
- (9) set an attribute value
+(1) provides a facility for insertion into the system
+
+(2) generate a sample conditional on a set of constraints
+
+(3) infer an expected value for an attribute
+
+(4) define a new entity
+
+(5) list relations optionally dependent relational entities
+
+(6) list entities.  Either specify them or simply list all.
+
+(7) remove a relation
+
+(8) remove an entity
+
+(9) set an attribute value
+
 
 More details on how to use these to build entities, relations and how to use generative commands to sample.
 
