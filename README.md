@@ -56,28 +56,27 @@ Parser
 
 The general parser syntax has the following definition:
 
- *  Implements an SLR parser. Valid Statements:
- *
- *      (1) ADD REL E1(x1=vx1[, x2=vx2, ..]) E2(y1=vy1[, y2=vy2, ..])
- *      (2) GEN E1[.A_E1] GIVEN E2 [ATTR Ai=Vi[, ...]]
- *      (3) INF E1.A_E1 GIVEN E2 [ATTR Ai=Vi[, ...]]
- *      (4) DEF E1[(x1_type-x1, x2_type-x2, ...)]
- *      (5) LST REL [E1 [E2]]
- *      (6) LST ENT [E1]*
- *      (7) RM REL E1(x_1 [, x_2, ..]) E2(y_1 [, y_2, ..])
- *      (8) RM ENT [E1]*
- *      (9) SET E.A FOR E1(x1=vx1[, x2=vx2, ..]) E2(y1=vy1[, y2=vy2, ..]) AS V
- *
- *  (1) provides a facility for insertion into the system
- *  (2) generate a sample conditional on a set of constraints
- *  (3) infer an expected value for an attribute
- *  (4) define a new entity
- *  (5) list relations optionally dependent relational entities
- *  (6) list entities.  Either specify them or simply list all.
- *  (7) remove a relation
- *  (8) remove an entity
- *  (9) set an attribute value
+ Implements an SLR parser. Valid Statements:
 
+    (1) ADD REL E1(x1=vx1[, x2=vx2, ..]) E2(y1=vy1[, y2=vy2, ..])
+    (2) GEN E1[.A_E1] GIVEN E2 [ATTR Ai=Vi[, ...]]
+    (3) INF E1.A_E1 GIVEN E2 [ATTR Ai=Vi[, ...]]
+    (4) DEF E1[(x1_type-x1, x2_type-x2, ...)]
+    (5) LST REL [E1 [E2]]
+    (6) LST ENT [E1]*
+    (7) RM REL E1(x_1 [, x_2, ..]) E2(y_1 [, y_2, ..])
+    (8) RM ENT [E1]*
+    (9) SET E.A FOR E1(x1=vx1[, x2=vx2, ..]) E2(y1=vy1[, y2=vy2, ..]) AS V
+
+ (1) provides a facility for insertion into the system
+ (2) generate a sample conditional on a set of constraints
+ (3) infer an expected value for an attribute
+ (4) define a new entity
+ (5) list relations optionally dependent relational entities
+ (6) list entities.  Either specify them or simply list all.
+ (7) remove a relation
+ (8) remove an entity
+ (9) set an attribute value
 
 More details on how to use these to build entities, relations and how to use generative commands to sample.
 
@@ -85,39 +84,39 @@ More details on how to use these to build entities, relations and how to use gen
 Implemented Functionality
 -------------------------
 
- - [ ] Parser Command: Defining Entities
- - [ ] Parser Command: Adding Relations
- - [ ] Parser Command: Removing Entities
- - [ ] Parser Command: Removing Relations
- - [ ] Parser Command: Setting Attribute Values
- - [ ] Parser Command: Listing Existing Entities
- - [ ] Parser Command: Listing Existing Relations
- - [ ] Parser Command: Generating Relation Samples
- - [ ] Parser Command: Inferring Expeceted Value of Relation Samples
- - [ ] Object Modeling: Entities
- - [ ] Object Modeling: Relations
- - [ ] Object Modeling: Attributes
- - [ ] Object Modeling: Attribute based collections
- - [ ] Object Modeling: JSON Representation of Entities
- - [ ] Object Modeling: JSON Representation of Relations
- - [ ] Object Modeling: JSON Representation of Relations with type data
- - [ ] Object Modeling: Mapping among JSON and object model representations for entities
- - [ ] Object Modeling: Mapping among JSON and object model representations for relations
- - [ ] Object Modeling: Define attribute types
- - [ ] Object Modeling: Attribute type validation
- - [ ] Object Modeling: Counts for relations
- - [ ] Storage Modeling: Entity Storage
- - [ ] Storage Modeling: Relation Storage
- - [ ] Storage Modeling: Type Storage
- - [ ] Probabilistic Modeling: Generate Marginal Distributions
- - [ ] Probabilistic Modeling: Generate Joint Distributions
- - [ ] Probabilistic Modeling: Generate Conditional Distributions
- - [ ] Probabilistic Modeling: Sampling Marginal Distributions
- - [ ] Probabilistic Modeling: Sampling Joint Distributions
- - [ ] Probabilistic Modeling: Sampling Joint Distributions given causality
- - [ ] Probabilistic Modeling: Expectation of attribute values across a relation set
- - [ ] Probabilistic Modeling: Counting Relations
- - [ ] Probabilistic Modeling: Counting Entity occurrences in Relation sets
+ - [x] Parser Command: Defining Entities
+ - [x] Parser Command: Adding Relations
+ - [x] Parser Command: Removing Entities
+ - [x] Parser Command: Removing Relations
+ - [x] Parser Command: Setting Attribute Values
+ - [x] Parser Command: Listing Existing Entities
+ - [x] Parser Command: Listing Existing Relations
+ - [x] Parser Command: Generating Relation Samples
+ - [x] Parser Command: Inferring Expeceted Value of Relation Samples
+ - [x] Object Modeling: Entities
+ - [x] Object Modeling: Relations
+ - [x] Object Modeling: Attributes
+ - [x] Object Modeling: Attribute based collections
+ - [x] Object Modeling: JSON Representation of Entities
+ - [x] Object Modeling: JSON Representation of Relations
+ - [x] Object Modeling: JSON Representation of Relations with type data
+ - [x] Object Modeling: Mapping among JSON and object model representations for entities
+ - [x] Object Modeling: Mapping among JSON and object model representations for relations
+ - [x] Object Modeling: Define attribute types
+ - [x] Object Modeling: Attribute type validation
+ - [x] Object Modeling: Counts for relations
+ - [x] Storage Modeling: Entity Storage
+ - [x] Storage Modeling: Relation Storage
+ - [x] Storage Modeling: Type Storage
+ - [x] Probabilistic Modeling: Generate Marginal Distributions
+ - [x] Probabilistic Modeling: Generate Joint Distributions
+ - [x] Probabilistic Modeling: Generate Conditional Distributions
+ - [x] Probabilistic Modeling: Sampling Marginal Distributions
+ - [x] Probabilistic Modeling: Sampling Joint Distributions
+ - [x] Probabilistic Modeling: Sampling Joint Distributions given causality
+ - [x] Probabilistic Modeling: Expectation of attribute values across a relation set
+ - [x] Probabilistic Modeling: Counting Relations
+ - [x] Probabilistic Modeling: Counting Entity occurrences in Relation sets
 
 
 Examples
