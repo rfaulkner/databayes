@@ -117,16 +117,19 @@ std::string IndexHandler::generateRelationHash(Json::Value val) {
     // Concat left field types and values
     keys = val[JSON_ATTR_REL_FIELDSL].getMemberNames();
     for (std::vector<std::string>::iterator it = keys.begin(); it != keys.end(); ++it) {
-        out += std::string(val[JSON_ATTR_REL_FIELDSL][std::string(JSON_ATTR_REL_TYPE_PREFIX) + *it].asCString());
-        out += std::string(val[JSON_ATTR_REL_FIELDSL][*it].asCString());
+        if (it->compare(JSON_ATTR_FIELDS_COUNT) != 0) {
+            out += *it;
+            out += std::string(val[JSON_ATTR_REL_FIELDSL][*it].asCString());
+        }
     }
 
     // Concat right field types and values
     keys = val[JSON_ATTR_REL_FIELDSR].getMemberNames();
     for (std::vector<std::string>::iterator it = keys.begin(); it != keys.end(); ++it) {
-        out += std::string(val[JSON_ATTR_REL_FIELDSR][std::string(JSON_ATTR_REL_TYPE_PREFIX) + *it].asCString());
-        out += std::string(val[JSON_ATTR_REL_FIELDSR][*it].asCString());
-
+        if (it->compare(JSON_ATTR_FIELDS_COUNT) != 0) {
+            out += *it;
+            out += std::string(val[JSON_ATTR_REL_FIELDSR][*it].asCString());
+        }
     }
 
     return md5(out);
