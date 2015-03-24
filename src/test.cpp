@@ -125,12 +125,15 @@ void testJSONRelationEncoding() {
     std::vector<std::pair<ColumnBase, std::string>> fields_ent_2;
     std::vector<std::pair<std::string, std::string>> fields_rel_1;
     std::vector<std::pair<std::string, std::string>> fields_rel_2;
+    std::unordered_map<std::string, std::string> types_rel_1, types_rel_2;
 
     // Popualate fields
     fields_ent_1.push_back(std::make_pair(IntegerColumn(), "a"));
     fields_ent_2.push_back(std::make_pair(StringColumn(), "b"));
     fields_rel_1.push_back(std::make_pair("a", "1"));
     fields_rel_2.push_back(std::make_pair("b", "hello"));
+    types_rel_1.insert(std::make_pair("a", COLTYPE_NAME_INT));
+    types_rel_2.insert(std::make_pair("b", COLTYPE_NAME_FLOAT));
 
     // Create entities
     Entity e1("test_1", fields_ent_1), e2("test_2", fields_ent_2);
@@ -138,7 +141,7 @@ void testJSONRelationEncoding() {
     ih.writeEntity(e2);
 
     // Create relation in redis
-    Relation r("test_1", "test_2", fields_rel_1, fields_rel_2);
+    Relation r("test_1", "test_2", fields_rel_1, fields_rel_2, types_rel_1, types_rel_2);
     ih.writeRelation(r);
 
     // Fetch the entity representation
@@ -224,7 +227,7 @@ void testCountRelations() {
     Bayes bayes;
     IndexHandler ih;
     std::vector<Json::Value> ret;
-    std::vector<std::pair<ColumnBase*, std::string>> fields_ent;
+    std::vector<std::pair<ColumnBase, std::string>> fields_ent;
     std::vector<std::pair<std::string, std::string>> fields_rel;
     std::unordered_map<std::string, std::string> types;
 
@@ -283,7 +286,7 @@ void testComputeMarginal() {
     Bayes bayes;
     IndexHandler ih;
     std::vector<Json::Value> ret;
-    std::vector<std::pair<ColumnBase*, std::string>> fields_ent;
+    std::vector<std::pair<ColumnBase, std::string>> fields_ent;
     std::vector<std::pair<std::string, std::string>> fields_rel;
     std::unordered_map<std::string, std::string> types;
 
@@ -373,7 +376,7 @@ void testRelation_toJson() {
     right.push_back(std::make_pair("y", "2"));
     typesL.insert(std::make_pair("x", COLTYPE_NAME_INT));
     typesR.insert(std::make_pair("y", COLTYPE_NAME_INT));
-    Relation rel("x", "y", left, right);
+    Relation rel("x", "y", left, right, typesL, typesR);
     Json::Value json = rel.toJson();
     assert(std::atoi(json[JSON_ATTR_REL_FIELDSL]["x"].asCString()) == 1 && std::atoi(json[JSON_ATTR_REL_FIELDSR]["y"].asCString()) == 2);
 }
