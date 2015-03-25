@@ -71,12 +71,12 @@ long Bayes::countEntityInRelations(std::string e, AttributeBucket& attrs, bool c
     // Count the relations
     long total_relations = 0;
     for (std::vector<Json::Value>::iterator it = relations_left.begin(); it != relations_left.end(); ++it) {
-        if (std::strcmp((*it)[JSON_ATTR_REL_CAUSE].asCString(), e.c_str()) != 0) continue;
+        if (std::strcmp((*it)[JSON_ATTR_REL_CAUSE].asCString(), e.c_str()) != 0 && causal) continue;
         total_relations += (*it)[JSON_ATTR_REL_COUNT].asInt();
     }
 
     for (std::vector<Json::Value>::iterator it = relations_right.begin(); it != relations_right.end(); ++it) {
-        if (std::strcmp((*it)[JSON_ATTR_REL_CAUSE].asCString(), e.c_str()) != 0) continue;
+        if (std::strcmp((*it)[JSON_ATTR_REL_CAUSE].asCString(), e.c_str()) != 0 && causal) continue;
         total_relations+= (*it)[JSON_ATTR_REL_COUNT].asInt();
     }
 
