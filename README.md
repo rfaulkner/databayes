@@ -81,44 +81,6 @@ The general parser syntax has the following definition:
 More details on how to use these to build entities, relations and how to use generative commands to sample.
 
 
-Implemented Functionality
--------------------------
-
- - [x] Parser Command: Defining Entities
- - [x] Parser Command: Adding Relations
- - [x] Parser Command: Removing Entities
- - [x] Parser Command: Removing Relations
- - [x] Parser Command: Setting Attribute Values
- - [x] Parser Command: Listing Existing Entities
- - [x] Parser Command: Listing Existing Relations
- - [x] Parser Command: Generating Relation Samples
- - [x] Parser Command: Inferring Expeceted Value of Relation Samples
- - [x] Object Modeling: Entities
- - [x] Object Modeling: Relations
- - [x] Object Modeling: Attributes
- - [x] Object Modeling: Attribute based collections
- - [x] Object Modeling: JSON Representation of Entities
- - [x] Object Modeling: JSON Representation of Relations
- - [x] Object Modeling: JSON Representation of Relations with type data
- - [x] Object Modeling: Mapping among JSON and object model representations for entities
- - [x] Object Modeling: Mapping among JSON and object model representations for relations
- - [x] Object Modeling: Define attribute types
- - [x] Object Modeling: Attribute type validation
- - [x] Object Modeling: Counts for relations
- - [x] Storage Modeling: Entity Storage
- - [x] Storage Modeling: Relation Storage
- - [x] Storage Modeling: Type Storage
- - [x] Probabilistic Modeling: Generate Marginal Distributions
- - [x] Probabilistic Modeling: Generate Joint Distributions
- - [x] Probabilistic Modeling: Generate Conditional Distributions
- - [x] Probabilistic Modeling: Sampling Marginal Distributions
- - [x] Probabilistic Modeling: Sampling Joint Distributions
- - [x] Probabilistic Modeling: Sampling Joint Distributions given causality
- - [x] Probabilistic Modeling: Expectation of attribute values across a relation set
- - [x] Probabilistic Modeling: Counting Relations
- - [x] Probabilistic Modeling: Counting Entity occurrences in Relation sets
-
-
 Examples
 --------
 
@@ -172,6 +134,61 @@ Allows client to remove relations from the database - WARNING, this will remove 
     databayes > rm rel x(a=1, b=2.1) y(c=22, d=0.3)
 
 This will remove all relations whose attributes match the assignments.
+
+
+Functionality Checklist
+-----------------------
+
+ - [x] CLI: Token Parsing
+ - [x] CLI: Parsing Loop to process input commands
+ - [ ] CLI: Cursor navigation with arrow keys
+ - [ ] CLI: Regenerate Last Command
+ - [ ] CLI: Handle arbitrary amounts of whitespace
+ - [x] Parser Modelling: Parser class to maintain internal state of command execution
+ - [x] Parser Modelling: Command codes and State Modeling
+ - [x] Parser Modelling: Error codes and Error handling Login
+ - [x] Parser Modelling: Termination loop to handle processing of parsed command by calling the index
+ - [x] Parser Command: Defining Entities
+ - [x] Parser Command: Adding Relations
+ - [x] Parser Command: Removing Entities
+ - [x] Parser Command: Removing Relations
+ - [x] Parser Command: Setting Attribute Values
+ - [x] Parser Command: Listing Existing Entities
+ - [x] Parser Command: Listing Existing Relations
+ - [x] Parser Command: Generating Relation Samples
+ - [ ] Parser Command: Inferring Expected Value of Relation Samples
+ - [x] Object Modeling: Entities
+ - [x] Object Modeling: Relations
+ - [x] Object Modeling: Attributes
+ - [x] Object Modeling: Attribute based collections
+ - [x] Object Modeling: JSON Representation of Entities
+ - [x] Object Modeling: JSON Representation of Relations
+ - [x] Object Modeling: JSON Representation of Relations with type data
+ - [x] Object Modeling: Mapping among JSON and object model representations for entities
+ - [x] Object Modeling: Mapping among JSON and object model representations for relations
+ - [x] Object Modeling: Define attribute types
+ - [x] Object Modeling: Attribute type validation
+ - [x] Object Modeling: Counts for relations
+ - [x] Storage Modeling: Entity Storage
+ - [x] Storage Modeling: Relation Storage
+ - [x] Storage Modeling: Type Storage
+ - [x] Storage Modeling: Index to handle mapping, filtering, extracting relation & entity data from memory to the runtime
+ - [x] Storage Modeling: Redis interface for in memory storage
+ - [ ] Storage Modeling: Disk Storage model
+ - [ ] Storage Modeling: Swapping logic for disk storage
+ - [ ] Storage Modeling: Cascading removal of Relations when Entities are removed (NEEDS TESTING)
+ - [x] Probabilistic Modeling: Generate Marginal Distributions
+ - [x] Probabilistic Modeling: Generate Joint Distributions
+ - [x] Probabilistic Modeling: Generate Conditional Distributions
+ - [x] Probabilistic Modeling: Sampling Marginal Distributions
+ - [x] Probabilistic Modeling: Sampling Joint Distributions
+ - [x] Probabilistic Modeling: Sampling Joint Distributions given causality
+ - [x] Probabilistic Modeling: Expectation of attribute values across a relation set
+ - [x] Probabilistic Modeling: Counting Relations
+ - [x] Probabilistic Modeling: Counting Entity occurrences in Relation sets
+ - [x] Hosting: Flask server logic utilizing wsgi_mod with Apache
+ - [ ] Hosting: Mapping scheme from URL to (ADDITIONAL COMMANDS NEED TO BE HANDLED)
+ - [ ] Hosting: HTTP Parsing logic
 
 
 Development
