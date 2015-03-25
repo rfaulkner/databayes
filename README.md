@@ -187,8 +187,10 @@ Functionality Checklist
  - [x] Probabilistic Modeling: Counting Relations
  - [x] Probabilistic Modeling: Counting Entity occurrences in Relation sets
  - [x] Hosting: Flask server logic utilizing wsgi_mod with Apache
- - [ ] Hosting: Mapping scheme from URL to (ADDITIONAL COMMANDS NEED TO BE HANDLED)
- - [ ] Hosting: HTTP Parsing logic
+ - [ ] Hosting: Mapping scheme from URL to Parser Commands (ADDITIONAL COMMANDS NEED TO BE HANDLED)
+ - [x] Hosting: HTTP Parsing logic (see views.py)
+ - [x] Hosting: Broker functionality for parser commands coming in form HTTP (currently uses redis)
+ - [ ] Hosting: Broker serving logic (NEEDS TESTING) 
 
 
 Development
