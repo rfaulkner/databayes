@@ -866,6 +866,7 @@ void Parser::parseGenForm(const std::string inputToken, const std::string err) {
             // Initialize current value list
             if (this->currValues != NULL) delete this->currValues;
             this->currValues = new vector<std::pair<std::string, std::string>>;
+            this->currTypes = new std::unordered_map<std::string, std::string>;
 
             if (inputToken.compare(STR_CMD_ATR) == 0 && !this->parsedIDWord) {
                 this->parsedIDWord = true;
