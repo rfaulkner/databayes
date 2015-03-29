@@ -275,7 +275,6 @@ public:
     }
 
 
-    // TODO - properly handle types here
     bool operator>(const AttributeTuple &rhs) const {
         // convert value to column type and make comparison
         if (strcmp(rhs.type.c_str(), COLTYPE_NAME_INT) == 0) {
@@ -286,8 +285,9 @@ public:
             return this->value.c_str()[0] > rhs.value.c_str()[0];
         }
 
-        // Match by default
-        return true;
+        // For unknown types emit a warning and return false
+        cout << "WARNING: Could not recognize type \"" << rhs.type << "\"for: " << rhs.entity << "." << rhs.attribute << endl;
+        return false;
     }
 
     bool operator<(const AttributeTuple &rhs) const {
@@ -302,7 +302,6 @@ public:
         return *this < rhs || *this == rhs;
     }
 
-    // TODO - properly handle types here
     bool operator==(const AttributeTuple &other) const {
 
         // convert value to column type and make comparison
@@ -314,8 +313,9 @@ public:
             return strcmp(this->value.c_str(), other.value.c_str()) == 0;
         }
 
-        // Match by default
-        return true;
+        // For unknown types emit a warning and return false
+        cout << "WARNING: Could not recognize type \"" << rhs.type << "\"for: " << rhs.entity << "." << rhs.attribute << endl;
+        return false;
     }
 
     bool operator!=(const AttributeTuple &other) const {
