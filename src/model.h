@@ -252,8 +252,8 @@ public:
             this->attribute = json["attribute"].asCString();
             this->value = json["value"].asCString();
             this->comparator = json["comparator"].asCString();
-         } else ;
-            // TODO - handle error
+         } else
+            cout << "ERROR - Could not parse json from formatted string." << endl;
     }
 
     /** Switching logic for attribute tuples - defaults to true in absence of a defined comparator */
