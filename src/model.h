@@ -12,6 +12,7 @@
 #define _model_h
 
 #include "md5.h"
+#include "emit.h"
 
 #include <string>
 #include <unordered_map>
@@ -253,7 +254,7 @@ public:
             this->value = json["value"].asCString();
             this->comparator = json["comparator"].asCString();
          } else
-            cout << "ERROR - Could not parse json from formatted string." << endl;
+            emitCLIError("Could not parse json from formatted string.");
     }
 
     /** Switching logic for attribute tuples - defaults to true in absence of a defined comparator */
@@ -286,7 +287,7 @@ public:
         }
 
         // For unknown types emit a warning and return false
-        cout << "WARNING: Could not recognize type \"" << rhs.type << "\"for: " << rhs.entity << "." << rhs.attribute << endl;
+        emitCLIWarning("Could not recognize type \"" << rhs.type << "\"for: " << rhs.entity << "." << rhs.attribute);
         return false;
     }
 
@@ -314,7 +315,7 @@ public:
         }
 
         // For unknown types emit a warning and return false
-        cout << "WARNING: Could not recognize type \"" << rhs.type << "\"for: " << rhs.entity << "." << rhs.attribute << endl;
+        emitCLIWarning("Could not recognize type \"" << rhs.type << "\"for: " << rhs.entity << "." << rhs.attribute);
         return false;
     }
 
@@ -363,7 +364,7 @@ public:
             attr.fromString(this->attrs[this->makeKey(attr)]);
             return attr;
         } else {
-            cout << "DEBUG -- Couldn't find attribute in bucket." << endl;
+            emitCLIError(Couldn't find attribute in bucket.");
             return AttributeTuple();
         }
     }
