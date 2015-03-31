@@ -17,4 +17,6 @@ void emitCLIWarning(std::string) { cout << std::string("WARN: ") + message << en
 
 void emitCLINote(std::string) { cout << std::string("NOTE: ") + message << endl; }
 
+void emitCLIRelation(Relation r) { cout << r.toJson().toStyledString() << endl; }
+
 #endif
