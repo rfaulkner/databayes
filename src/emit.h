@@ -11,8 +11,10 @@
 #ifndef _emit_h
 #define _emit_h
 
-void emitCLIError(std::string, bool isDebug = false) {}
-void emitCLIWarning(std::string, bool isDebug = false) {}
-void emitCLINote(std::string, bool isDebug = false) {}
+void emitCLIError(std::string message, bool isDebug = false) { cout << std::string("ERR: ") + message << endl; }
+
+void emitCLIWarning(std::string, bool isDebug = false) { cout << std::string("WARN: ") + message << endl; }
+
+void emitCLINote(std::string, bool isDebug = false) { cout << std::string("NOTE: ") + message << endl; }
 
 #endif
