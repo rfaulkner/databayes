@@ -26,3 +26,4 @@
 .vagrant
 .idea
 push.log
+*.swp
