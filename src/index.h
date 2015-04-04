@@ -54,6 +54,7 @@ public:
     bool writeToDisk(int);
 
     bool removeEntity(std::string);
+    bool removeEntity(Entity&);
     bool removeRelation(Relation&);
     bool removeRelation(Json::Value&);
 
@@ -160,6 +161,9 @@ bool IndexHandler::writeEntity(Entity& e) {
     this->redisHandler->write(this->generateEntityKey(e.name), jsonVal.toStyledString());
     return true;
 }
+
+/** Remove entity key from redis */
+bool IndexHandler::removeEntity(Entity& e) { this->removeEntity(e.name); }
 
 /** Remove entity key from redis */
 bool IndexHandler::removeEntity(std::string entity) {
