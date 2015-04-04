@@ -341,7 +341,19 @@ void testComputeMarginal() {
  *  Tests that removal of entities functions properly
  */
 void testEntityRemoval() {
-    // TODO - implement
+    
+    IndexHandler ih;
+    std::vector<std::pair<ColumnBase, std::string>> fields_ent;
+    
+    // declare three entities
+    Entity e("_w", fields_ent);
+
+    if (ih.existsEntity(e)) 
+        ih.removeEntity(e)
+    ih.writeEntity(e);
+    ih.removeEntity(e);
+
+    assert(ih.existsEntity(e));
 }
 
 /**
