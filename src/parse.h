@@ -255,12 +255,12 @@ std::string Parser::parse(const string& s) {
     // Process command tokens
     for (std::vector<string>::iterator it = tokens.begin() ; it != tokens.end(); ++it) {
         if (this->debug)
-            cout << "DEBUG -- Processing input token: " << *it << endl; // DEBUG
+            emitCLINote(std::string("Processing input token: ") + *it);
         result = this->analyze(*it);
 
         // Handle Errors detected during statement parse
         if (this->error) {
-            cout << this->errStr << endl;
+            emitCLIError(this->errStr);
             return this->errStr;
         }
     }
@@ -270,10 +270,10 @@ std::string Parser::parse(const string& s) {
 
     // If the input was not interpreted to any meaningful command
     if (this->state == STATE_START && tokens.size() > 0) {
-        cout << ERR_UNKNOWN_CMD << endl;
+        emitCLIError(std::string(ERR_UNKNOWN_CMD);
         return ERR_UNKNOWN_CMD;
     } else if (this->state != STATE_FINISH && tokens.size() > 0) {
-        cout << ERR_MALFORMED_CMD << endl;
+        emitCLIError(std::string(ERR_MALFORMED_CMD);
         return ERR_MALFORMED_CMD;
     }
 
@@ -290,7 +290,8 @@ std::string Parser::analyze(const std::string& s) {
     std::string sLower = s;
     std::transform(sLower.begin(), sLower.end(), sLower.begin(), ::tolower);
 
-    cout << "DEBUG -- Current state: " << this->state << endl;
+    if (this->debug)
+        emitCLINote(std::string("Current state: ") + this->state);
 
     if (this->state == STATE_START) {
 
@@ -319,7 +320,8 @@ std::string Parser::analyze(const std::string& s) {
             this->macroState = STATE_SET;
         }
 
-        cout << "DEBUG -- Setting Macro state: " << this->macroState << endl;
+        if (this->debug)
+            emitCLINote(std::string("Setting Macro state: ") + this->macroState);
 
     } else if (this->state == STATE_ADD) {
         if (sLower.compare(STR_CMD_REL) == 0)
@@ -414,9 +416,9 @@ std::string Parser::analyze(const std::string& s) {
     if (this->state == STATE_FINISH) {
 
         if (this->debug) {
-            cout << "DEBUG -- Finishing statement processing." << endl;
-            cout << "DEBUG -- Macro state: " << this->macroState << endl;
-            cout << "DEBUG -- Error state: " << this->error << endl;
+            emitCLINote(std::string("Finishing statement processing."));
+            emitCLINote(std::string("Macro state: ") + this->macroState);
+            emitCLINote(std::string("Error state: ") + this->error);
         }
 
         // If there's an error cleanup and bail
@@ -428,7 +430,7 @@ std::string Parser::analyze(const std::string& s) {
             this->rspStr = "Entity successfully added";
 
             if (this->debug)
-                cout << "DEBUG -- Writing definition of entity." << endl;
+                emitCLINote(std::string("Writing definition of entity."));
 
         } else if (this->macroState == STATE_ADD) {
             Relation r(this->bufferEntity, this->currEntity, *(this->bufferValues), *(this->currValues), *(this->bufferTypes), *(this->currTypes));
@@ -436,7 +438,7 @@ std::string Parser::analyze(const std::string& s) {
             this->rspStr = "Relation successfully added";
 
             if (this->debug)
-                cout << "DEBUG -- Adding relation." << endl;
+                emitCLINote(std::string("Adding relation."));
 
         } else if (this->macroState == STATE_GEN) {
             this->processGEN();
@@ -447,18 +449,18 @@ std::string Parser::analyze(const std::string& s) {
         } else if (this->macroState == STATE_LST_ENT) {
 
             std::vector<Json::Value> entities;
-            cout << "Current Matched Entities for \"" << this->currEntity << "\""<< endl;
+            emitCLINote(std::string("Current Matched Entities for \"") + this->currEntity + std::string("\""));
             entities = this->indexHandler->fetchPatternJson(this->indexHandler->generateEntityKey(this->currEntity));
             if (entities.size() != 0)
                 for (std::vector<Json::Value>::iterator it = entities.begin() ; it != entities.end(); ++it)
                     this->rspStr += std::string((*it).toStyledString());
             else
                 this->rspStr = "Not found";
-            cout << this->rspStr << endl;
+            emitCLINote(std::string(this->rspStr));
 
         } else if (this->macroState == STATE_LST_REL) {
             // Get all relations on given entities
-            cout << "Current Matched Relations for \"" << this->bufferEntity << "\" and \"" << this->currEntity << "\"" << endl;
+            emitCLINote(std::string("Current Matched Relations for \"") + this->bufferEntity + std::string("\" and \"") + this->currEntity + std::string("\""));
 
             // Combine buffer and current values
             for (std::vector<std::pair<std::string, std::string>>::iterator it = this->bufferValues->begin() ; it != bufferValues->end(); ++it)
@@ -473,26 +475,27 @@ std::string Parser::analyze(const std::string& s) {
             // for each relation determine if they match the condition criteria
             for (std::vector<Relation>::iterator it = relations.begin() ; it != relations.end(); ++it)
                 this->rspStr += std::string(it->toJson().toStyledString());
-            cout << this->rspStr << endl;
+            emitCLIGeneric(this->rspStr);
 
         } else if (this->macroState == STATE_RM_REL) {
             // Handle the logic for the removal of matching relations
             Relation r(this->bufferEntity, this->currEntity, *(this->bufferValues), *(this->currValues), *(this->bufferTypes), *(this->currTypes));
             if (this->indexHandler->removeRelation(r)) {
-                this->rspStr = "Relation removed";
+                emitCLINote("Relation removed");
             } else {
-                this->rspStr = ERR_RM_REL_CMD;
+                this->error = true;
+                this->errStr = ERR_RM_REL_CMD;
             }
-            cout << this->rspStr << endl;
 
         } else if (this->macroState == STATE_RM) {
             // Handle the logic for the removal of matching entities
             if (this->indexHandler->removeEntity(this->currEntity)) {
-                this->rspStr = "Entity removed";
+                emitCLINote("Entity removed");
             } else {
-                this->rspStr = ERR_RM_ENT_CMD;
+                this->error = true;
+                this->errStr = ERR_RM_ENT_CMD;
             }
-            cout << this->rspStr << endl;
+
         } else if (this->macroState == STATE_SET) {
             this->processSET();
         }
@@ -510,7 +513,7 @@ std::string Parser::analyze(const std::string& s) {
  */
 void Parser::cleanup() {
     if (this->debug)
-        cout << "DEBUG -- cleanup. freeing out statement allocation." << endl;
+        emitCLINote("DEBUG -- cleanup. freeing out statement allocation.");
     if (this->currFields != NULL) { delete this->currFields; this->currFields = NULL; }
     if (this->currValues != NULL) { delete this->currValues; this->currValues = NULL; }
     if (this->bufferValues != NULL) { delete this->bufferValues; this->bufferValues = NULL; }
@@ -565,9 +568,9 @@ void Parser::parseEntitySymbol(const std::string s) {
     }
 
     if (this->debug) {
-        cout << "DEBUG -- Reading entity: " << this->currEntity << endl; // DEBUG
+        emitCLINote(std::string("Reading entity: ") + this->currEntity);
         if (noFields)
-            cout << "DEBUG -- Entity has no fields" << endl; // DEBUG
+            emitCLINote(std::string("Entity has no fields.") + this->currEntity);
     }
 
     this->entityProcessed = true;
@@ -603,9 +606,9 @@ void Parser::parseAttributeSymbol(const std::string s, bool entityOnly) {
     // Debug output
     if (this->debug)
         if (entityOnly)
-            cout << "DEBUG -- Reading entity/attribute: " << this->currAttrEntity << endl; // DEBUG
+            emitCLINote(std::string("Reading entity/attribute: ") + this->currAttrEntity);
         else
-            cout << "DEBUG -- Reading entity/attribute: " << this->currAttrEntity << "." << this->currAttribute << endl; // DEBUG
+            emitCLINote(std::string("Reading entity/attribute: ") + this->currAttrEntity + std::string(".") + this->currAttribute);
 
     this->entityProcessed = true;
 }
@@ -634,7 +637,7 @@ void Parser::parseFieldStatement(const std::string &fieldStr) {
     std::string field;
 
     if (this->debug)
-        cout << "DEBUG -- Reading field: " << fieldStr << endl; // DEBUG
+        emitCLINote(std::string("Reading field: ") + fieldStr);
 
     for (std::vector<string>::iterator it = fields.begin() ; it != fields.end(); ++it) {
         field = *it;
@@ -679,7 +682,7 @@ void Parser::parseCommaSeparatedList(const string &fieldStr, const char fieldDel
     std::string field;
 
     if (this->debug)
-        cout << "DEBUG -- Reading field: " << fieldStr << endl; // DEBUG
+        emitCLINote(std::string("Reading field: ") + fieldStr);
 
     for (std::vector<string>::iterator it = fields.begin() ; it != fields.end(); ++it) {
         field = *it;
@@ -703,8 +706,8 @@ void Parser::parseEntityDefinitionField(const std::string field) {
     fieldItems = this->tokenize(field, '_');
 
     if (this->debug) {
-        cout << "DEBUG -- Processing field definition name: " << fieldItems[0] << endl; // DEBUG
-        cout << "DEBUG -- Processing field definition type: " << fieldItems[1] << endl; // DEBUG
+        emitCLINote(std::string("Processing field definition name: ") + fieldItems[0]);
+        emitCLINote(std::string("Processing field definition type: ") + fieldItems[1]);
     }
 
     if (fieldItems.size() != 2) {
@@ -927,7 +930,7 @@ void Parser::processGEN() {
     Relation r = this->bayes->samplePairwise(this->bufferAttrEntity, this->currEntity, ab);
 
     // Print the sample
-    cout << r.toJson().toStyledString() << endl;
+    emitCLIRelation(r);
 }
 
 void Parser::processINF() {
@@ -941,7 +944,7 @@ void Parser::processINF() {
     float exp = this->bayes->expectedAttribute(*at, ab);
 
     // Print the expected value
-    cout << exp << endl;
+    emitCLIGeneric(std::string(exp));
     delete at;
 }
 
@@ -963,7 +966,7 @@ void Parser::processSET() {
         if (!this->indexHandler->removeRelation(*it)) {
             this->error = true;
             this->errStr = ERR_BAD_SET;
-            cout << "Could not remove relation, aborting SET: " << this->currAttrEntity << "." << this->currAttribute << endl;
+            emitCLIError(std::string("Could not remove relation, aborting SET: ") + this->currAttrEntity + std::string(".") + this->currAttribute);
             continue;
         }
 
@@ -973,7 +976,7 @@ void Parser::processSET() {
             // First ensure that the attribute in fact exists for the specified entity
             if (!(*it)[JSON_ATTR_REL_FIELDSL].isMember(this->currAttribute)) {
                 this->indexHandler->writeRelation(*it);   // Write back the original relation
-                cout << "Attribute not found in SET: " << this->currAttrEntity << "." << this->currAttribute << endl;
+                emitCLINote(std::string("Attribute not found in SET: ") + this->currAttrEntity + std::string(".") + this->currAttribute);
                 continue;
             }
 
@@ -984,7 +987,7 @@ void Parser::processSET() {
             } else {
                 this->error = true;
                 this->errStr = ERR_BAD_SET;
-                cout << "Invalid type: " << this->currAttrEntity << "." << this->currAttribute << " to " << this->currValue << endl;
+                emitCLIError(std::string("Invalid type: ") + this->currAttrEntity + std::string(".") + this->currAttribute + std::string(" to ") + this->currValue);
             }
 
         // Does it match the right-hand entity?
@@ -993,7 +996,7 @@ void Parser::processSET() {
             // First ensure that the attribute in fact exists for the specified entity
             if (!(*it)[JSON_ATTR_REL_FIELDSR].isMember(this->currAttribute)) {
                 this->indexHandler->writeRelation(*it);   // Write back the original relation
-                cout << "Attribute not found in SET: " << this->bufferAttrEntity << "." << this->currAttribute << endl;
+                emitCLINote(std::string("Attribute not found in SET: ") + this->bufferAttrEntity + std::string(".") + this->currAttribute);
                 continue;
             }
 
@@ -1004,16 +1007,16 @@ void Parser::processSET() {
             } else {
                 this->error = true;
                 this->errStr = ERR_BAD_SET;
-                cout << "Invalid type: " << this->currAttrEntity << "." << this->currAttribute << " to " << this->currValue << endl;
+                emitCLIError(std::string("Invalid type: ") + this->currAttrEntity + std::string(".") + this->currAttribute + std::string(" to ") + this->currValue);
             }
         }
 
         if (this->indexHandler->writeRelation(*it) && goodSet) {
-            cout << "SET attribute: " << this->currAttrEntity << "." << this->currAttribute << " to " << this->currValue << endl;
+            emitCLINote(std::string("SET attribute: ") + this->currAttrEntity + std::string(".") + this->currAttribute + std::string(" to ") << this->currValue);
         } else {
             this->error = true;
             this->errStr = ERR_BAD_SET;
-            cout << "Could not write back relation: " << this->currAttrEntity << "." << this->currAttribute << " to " << this->currValue << endl;
+            emitCLIError(std::string("Could not write back relation: ") + this->currAttrEntity + std::string(".") + this->currAttribute + std::string(" to ") + this->currValue);
         }
 
         goodSet = false;
