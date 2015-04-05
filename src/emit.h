@@ -19,4 +19,6 @@ void emitCLINote(std::string) { cout << std::string("NOTE: ") + message << endl;
 
 void emitCLIRelation(Relation r) { cout << r.toJson().toStyledString() << endl; }
 
+void emitCLIGeneric(std::string s) { cout << s << endl; }
+
 #endif
