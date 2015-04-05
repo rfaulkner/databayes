@@ -336,7 +336,6 @@ void testComputeMarginal() {
 
 }
 
-
 /**
  *  Tests that removal of entities functions properly
  */
@@ -407,10 +406,55 @@ void testSampleMarginal() {
  *  Ensure sample marginal returns a valid sample
  */
 void testSamplePairwise() {
-    // Define entities and relations
-    // Generate a sample
-    // specify filter criteria
-    // test sample to ensure that it meets criteria
+
+    Bayes bayes;
+    IndexHandler ih;
+    std::vector<Json::Value> ret;
+    std::vector<std::pair<ColumnBase, std::string>> fields_ent;
+    std::vector<std::pair<std::string, std::string>> fields_rel;
+    std::unordered_map<std::string, std::string> types;
+
+    ih.setRelationCountTotal(0);
+
+    // declare three entities
+    Entity e1("_x", fields_ent), e2("_y", fields_ent);
+
+    // construct a number of relations
+    Relation r1(e1, e2, fields_rel, fields_rel, types, types);
+    Relation r2(e1, e2, fields_rel, fields_rel, types, types);
+    Relation r3(e1, e2, fields_rel, fields_rel, types, types);
+
+    if (ih.existsEntity(e1)) ih.removeEntity(e1);
+    if (ih.existsEntity(e1)) ih.removeEntity(e2);
+
+    ih.writeEntity(e1);
+    ih.writeEntity(e2);
+
+    if (ih.existsRelation(e1)) ih.removeRelation(r1);
+    if (ih.existsRelation(e1)) ih.removeRelation(r2);
+    if (ih.existsRelation(e1)) ih.removeRelation(r3);
+
+    ih.writeRelation(r1);
+    ih.writeRelation(r2);
+    ih.writeRelation(r3);
+
+    // Construct Attribute Bucket
+    AttributeBucket ab;
+    // TODO - assemble a list on which to filter
+
+    // Sample from e1, e2
+    Relation r = bayes->samplePairwise(e1, e2, ab);
+
+    // Assert that a sample is generated
+    // Assert that the sample matches the attribute set
+
+    // Cleanup
+    ih.removeEntity(e1);
+    ih.removeEntity(e2);
+    ih.removeRelation(r1);
+    ih.removeRelation(r2);
+    ih.removeRelation(r3);
+
 }
 
 /**
@@ -421,6 +465,31 @@ void testSamplePairwiseCausal() {
     // Generate a sample
     // specify filter criteria
     // test sample to ensure that it meets criteria
+}
+
+
+/**
+ *  Ensure that the relation filtering is functioning correclty
+ */
+void testIndexFilterRelations() {
+    AttributeBucket ab;
+    AttributeTuple at;
+    Entity e1, e2;
+    IndexHandler ih;
+    std::vector<Relation> relations;
+
+    // TODO - initialize entities
+
+    // TODO - add relation set
+    // TODO - populate attribute bucket
+
+    ab.addAttribute(at);
+    ih.filterRelations(relations, ab);
+
+    // assert the all valid relations make it through
+    // assert that all invalid relations are filtered
+
+    // TODO - cleanup
 }
 
 
