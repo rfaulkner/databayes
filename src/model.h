@@ -80,7 +80,18 @@ public:
     // From Json
     Relation(Json::Value val) { this->fromJSON(val); }
 
-    // Explicit
+    // Relation
+    Relation(
+        Entity& e1,
+        Entity& e2,
+        valpair& attrs_left,
+        valpair& attrs_right,
+        std::unordered_map<std::string, std::string> types_left,
+        std::unordered_map<std::string, std::string> types_right) {
+
+        Relation(e1.name, e2.name, attrs_left, attrs_right, types_left, types_right);
+    }
+
     Relation(
         std::string left,
         std::string right,
