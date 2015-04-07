@@ -476,20 +476,50 @@ void testIndexFilterRelations() {
     AttributeTuple at;
     Entity e1, e2;
     IndexHandler ih;
-    std::vector<Relation> relations;
+    std::vector<Relation> relations, rel_out;
 
-    // TODO - initialize entities
+    // Initialize fields and types
+    std::vector<std::pair<ColumnBase, std::string>> fields_ent_1, fields_ent_2;
+    std::vector<std::pair<std::string, std::string>> fields_rel_1, fields_rel_2, fields_rel_3;
+    std::unordered_map<std::string, std::string> types_rel_1, types_rel_2;
 
-    // TODO - add relation set
-    // TODO - populate attribute bucket
+    fields_ent_1.push_back(std::make_pair(IntegerColumn(), "a"));
+    fields_ent_2.push_back(std::make_pair(StringColumn(), "b"));
+    fields_rel_1.push_back(std::make_pair("a", "1"));
+    fields_rel_2.push_back(std::make_pair("b", "hello"));
+    fields_rel_3.push_back(std::make_pair("b", "goodbye"));
+    types_rel_1.insert(std::make_pair("a", COLTYPE_NAME_INT));
+    types_rel_2.insert(std::make_pair("b", COLTYPE_NAME_FLOAT));
 
+    // Initialize entities
+    Entity e1("_x", fields_ent_1), e2("_y", fields_ent_2);
+
+    // Add relation set
+    Relation r1(e1, e2, fields_rel_1, fields_rel_2, types_rel_1, types_rel_2);
+    Relation r2(e1, e2, fields_rel_1, fields_rel_3, types_rel_1, types_rel_2);
+
+    // First filter test - One relation meets a single condition
+    at = AttributeTuple("_x", "a", "0", "");
     ab.addAttribute(at);
-    ih.filterRelations(relations, ab);
+    rel_out = ih.filterRelations(relations, ab);
 
-    // assert the all valid relations make it through
-    // assert that all invalid relations are filtered
+    assert(rel_out.size() == 1);
 
-    // TODO - cleanup
+    // Second filter test - One relation fails to meet all conditions
+    at = AttributeTuple("_x", "a", "1", "");
+    ab.addAttribute(at);
+    rel_out = ih.filterRelations(relations, ab);
+
+    assert(rel_out.size() == 0);
+
+    // TODO - more tests!
+
+    // Cleanup
+    ih.removeEntity(e1);
+    ih.removeEntity(e2);
+    ih.removeRelation(r1);
+    ih.removeRelation(r2);
+
 }
 
 
