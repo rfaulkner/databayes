@@ -298,7 +298,7 @@ public:
         }
 
         // For unknown types emit a warning and return false
-        emitCLIWarning("Could not recognize type \"" << rhs.type << "\"for: " << rhs.entity << "." << rhs.attribute);
+        emitCLIWarning("Could not recognize type \"" + rhs.type + std::string("\"for: ") + rhs.entity + std::string(".") + rhs.attribute);
         return false;
     }
 
@@ -326,7 +326,7 @@ public:
         }
 
         // For unknown types emit a warning and return false
-        emitCLIWarning("Could not recognize type \"" << rhs.type << "\"for: " << rhs.entity << "." << rhs.attribute);
+        emitCLIWarning(std::string("Could not recognize type \"") + rhs.type + std::string("\"for: ") + rhs.entity + std::string(".") + rhs.attribute);
         return false;
     }
 
