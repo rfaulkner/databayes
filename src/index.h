@@ -61,6 +61,7 @@ public:
     bool composeJSON(std::string, Json::Value&);
 
     bool existsEntity(std::string);
+    bool existsEntity(Entity&);
     bool existsEntityField(std::string, std::string);
     bool existsRelation(std::string, std::string);
 
@@ -318,6 +319,7 @@ std::vector<Json::Value> IndexHandler::fetchAttribute(AttributeTuple& attr) {
     return relations;
 }
 
+bool IndexHandler::existsEntity(Entity& e) { this->existsEntity(e.name) }
 
 /** Check to ensure entity exists */
 bool IndexHandler::existsEntity(std::string entity) {
