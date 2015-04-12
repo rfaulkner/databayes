@@ -10,7 +10,6 @@
 
 #include <iostream>
 #include <string>
-#include <redis3m/connection.h>
 #include "parse.h"
 
 using namespace std;
