@@ -291,7 +291,7 @@ std::string Parser::analyze(const std::string& s) {
     std::transform(sLower.begin(), sLower.end(), sLower.begin(), ::tolower);
 
     if (this->debug)
-        emitCLINote(std::string("Current state: ") + this->state);
+        emitCLINote(std::string("Current state: ") + std::string(this->state);
 
     if (this->state == STATE_START) {
 
@@ -321,7 +321,7 @@ std::string Parser::analyze(const std::string& s) {
         }
 
         if (this->debug)
-            emitCLINote(std::string("Setting Macro state: ") + this->macroState);
+            emitCLINote(std::string("Setting Macro state: ") + std::string(this->macroState);
 
     } else if (this->state == STATE_ADD) {
         if (sLower.compare(STR_CMD_REL) == 0)
@@ -417,8 +417,8 @@ std::string Parser::analyze(const std::string& s) {
 
         if (this->debug) {
             emitCLINote(std::string("Finishing statement processing."));
-            emitCLINote(std::string("Macro state: ") + this->macroState);
-            emitCLINote(std::string("Error state: ") + this->error);
+            emitCLINote(std::string("Macro state: ") + std::string(this->macroState);
+            emitCLINote(std::string("Error state: ") + std::string(this->error);
         }
 
         // If there's an error cleanup and bail
