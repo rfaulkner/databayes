@@ -326,7 +326,7 @@ public:
         }
 
         // For unknown types emit a warning and return false
-        emitCLIWarning(std::string("Could not recognize type \"") + rhs.type + std::string("\"for: ") + rhs.entity + std::string(".") + rhs.attribute);
+        emitCLIWarning(std::string("Could not recognize type \"") + other.type + std::string("\"for: ") + other.entity + std::string(".") + other.attribute);
         return false;
     }
 

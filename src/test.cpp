@@ -348,7 +348,7 @@ void testEntityRemoval() {
     Entity e("_w", fields_ent);
 
     if (ih.existsEntity(e)) 
-        ih.removeEntity(e)
+        ih.removeEntity(e);
     ih.writeEntity(e);
     ih.removeEntity(e);
 
@@ -430,9 +430,9 @@ void testSamplePairwise() {
     ih.writeEntity(e1);
     ih.writeEntity(e2);
 
-    if (ih.existsRelation(e1)) ih.removeRelation(r1);
-    if (ih.existsRelation(e1)) ih.removeRelation(r2);
-    if (ih.existsRelation(e1)) ih.removeRelation(r3);
+    if (ih.existsRelation(r1)) ih.removeRelation(r1);
+    if (ih.existsRelation(r1)) ih.removeRelation(r2);
+    if (ih.existsRelation(r1)) ih.removeRelation(r3);
 
     ih.writeRelation(r1);
     ih.writeRelation(r2);
@@ -443,7 +443,7 @@ void testSamplePairwise() {
     // TODO - assemble a list on which to filter
 
     // Sample from e1, e2
-    Relation r = bayes->samplePairwise(e1, e2, ab);
+    Relation r = bayes.samplePairwise(e1, e2, ab);
 
     // Assert that a sample is generated
     // Assert that the sample matches the attribute set
@@ -474,7 +474,6 @@ void testSamplePairwiseCausal() {
 void testIndexFilterRelations() {
     AttributeBucket ab;
     AttributeTuple at;
-    Entity e1, e2;
     IndexHandler ih;
     std::vector<Relation> relations, rel_out;
 
@@ -501,14 +500,16 @@ void testIndexFilterRelations() {
     // First filter test - One relation meets a single condition
     at = AttributeTuple("_x", "a", "0", "");
     ab.addAttribute(at);
-    rel_out = ih.filterRelations(relations, ab);
+    rel_out = relations;
+    ih.filterRelations(rel_out, ab);
 
     assert(rel_out.size() == 1);
 
     // Second filter test - One relation fails to meet all conditions
     at = AttributeTuple("_x", "a", "1", "");
     ab.addAttribute(at);
-    rel_out = ih.filterRelations(relations, ab);
+    rel_out = relations;
+    ih.filterRelations(rel_out, ab);
 
     assert(rel_out.size() == 0);
 
