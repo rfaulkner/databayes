@@ -3,12 +3,10 @@ databayes
 
 Probabilistic Database that uses bayesian inference to build up relations.
 
-Install C++ redis client redis3m & jsoncpp.  Follow the instructions at https://github.com/luca3m/redis3m.
+Install C++ redis client hiredis & jsoncpp.  Follow the instructions at https://github.com/redis/hiredis (release 0.11.0).
 
 Repeat for https://github.com/open-source-parsers/jsoncpp.
 
-Install C redis client https://github.com/redis/hiredis release 0.11.0.
- 
 
 Installation
 ------------
@@ -29,9 +27,9 @@ Ensure that you LD_LIBRARY_PATH is set:
 
     export LD_LIBRARY_PATH=/usr/local/lib
 
-Use the following compiler flags including the redis3m and jsoncpp libraries:
+Use the following compiler flags including the jsoncpp library:
 
-    -std=c++0x $(pkg-config --cflags --libs redis3m jsoncpp)
+    -std=c++0x $(pkg-config --cflags --libs jsoncpp)
 
 In the current setup you will need create an object file for the md5 lib manually (will eventually fix this):
 
@@ -39,7 +37,7 @@ In the current setup you will need create an object file for the md5 lib manuall
 
 For execution (link hiredis, md5, libboost_regex):
 
-    databayes$ g++ -std=c++0x src/client.cpp $(pkg-config --cflags --libs redis3m jsoncpp) -g -o dbcli /usr/lib/libhiredis.a /usr/lib/libboost_regex.a ./md5.o
+    databayes$ g++ -std=c++0x src/client.cpp $(pkg-config --cflags --libs jsoncpp) -g -o dbcli /usr/lib/libhiredis.a /usr/lib/libboost_regex.a ./md5.o
     databayes$ ./dbcli
 
 
@@ -190,7 +188,7 @@ Functionality Checklist
  - [ ] Hosting: Mapping scheme from URL to Parser Commands (ADDITIONAL COMMANDS NEED TO BE HANDLED)
  - [x] Hosting: HTTP Parsing logic (see views.py)
  - [x] Hosting: Broker functionality for parser commands coming in form HTTP (currently uses redis)
- - [ ] Hosting: Broker serving logic (NEEDS TESTING) 
+ - [ ] Hosting: Broker serving logic (NEEDS TESTING)
 
 
 Development
