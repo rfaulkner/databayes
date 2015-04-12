@@ -930,7 +930,7 @@ void Parser::processGEN() {
     Relation r = this->bayes->samplePairwise(this->bufferAttrEntity, this->currEntity, ab);
 
     // Print the sample
-    emitCLIRelation(r);
+    emitCLIGeneric(r.toJson().toStyledString());
 }
 
 void Parser::processINF() {

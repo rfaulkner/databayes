@@ -11,15 +11,11 @@
 #ifndef _emit_h
 #define _emit_h
 
-#include "definitions.h"
-
 void emitCLIError(std::string message) { cout << std::string("ERR: ") + message << endl; }
 
 void emitCLIWarning(std::string message) { cout << std::string("WARN: ") + message << endl; }
 
 void emitCLINote(std::string message) { cout << std::string("NOTE: ") + message << endl; }
-
-void emitCLIRelation(Relation r) { cout << r.toJson().toStyledString() << endl; }
 
 void emitCLIGeneric(std::string s) { cout << s << endl; }
 
