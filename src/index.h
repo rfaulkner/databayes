@@ -64,6 +64,7 @@ public:
     bool existsEntity(Entity&);
     bool existsEntityField(std::string, std::string);
     bool existsRelation(std::string, std::string);
+    bool existsRelation(Relation&);
 
     bool fetchRaw(std::string, Json::Value&);
     bool fetchEntity(std::string, Json::Value&);
@@ -319,7 +320,7 @@ std::vector<Json::Value> IndexHandler::fetchAttribute(AttributeTuple& attr) {
     return relations;
 }
 
-bool IndexHandler::existsEntity(Entity& e) { this->existsEntity(e.name) }
+bool IndexHandler::existsEntity(Entity& e) { this->existsEntity(e.name); }
 
 /** Check to ensure entity exists */
 bool IndexHandler::existsEntity(std::string entity) {
@@ -333,6 +334,10 @@ bool IndexHandler::existsEntityField(std::string entity, std::string field) {
     this->fetchEntity(entity, json);
     return json[JSON_ATTR_ENT_FIELDS].isMember(field);
 }
+
+
+/** Check to ensure relation exists */
+bool IndexHandler::existsRelation(Relation& r) { this->existsRelation(r.name_left, r.name_right); }
 
 /** Check to ensure relation exists */
 bool IndexHandler::existsRelation(std::string entityL, std::string entityR) {
