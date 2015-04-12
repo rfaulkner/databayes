@@ -11,6 +11,8 @@
 #ifndef _emit_h
 #define _emit_h
 
+#include "definitions.h"
+
 void emitCLIError(std::string message) { cout << std::string("ERR: ") + message << endl; }
 
 void emitCLIWarning(std::string message) { cout << std::string("WARN: ") + message << endl; }
