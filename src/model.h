@@ -89,7 +89,14 @@ public:
         std::unordered_map<std::string, std::string> types_left,
         std::unordered_map<std::string, std::string> types_right) {
 
-        Relation(e1.name, e2.name, attrs_left, attrs_right, types_left, types_right);
+        this->types_left = types_left;
+        this->types_right = types_right;
+        this->name_left = e1.name;
+        this->name_right = e2.name;
+        this->attrs_left = attrs_left;
+        this->attrs_right = attrs_right;
+        this->cause = e1.name;
+        this->instance_count = 1;
     }
 
     Relation(
