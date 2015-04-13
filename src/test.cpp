@@ -472,6 +472,7 @@ void testSamplePairwiseCausal() {
  *  Ensure that the relation filtering is functioning correclty
  */
 void testIndexFilterRelations() {
+
     AttributeBucket ab;
     AttributeTuple at;
     IndexHandler ih;
@@ -484,9 +485,11 @@ void testIndexFilterRelations() {
 
     fields_ent_1.push_back(std::make_pair(IntegerColumn(), "a"));
     fields_ent_2.push_back(std::make_pair(StringColumn(), "b"));
+
     fields_rel_1.push_back(std::make_pair("a", "1"));
     fields_rel_2.push_back(std::make_pair("b", "hello"));
     fields_rel_3.push_back(std::make_pair("b", "goodbye"));
+
     types_rel_1.insert(std::make_pair("a", COLTYPE_NAME_INT));
     types_rel_2.insert(std::make_pair("b", COLTYPE_NAME_FLOAT));
 
@@ -497,16 +500,18 @@ void testIndexFilterRelations() {
     Relation r1(e1, e2, fields_rel_1, fields_rel_2, types_rel_1, types_rel_2);
     Relation r2(e1, e2, fields_rel_1, fields_rel_3, types_rel_1, types_rel_2);
 
+    // Populate the relation set
+    relations.push_back(r1);
+
     // First filter test - One relation meets a single condition
-    at = AttributeTuple("_x", "a", "0", "");
+    at = AttributeTuple("_x", "a", "1", COLTYPE_NAME_INT);
     ab.addAttribute(at);
     rel_out = relations;
     ih.filterRelations(rel_out, ab);
-
     assert(rel_out.size() == 1);
 
     // Second filter test - One relation fails to meet all conditions
-    at = AttributeTuple("_x", "a", "1", "");
+    at = AttributeTuple("_x", "a", "0", COLTYPE_NAME_INT);
     ab.addAttribute(at);
     rel_out = relations;
     ih.filterRelations(rel_out, ab);
@@ -541,7 +546,7 @@ int main() {
     // testFieldAssignTypeMismatchFloat();
     // testFieldAssignTypeMismatchString();
     // testCountRelations();
-    testComputeMarginal();
+    testIndexFilterRelations();
     // testRelation_toJson();
 
     cout << endl << "-- TESTS END --" << endl;
