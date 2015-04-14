@@ -26,6 +26,9 @@
 
 using namespace std;
 
+typedef void (*FnPtr)();
+std::vector<std::pair<bool, FnPtr>> tests = std::vector<std::pair<bool, FnPtr>>();
+
 /** Test to ensure that redis keys are correctly returned */
 void testRedisSet() {
     RedisHandler r;
@@ -515,7 +518,6 @@ void testIndexFilterRelations() {
     ab.addAttribute(at);
     rel_out = relations;
     ih.filterRelations(rel_out, ab);
-
     assert(rel_out.size() == 0);
 
     // TODO - more tests!
@@ -530,6 +532,8 @@ void testIndexFilterRelations() {
 
 
 int main() {
+
+    initTests();
     cout << "-- TESTS BEGIN --" << endl << endl;
 
 //    testRedisSet();
@@ -546,8 +550,9 @@ int main() {
     // testFieldAssignTypeMismatchFloat();
     // testFieldAssignTypeMismatchString();
     // testCountRelations();
-    testIndexFilterRelations();
+    // testIndexFilterRelations();
     // testRelation_toJson();
+
 
     cout << endl << "-- TESTS END --" << endl;
 
