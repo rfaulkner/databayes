@@ -470,7 +470,6 @@ void testSamplePairwiseCausal() {
     // test sample to ensure that it meets criteria
 }
 
-
 /**
  *  Ensure that the relation filtering is functioning correclty
  */
@@ -530,29 +529,37 @@ void testIndexFilterRelations() {
 
 }
 
+/**
+ *  Initialize tests that should (and should not) run
+ */
+void initTests() {
 
+    tests.push_back(std::make_pair(false, testRedisSet));
+    tests.push_back(std::make_pair(false, testRedisGet));
+    tests.push_back(std::make_pair(false, testRedisKeys));
+    tests.push_back(std::make_pair(false, testMd5Hashing));
+    tests.push_back(std::make_pair(false, testRedisIO));
+    tests.push_back(std::make_pair(false, testRegexForTypes));
+    tests.push_back(std::make_pair(false, testOrderPairAlphaNumeric));
+    tests.push_back(std::make_pair(false, testJSONEntityEncoding));
+    tests.push_back(std::make_pair(false, testJSONRelationEncoding));
+    tests.push_back(std::make_pair(false, testFieldAssignTypeMismatchInteger));
+    tests.push_back(std::make_pair(false, testFieldAssignTypeMismatchFloat));
+    tests.push_back(std::make_pair(false, testFieldAssignTypeMismatchString));
+    tests.push_back(std::make_pair(false, testCountRelations));
+    tests.push_back(std::make_pair(true, testIndexFilterRelations));
+    tests.push_back(std::make_pair(false, testRelation_toJson));
+}
+
+/** MAIN BLOCK -- Execute tests */
 int main() {
 
     initTests();
     cout << "-- TESTS BEGIN --" << endl << endl;
 
-//    testRedisSet();
-//    testRedisGet();
-//    testRedisKeys();
-//    md5Hashing();
-//    testRedisIO();
-//    testRegexForTypes();
-//    testOrderPairAlphaNumeric();
-
-    // testJSONEntityEncoding();
-    // testJSONRelationEncoding();
-    // testFieldAssignTypeMismatchInteger();
-    // testFieldAssignTypeMismatchFloat();
-    // testFieldAssignTypeMismatchString();
-    // testCountRelations();
-    // testIndexFilterRelations();
-    // testRelation_toJson();
-
+    for (std::vector<std::pair<bool, FnPtr>>::iterator it = tests.begin(); it != tests.end(); ++it)
+        if (it->first)
+            it->second();
 
     cout << endl << "-- TESTS END --" << endl;
 
