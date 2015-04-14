@@ -27,7 +27,8 @@
 using namespace std;
 
 typedef void (*FnPtr)();
-std::vector<std::pair<bool, FnPtr>> tests = std::vector<std::pair<bool, FnPtr>>();
+std::unordered_map<std::string, std::pair<bool, FnPtr>> tests =
+    std::unordered_map<std::string, std::pair<bool, FnPtr>>();
 
 /** Test to ensure that redis keys are correctly returned */
 void testRedisSet() {
@@ -534,32 +535,36 @@ void testIndexFilterRelations() {
  */
 void initTests() {
 
-    tests.push_back(std::make_pair(false, testRedisSet));
-    tests.push_back(std::make_pair(false, testRedisGet));
-    tests.push_back(std::make_pair(false, testRedisKeys));
-    tests.push_back(std::make_pair(false, testMd5Hashing));
-    tests.push_back(std::make_pair(false, testRedisIO));
-    tests.push_back(std::make_pair(false, testRegexForTypes));
-    tests.push_back(std::make_pair(false, testOrderPairAlphaNumeric));
-    tests.push_back(std::make_pair(false, testJSONEntityEncoding));
-    tests.push_back(std::make_pair(false, testJSONRelationEncoding));
-    tests.push_back(std::make_pair(false, testFieldAssignTypeMismatchInteger));
-    tests.push_back(std::make_pair(false, testFieldAssignTypeMismatchFloat));
-    tests.push_back(std::make_pair(false, testFieldAssignTypeMismatchString));
-    tests.push_back(std::make_pair(false, testCountRelations));
-    tests.push_back(std::make_pair(true, testIndexFilterRelations));
-    tests.push_back(std::make_pair(false, testRelation_toJson));
+    tests.insert(std::make_pair("testRedisSet", std::make_pair(false, testRedisSet)));
+    tests.insert(std::make_pair("testRedisGet", std::make_pair(false, testRedisGet)));
+    tests.insert(std::make_pair("testRedisKeys", std::make_pair(false, testRedisKeys)));
+    tests.insert(std::make_pair("testMd5Hashing", std::make_pair(false, testMd5Hashing)));
+    tests.insert(std::make_pair("testRedisIO", std::make_pair(false, testRedisIO)));
+    tests.insert(std::make_pair("testRegexForTypes", std::make_pair(false, testRegexForTypes)));
+    tests.insert(std::make_pair("testOrderPairAlphaNumeric", std::make_pair(false, testOrderPairAlphaNumeric)));
+    tests.insert(std::make_pair("testJSONEntityEncoding", std::make_pair(false, testJSONEntityEncoding)));
+    tests.insert(std::make_pair("testJSONRelationEncoding", std::make_pair(false, testJSONRelationEncoding)));
+    tests.insert(std::make_pair("testFieldAssignTypeMismatchInteger", std::make_pair(false, testFieldAssignTypeMismatchInteger)));
+    tests.insert(std::make_pair("testFieldAssignTypeMismatchFloat", std::make_pair(false, testFieldAssignTypeMismatchFloat)));
+    tests.insert(std::make_pair("testFieldAssignTypeMismatchString", std::make_pair(false, testFieldAssignTypeMismatchString)));
+    tests.insert(std::make_pair("testCountRelations", std::make_pair(false, testCountRelations)));
+    tests.insert(std::make_pair("testIndexFilterRelations", std::make_pair(true, testIndexFilterRelations)));
+    tests.insert(std::make_pair("testRelation_toJson", std::make_pair(false, testRelation_toJson)));
 }
 
 /** MAIN BLOCK -- Execute tests */
 int main() {
 
     initTests();
-    cout << "-- TESTS BEGIN --" << endl << endl;
+    cout << endl << "-- TESTS BEGIN --" << endl << endl;
 
-    for (std::vector<std::pair<bool, FnPtr>>::iterator it = tests.begin(); it != tests.end(); ++it)
-        if (it->first)
-            it->second();
+    for (std::unordered_map<std::string, std::pair<bool, FnPtr>>::iterator it = tests.begin(); it != tests.end(); ++it) {
+        if (it->second.first) {
+            cout << "----- TESTING: " << it->first << endl << endl;
+            it->second.second();
+            cout << endl << "TEST PASSED: " << endl << endl;
+        }
+    }
 
     cout << endl << "-- TESTS END --" << endl;
 
