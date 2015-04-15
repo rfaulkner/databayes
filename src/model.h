@@ -396,6 +396,8 @@ public:
     }
 
     std::string makeKey(AttributeTuple& attr) { return md5(attr.entity + attr.attribute + attr.value); }
+
+    void clearBucket() { }
 };
 
 #endif
