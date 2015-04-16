@@ -382,7 +382,7 @@ public:
             attr.fromString(this->attrs[this->makeKey(attr)]);
             return attr;
         } else {
-            emitCLIError("Couldn't find attribute in bucket.");
+            emitCLIError(std::string("Couldn't find attribute in bucket:") + attr.toString());
             return AttributeTuple();
         }
     }
