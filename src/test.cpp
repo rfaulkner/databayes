@@ -515,6 +515,7 @@ void testIndexFilterRelations() {
 
     // Second filter test - One relation fails to meet all conditions
     at = AttributeTuple("_x", "a", "0", COLTYPE_NAME_INT);
+    ab.clearBucket();
     ab.addAttribute(at);
     rel_out = relations;
     ih.filterRelations(rel_out, ab);
