@@ -289,8 +289,10 @@ public:
             return lhs != rhs;
         else if (std::strcmp(lhs.comparator.c_str(), "=") == 0)
             return lhs == rhs;
-        else    // Error - unrecognized operator
-            return true;
+        else {   // Error - unrecognized operator
+            cout << "missing comparator" << endl;
+            return false;
+        }
     }
 
 
@@ -382,8 +384,8 @@ public:
             attr.fromString(this->attrs[this->makeKey(attr)]);
             return attr;
         } else {
-            emitCLIError(std::string("Couldn't find attribute in bucket:") + attr.toString());
-            return AttributeTuple();
+            // emitCLIError(std::string("Couldn't find attribute in bucket:") + attr.toString());
+            return AttributeTuple(); // Return an empty attribute
         }
     }
 
