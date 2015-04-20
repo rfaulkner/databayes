@@ -412,7 +412,7 @@ std::string IndexHandler::orderPairAlphaNumeric(std::string s1, std::string s2) 
 
 /**
  *  Filter matching relations based on contents attrs.  All of a relations attributes must match those
- *  in the bucket to be included
+ *  in the bucket to be included.  For eax
  */
 void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBucket& filterAttrs) {
 
@@ -428,8 +428,12 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
         // Match left hand relations
         for (valpair::iterator it_inner = it->attrs_left.begin(); it_inner != it->attrs_left.end(); ++it_inner) {
             currAttr = AttributeTuple(it->name_left, std::get<0>(*it_inner), std::get<1>(*it_inner), it->types_left[std::get<0>(*it_inner)]);
+
+            // TODO - fetch attribute based on entity:attr
             bucketAttr = filterAttrs.getAttribute(currAttr);
-            if (std::strcmp(bucketAttr.entity.c_str(), "") == 0) {
+
+            // If the entity is empty (the entity:attr was not on the bucket) continue, otherwise compare
+            if (std::strcmp(bucketAttr.entity.c_str(), "") != 0) {
                 matching = AttributeTuple::compare(bucketAttr, currAttr);
                 if (!matching) break;
             }
@@ -440,8 +444,9 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
             for (valpair::iterator it_inner = it->attrs_right.begin(); it_inner != it->attrs_right.end(); ++it_inner) {
                 currAttr = AttributeTuple(it->name_right, std::get<0>(*it_inner), std::get<1>(*it_inner), it->types_right[std::get<0>(*it_inner)]);
                 bucketAttr = filterAttrs.getAttribute(currAttr);
-                if (std::strcmp(bucketAttr.entity.c_str(), "") == 0) {
+                if (std::strcmp(bucketAttr.entity.c_str(), "") != 0) {
                     matching = AttributeTuple::compare(bucketAttr, currAttr);
+                    cout << matching << endl;
                     if (!matching) break;
                 }
             }
