@@ -508,6 +508,7 @@ void testIndexFilterRelations() {
 
     // First filter test - One relation meets a single condition
     at = AttributeTuple("_x", "a", "1", COLTYPE_NAME_INT);
+    at.comparator = "=";
     ab.addAttribute(at);
     rel_out = relations;
     ih.filterRelations(rel_out, ab);
@@ -515,6 +516,7 @@ void testIndexFilterRelations() {
 
     // Second filter test - One relation fails to meet all conditions
     at = AttributeTuple("_x", "a", "0", COLTYPE_NAME_INT);
+    at.comparator = "=";
     ab.clearBucket();
     ab.addAttribute(at);
     rel_out = relations;
@@ -563,7 +565,7 @@ int main() {
         if (it->second.first) {
             cout << "----- TESTING: " << it->first << endl << endl;
             it->second.second();
-            cout << endl << "TEST PASSED: " << endl << endl;
+            cout << endl << "TEST PASSED." << endl << endl;
         }
     }
 
