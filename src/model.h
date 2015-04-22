@@ -388,10 +388,10 @@ public:
     std::unordered_map<std::string, std::vector<std::string>> getAttributeHash() { return attrs; }
 
     // Does the attribute exist in this bucket?
-    bool getAttribute(AttributeTuple& attr) {
+    bool isAttribute(AttributeTuple& attr) {
         std::vector<std::string> vec
         AttributeTuple at;
-        if (this->isAttribute(attr)) {
+        if (this->hasKey(attr)) {
             vec = this->attrs[this->makeKey(attr)];
             for (std::vector<std::string>::iterator it = vec.begin() ; it != vec.end(); ++it) {
                 at.fromString(*it);         // Set the tuple
@@ -403,7 +403,7 @@ public:
     }
 
     // Does the attribute exist in this bucket?
-    bool isAttribute(AttributeTuple& attr) {
+    bool hasKey(AttributeTuple& attr) {
         if (this->attrs.find(this->makeKey(attr)) != this->attrs.end())
             return true;
         else
