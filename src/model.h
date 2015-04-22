@@ -351,7 +351,7 @@ public:
 class AttributeBucket {
 
     // Hashmap storing attribute instances in this bucket
-    std::unordered_map<std::string, std::string> attrs;
+    std::unordered_map<std::string, std::vector<std::string>> attrs;
 
 public:
 
@@ -361,7 +361,16 @@ public:
     AttributeBucket(std::string entity, valpair& vals, std::unordered_map<std::string, std::string>& types) { this->addAttributes(entity, vals, types); }
 
     /** Insert a new atribute into the bucket */
-    void addAttribute(AttributeTuple attr) { this->attrs.insert(std::make_pair(this->makeKey(attr), attr.toString())); }
+    void addAttribute(AttributeTuple attr) {
+        std::unordered_map<std::string, std::vector<std::string>>::iterator vec = this->attrs.find(this->makeKey(attr));
+        if (vec != this->attrs.end())
+            vec->second.push_back(attr.toString());
+        else {
+            std::vector<std::string> newVec;
+            newVec.push_back(attr.toString());
+            this->attrs.insert(std::make_pair(this->makeKey(attr), newVec));
+        }
+    }
 
     /** Insert a list of attributes */
     void addAttributes(std::string entity, valpair& vals, std::unordered_map<std::string, std::string>& types) {
