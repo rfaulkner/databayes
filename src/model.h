@@ -416,8 +416,9 @@ public:
     // Enumerate the items in the bucket
     std::string stringify() {
         std::string bucketStr;
-        for (std::unordered_map<std::string, std::string>::iterator it_inner = this->attrs.begin(); it_inner != this->attrs.end(); ++it_inner)
-            bucketStr += it_inner->first + std::string(" -> ") + it_inner->second + std::string("\n");
+        for (std::unordered_map<std::string, std::vector<std::string>>::iterator it = this->attrs.begin(); it != this->attrs.end(); ++it)
+            for (std::vector<std::string>::iterator it_in = it->second.begin(); it_in != it->second.end(); ++it_in)
+                bucketStr += it->first + std::string(" -> ") + *it_in + std::string("\n");
         return bucketStr;
     }
 
