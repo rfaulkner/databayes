@@ -388,14 +388,18 @@ public:
     std::unordered_map<std::string, std::vector<std::string>> getAttributeHash() { return attrs; }
 
     // Does the attribute exist in this bucket?
-    AttributeTuple getAttribute(AttributeTuple& attr) {
+    bool getAttribute(AttributeTuple& attr) {
+        std::vector<std::string> vec
+        AttributeTuple at;
         if (this->isAttribute(attr)) {
-            attr.fromString(this->attrs[this->makeKey(attr)]);
-            return attr;
-        } else {
-            // emitCLIError(std::string("Couldn't find attribute in bucket:") + attr.toString());
-            return AttributeTuple(); // Return an empty attribute
+            vec = this->attrs[this->makeKey(attr)];
+            for (std::vector<std::string>::iterator it = vec.begin() ; it != vec.end(); ++it) {
+                at.fromString(*it);         // Set the tuple
+                if (it->compare(at.value.c_str()) == 0)
+                    return true;
+            }
         }
+        return false;
     }
 
     // Does the attribute exist in this bucket?
