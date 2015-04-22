@@ -411,7 +411,7 @@ public:
     }
 
     // Generate a key in the bucket for this item
-    std::string makeKey(AttributeTuple& attr) { return md5(attr.entity + attr.attribute + attr.value); }
+    std::string makeKey(AttributeTuple& attr) { return md5(attr.entity + attr.attribute); }
 
     // Enumerate the items in the bucket
     std::string stringify() {
