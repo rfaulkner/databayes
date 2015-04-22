@@ -389,7 +389,7 @@ public:
 
     // Does the attribute exist in this bucket?
     bool isAttribute(AttributeTuple& attr) {
-        std::vector<std::string> vec
+        std::vector<std::string> vec;
         AttributeTuple at;
         if (this->hasKey(attr)) {
             vec = this->attrs[this->makeKey(attr)];
