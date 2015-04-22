@@ -422,6 +422,8 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
     std::string key, value;
     AttributeTuple currAttr, bucketAttr;
 
+    cout << filterAttrs.stringify() << endl;
+
     // Iterate over relations
     for (std::vector<Relation>::iterator it = relations.begin(); it != relations.end(); ++it) {
 
@@ -429,11 +431,8 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
         for (valpair::iterator it_inner = it->attrs_left.begin(); it_inner != it->attrs_left.end(); ++it_inner) {
             currAttr = AttributeTuple(it->name_left, std::get<0>(*it_inner), std::get<1>(*it_inner), it->types_left[std::get<0>(*it_inner)]);
 
-            // TODO - fetch attribute based on entity:attr
-            bucketAttr = filterAttrs.getAttribute(currAttr);
-
             // If the entity is empty (the entity:attr was not on the bucket) continue, otherwise compare
-            if (std::strcmp(bucketAttr.entity.c_str(), "") != 0) {
+            if (filterAttrs.isAttribute(currAttr)) {
                 matching = AttributeTuple::compare(bucketAttr, currAttr);
                 if (!matching) break;
             }
@@ -443,14 +442,14 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
         if (matching)
             for (valpair::iterator it_inner = it->attrs_right.begin(); it_inner != it->attrs_right.end(); ++it_inner) {
                 currAttr = AttributeTuple(it->name_right, std::get<0>(*it_inner), std::get<1>(*it_inner), it->types_right[std::get<0>(*it_inner)]);
-                bucketAttr = filterAttrs.getAttribute(currAttr);
-                if (std::strcmp(bucketAttr.entity.c_str(), "") != 0) {
+
+                if (filterAttrs.isAttribute(currAttr)) {
                     matching = AttributeTuple::compare(bucketAttr, currAttr);
-                    cout << matching << endl;
                     if (!matching) break;
                 }
             }
 
+        cout << matching << endl;
         if (!matching)
             relations.erase(relations.begin() + std::distance(relations.begin(), it));
     }
