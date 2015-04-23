@@ -395,7 +395,7 @@ public:
             vec = this->attrs[this->makeKey(attr)];
             for (std::vector<std::string>::iterator it = vec.begin() ; it != vec.end(); ++it) {
                 at.fromString(*it);         // Set the tuple
-                if (it->compare(at.value.c_str()) == 0)
+                if (attr.value.compare(at.value.c_str()) == 0)
                     return true;
             }
         }
