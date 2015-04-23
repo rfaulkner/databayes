@@ -280,18 +280,18 @@ public:
     }
 
     /** Switching logic for attribute tuples - defaults to true in absence of a defined comparator */
-    static bool compare(AttributeTuple& lhs, AttributeTuple& rhs, char* comparator) {
-        if (std::strcmp(comparator, ATTR_TUPLE_COMPARE_LT) == 0)
+    static bool compare(AttributeTuple& lhs, AttributeTuple& rhs, std::string comparator) {
+        if (std::strcmp(comparator.c_str(), ATTR_TUPLE_COMPARE_LT) == 0)
             return lhs < rhs;
-        else if (std::strcmp(comparator, ATTR_TUPLE_COMPARE_GT) == 0)
+        else if (std::strcmp(comparator.c_str(), ATTR_TUPLE_COMPARE_GT) == 0)
             return lhs > rhs;
-        else if (std::strcmp(comparator, ATTR_TUPLE_COMPARE_LTE) == 0)
+        else if (std::strcmp(comparator.c_str(), ATTR_TUPLE_COMPARE_LTE) == 0)
             return lhs <= rhs;
-        else if (std::strcmp(comparator, ATTR_TUPLE_COMPARE_GTE) == 0)
+        else if (std::strcmp(comparator.c_str(), ATTR_TUPLE_COMPARE_GTE) == 0)
             return lhs >= rhs;
-        else if (std::strcmp(comparator, ATTR_TUPLE_COMPARE_NE) == 0)
+        else if (std::strcmp(comparator.c_str(), ATTR_TUPLE_COMPARE_NE) == 0)
             return lhs != rhs;
-        else if (std::strcmp(comparator, ATTR_TUPLE_COMPARE_EQ) == 0)
+        else if (std::strcmp(comparator.c_str(), ATTR_TUPLE_COMPARE_EQ) == 0)
             return lhs == rhs;
         else {   // Error - unrecognized operator
             emitCLIError("Unrecognized comparator on Attribute Tuple comarison");

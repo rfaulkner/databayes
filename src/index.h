@@ -77,8 +77,8 @@ public:
     std::vector<Relation> Json2RelationVector(std::vector<Json::Value>);
     std::vector<Json::Value> Relation2JsonVector(std::vector<Relation>);
 
-    void filterRelations(std::vector<Relation>&, AttributeBucket&, char*);
-    void filterRelations(std::vector<Json::Value>&, AttributeBucket&, char*);
+    void filterRelations(std::vector<Relation>&, AttributeBucket&, std::string);
+    void filterRelations(std::vector<Json::Value>&, AttributeBucket&, std::string);
     std::vector<Json::Value> fetchAttribute(AttributeTuple&);
 
     std::string generateEntityKey(std::string);
@@ -414,7 +414,7 @@ std::string IndexHandler::orderPairAlphaNumeric(std::string s1, std::string s2) 
  *  Filter matching relations based on contents attrs.  All of a relations attributes must match those
  *  in the bucket to be included.  For eax
  */
-void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBucket& filterAttrs, char* comparator) {
+void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBucket& filterAttrs, std::string comparator) {
 
     if (filterAttrs.getAttributeHash().size() == 0) return;
 
@@ -467,7 +467,7 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
  *  Filter matching relations based on contents attrs.  All of a relations attributes must match those
  *  in the bucket to be included
  */
-void IndexHandler::filterRelations(std::vector<Json::Value>& relations, AttributeBucket& filterAttrs, char* comparator) {
+void IndexHandler::filterRelations(std::vector<Json::Value>& relations, AttributeBucket& filterAttrs, std::string comparator) {
 
     if (filterAttrs.getAttributeHash().size() == 0) return;
 
