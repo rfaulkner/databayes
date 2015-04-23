@@ -245,7 +245,6 @@ public:
     std::string entity;
     std::string attribute;
     std::string value;
-    std::string comparator;
 
     AttributeTuple() {}
 
@@ -262,7 +261,6 @@ public:
         json["entity"] = this->entity;
         json["attribute"] = this->attribute;
         json["value"] = this->value;
-        json["comparator"] = this->comparator;
         return json.toStyledString();
     }
 
@@ -277,7 +275,6 @@ public:
             this->entity = json["entity"].asCString();
             this->attribute = json["attribute"].asCString();
             this->value = json["value"].asCString();
-            this->comparator = json["comparator"].asCString();
          } else
             emitCLIError("Could not parse json from formatted string.");
     }
