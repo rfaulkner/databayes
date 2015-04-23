@@ -77,8 +77,8 @@ public:
     std::vector<Relation> Json2RelationVector(std::vector<Json::Value>);
     std::vector<Json::Value> Relation2JsonVector(std::vector<Relation>);
 
-    void filterRelations(std::vector<Relation>&, AttributeBucket&);
-    void filterRelations(std::vector<Json::Value>&, AttributeBucket&);
+    void filterRelations(std::vector<Relation>&, AttributeBucket&, char*);
+    void filterRelations(std::vector<Json::Value>&, AttributeBucket&, char*);
     std::vector<Json::Value> fetchAttribute(AttributeTuple&);
 
     std::string generateEntityKey(std::string);
@@ -414,7 +414,7 @@ std::string IndexHandler::orderPairAlphaNumeric(std::string s1, std::string s2) 
  *  Filter matching relations based on contents attrs.  All of a relations attributes must match those
  *  in the bucket to be included.  For eax
  */
-void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBucket& filterAttrs) {
+void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBucket& filterAttrs, char* comparator) {
 
     if (filterAttrs.getAttributeHash().size() == 0) return;
 
@@ -434,7 +434,7 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
             cout << currAttr.toString() << endl;
             // If the entity is empty (the entity:attr was not on the bucket) continue, otherwise compare
             if (filterAttrs.isAttribute(currAttr)) {
-                matching = AttributeTuple::compare(bucketAttr, currAttr);
+                matching = AttributeTuple::compare(bucketAttr, currAttr, comparator);
                 if (!matching) break;
             }
         }
@@ -445,7 +445,7 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
                 currAttr = AttributeTuple(it->name_right, std::get<0>(*it_inner), std::get<1>(*it_inner), it->types_right[std::get<0>(*it_inner)]);
                 cout << currAttr.toString() << endl;
                 if (filterAttrs.isAttribute(currAttr)) {
-                    matching = AttributeTuple::compare(bucketAttr, currAttr);
+                    matching = AttributeTuple::compare(bucketAttr, currAttr, comparator);
                     if (!matching) break;
                 }
             }
@@ -467,7 +467,7 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
  *  Filter matching relations based on contents attrs.  All of a relations attributes must match those
  *  in the bucket to be included
  */
-void IndexHandler::filterRelations(std::vector<Json::Value>& relations, AttributeBucket& filterAttrs) {
+void IndexHandler::filterRelations(std::vector<Json::Value>& relations, AttributeBucket& filterAttrs, char* comparator) {
 
     if (filterAttrs.getAttributeHash().size() == 0) return;
 
@@ -493,7 +493,7 @@ void IndexHandler::filterRelations(std::vector<Json::Value>& relations, Attribut
                                 (*it)[JSON_ATTR_REL_FIELDSL][filterAttr.attribute].asCString(),
                                 std::string(JSON_ATTR_REL_TYPE_PREFIX) + std::string((*it)[JSON_ATTR_REL_FIELDSL][filterAttr.attribute].asCString())
                                 );
-                    matching = AttributeTuple::compare(filterAttr, currAttr);
+                    matching = AttributeTuple::compare(filterAttr, currAttr, comparator);
                     if (!matching) break;
                 }
 
@@ -505,7 +505,7 @@ void IndexHandler::filterRelations(std::vector<Json::Value>& relations, Attribut
                                     (*it)[JSON_ATTR_REL_FIELDSR][filterAttr.attribute].asCString(),
                                     std::string(JSON_ATTR_REL_TYPE_PREFIX) + std::string((*it)[JSON_ATTR_REL_FIELDSR][filterAttr.attribute].asCString())
                                     );
-                        matching = AttributeTuple::compare(filterAttr, currAttr);
+                        matching = AttributeTuple::compare(filterAttr, currAttr, comparator);
                         if (!matching) break;
                     }
             }
