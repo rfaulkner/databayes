@@ -30,6 +30,13 @@
 #define JSON_ATTR_REL_CAUSE "cause"
 #define JSON_ATTR_REL_TYPE_PREFIX "#"
 
+#define ATTR_TUPLE_COMPARE_EQ "="
+#define ATTR_TUPLE_COMPARE_LT "<"
+#define ATTR_TUPLE_COMPARE_GT ">"
+#define ATTR_TUPLE_COMPARE_LTE "<="
+#define ATTR_TUPLE_COMPARE_GTE ">="
+#define ATTR_TUPLE_COMPARE_NE "!="
+
 using namespace std;
 
 // Vector type that defines entities
@@ -277,17 +284,17 @@ public:
 
     /** Switching logic for attribute tuples - defaults to true in absence of a defined comparator */
     static bool compare(AttributeTuple& lhs, AttributeTuple& rhs, char* comparator) {
-        if (std::strcmp(lhs.comparator.c_str(), comparator) == 0)
+        if (std::strcmp(comparator, ATTR_TUPLE_COMPARE_LT) == 0)
             return lhs < rhs;
-        else if (std::strcmp(lhs.comparator.c_str(), comparator) == 0)
+        else if (std::strcmp(comparator, ATTR_TUPLE_COMPARE_GT) == 0)
             return lhs > rhs;
-        else if (std::strcmp(lhs.comparator.c_str(), comparator) == 0)
+        else if (std::strcmp(comparator, ATTR_TUPLE_COMPARE_LTE) == 0)
             return lhs <= rhs;
-        else if (std::strcmp(lhs.comparator.c_str(), comparator) == 0)
+        else if (std::strcmp(comparator, ATTR_TUPLE_COMPARE_GTE) == 0)
             return lhs >= rhs;
-        else if (std::strcmp(lhs.comparator.c_str(), comparator) == 0)
+        else if (std::strcmp(comparator, ATTR_TUPLE_COMPARE_NE) == 0)
             return lhs != rhs;
-        else if (std::strcmp(lhs.comparator.c_str(), comparator) == 0)
+        else if (std::strcmp(comparator, ATTR_TUPLE_COMPARE_EQ) == 0)
             return lhs == rhs;
         else {   // Error - unrecognized operator
             emitCLIError("Unrecognized comparator on Attribute Tuple comarison");
