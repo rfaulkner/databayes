@@ -468,43 +468,44 @@ void IndexHandler::filterRelations(std::vector<Json::Value>& relations, Attribut
     bool matching = true;
     std::string key, value;
     AttributeTuple currAttr, filterAttr;
-    std::unordered_map<std::string, std::string> hm = filterAttrs.getAttributeHash();
+    std::unordered_map<std::string, std::vector<std::string>> hm = filterAttrs.getAttributeHash();
 
     // Not very efficient (O(n*m)), but OK if filterAttrs is small (m << n)
     for (std::vector<Json::Value>::iterator it = relations.begin(); it != relations.end(); ++it) {
-        for (std::unordered_map<std::string, std::string>::iterator it_inner = hm.begin(); it_inner != hm.end(); ++it_inner) {
+        for (std::unordered_map<std::string, std::vector<std::string>>::iterator it_inner = hm.begin(); it_inner != hm.end(); ++it_inner) {
+            for (std::vector<std::string>::iterator it_tuples = it_inner->second.begin(); it_tuples != it_inner->second.end(); ++it_tuples) {
 
-            // Get filter attribute from hashmap values from bucket
-            filterAttr = AttributeTuple();
-            filterAttr.fromString(it_inner->second);
+                // Get filter attribute from hashmap values from bucket
+                filterAttr = AttributeTuple();
+                filterAttr.fromString(*it_tuples);
 
-            // Match left hand relations
-            if ((*it)[JSON_ATTR_REL_FIELDSL].isMember(filterAttr.attribute) &&
-                    std::strcmp((*it)[JSON_ATTR_REL_ENTL].asCString(), filterAttr.entity.c_str()) == 0) {
+                // Match left hand relations
+                if ((*it)[JSON_ATTR_REL_FIELDSL].isMember(filterAttr.attribute) &&
+                        std::strcmp((*it)[JSON_ATTR_REL_ENTL].asCString(), filterAttr.entity.c_str()) == 0) {
 
-                currAttr = AttributeTuple(filterAttr.entity, filterAttr.attribute,
-                            (*it)[JSON_ATTR_REL_FIELDSL][filterAttr.attribute].asCString(),
-                            std::string(JSON_ATTR_REL_TYPE_PREFIX) + std::string((*it)[JSON_ATTR_REL_FIELDSL][filterAttr.attribute].asCString())
-                            );
-                matching = AttributeTuple::compare(filterAttr, currAttr);
-                if (!matching) break;
-            }
-
-            // Match right hand relations - only process if left hand relations matched
-            if (matching)
-                if ((*it)[JSON_ATTR_REL_FIELDSR].isMember(filterAttr.attribute) &&
-                        std::strcmp((*it)[JSON_ATTR_REL_ENTR].asCString(), filterAttr.entity.c_str()) == 0) {
                     currAttr = AttributeTuple(filterAttr.entity, filterAttr.attribute,
-                                (*it)[JSON_ATTR_REL_FIELDSR][filterAttr.attribute].asCString(),
-                                std::string(JSON_ATTR_REL_TYPE_PREFIX) + std::string((*it)[JSON_ATTR_REL_FIELDSR][filterAttr.attribute].asCString())
+                                (*it)[JSON_ATTR_REL_FIELDSL][filterAttr.attribute].asCString(),
+                                std::string(JSON_ATTR_REL_TYPE_PREFIX) + std::string((*it)[JSON_ATTR_REL_FIELDSL][filterAttr.attribute].asCString())
                                 );
                     matching = AttributeTuple::compare(filterAttr, currAttr);
                     if (!matching) break;
                 }
-        }
 
-        if (!matching)
-            relations.erase(relations.begin() + std::distance(relations.begin(),it));
+                // Match right hand relations - only process if left hand relations matched
+                if (matching)
+                    if ((*it)[JSON_ATTR_REL_FIELDSR].isMember(filterAttr.attribute) &&
+                            std::strcmp((*it)[JSON_ATTR_REL_ENTR].asCString(), filterAttr.entity.c_str()) == 0) {
+                        currAttr = AttributeTuple(filterAttr.entity, filterAttr.attribute,
+                                    (*it)[JSON_ATTR_REL_FIELDSR][filterAttr.attribute].asCString(),
+                                    std::string(JSON_ATTR_REL_TYPE_PREFIX) + std::string((*it)[JSON_ATTR_REL_FIELDSR][filterAttr.attribute].asCString())
+                                    );
+                        matching = AttributeTuple::compare(filterAttr, currAttr);
+                        if (!matching) break;
+                    }
+            }
+
+            if (!matching) relations.erase(relations.begin() + std::distance(relations.begin(), it));
+        }
     }
 }
 
