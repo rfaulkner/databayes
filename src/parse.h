@@ -470,7 +470,7 @@ std::string Parser::analyze(const std::string& s) {
             std::vector<Json::Value> relationsJson = this->indexHandler->fetchRelationPrefix(this->bufferEntity, this->currEntity);
             std::vector<Relation> relations = this->indexHandler->Json2RelationVector(relationsJson);
             AttributeBucket ab = AttributeBucket(this->currEntity, *(this->currValues), *(this->currTypes));
-            this->indexHandler->filterRelations(relations, ab);
+            this->indexHandler->filterRelations(relations, ab, ATTR_TUPLE_COMPARE_EQ);
 
             // for each relation determine if they match the condition criteria
             for (std::vector<Relation>::iterator it = relations.begin() ; it != relations.end(); ++it)
@@ -957,7 +957,7 @@ void Parser::processSET() {
 
     // Filter out candidate relations
     std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(this->bufferEntity, this->currEntity);
-    this->indexHandler->filterRelations(relations, ab);
+    this->indexHandler->filterRelations(relations, ab, ATTR_TUPLE_COMPARE_EQ);
 
     // Iterate through relations to be set
     for (std::vector<Json::Value>::iterator it = relations.begin() ; it != relations.end(); ++it) {

@@ -508,19 +508,17 @@ void testIndexFilterRelations() {
 
     // First filter test - One relation meets a single condition
     at = AttributeTuple("_x", "a", "1", COLTYPE_NAME_INT);
-    at.comparator = "=";
     ab.addAttribute(at);
     rel_out = relations;
-    ih.filterRelations(rel_out, ab);
+    ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_EQ);
     assert(rel_out.size() == 1);
 
     // Second filter test - One relation fails to meet all conditions
     at = AttributeTuple("_x", "a", "0", COLTYPE_NAME_INT);
-    at.comparator = "=";
-    ab.clearBucket();
+    ab = AttributeBucket();
     ab.addAttribute(at);
     rel_out = relations;
-    ih.filterRelations(rel_out, ab);
+    ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_EQ);
     assert(rel_out.size() == 0);
 
     // TODO - more tests!

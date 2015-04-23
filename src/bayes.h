@@ -17,6 +17,7 @@
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>       /* time */
 #include "index.h"
+#include "model.h"
 #include <json/json.h>
 
 
@@ -53,7 +54,7 @@ public:
 /** Count the occurrences of a relation subject to a set of attribute filters */
 long Bayes::countRelations(std::string e1, std::string e2, AttributeBucket& attrs) {
     std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(e1, e2);
-    this->indexHandler->filterRelations(relations, attrs);
+    this->indexHandler->filterRelations(relations, attrs, ATTR_TUPLE_COMPARE_EQ);
     long total_relations = 0;
     for (std::vector<Json::Value>::iterator it = relations.begin(); it != relations.end(); ++it) total_relations += (*it)[JSON_ATTR_REL_COUNT].asInt();
     return total_relations;
@@ -65,8 +66,8 @@ long Bayes::countEntityInRelations(std::string e, AttributeBucket& attrs, bool c
     std::vector<Json::Value> relations_right = this->indexHandler->fetchRelationPrefix("*", e);
 
     // Filter on attribute conditions in AttributeBucket
-    this->indexHandler->filterRelations(relations_left, attrs);
-    this->indexHandler->filterRelations(relations_right, attrs);
+    this->indexHandler->filterRelations(relations_left, attrs, ATTR_TUPLE_COMPARE_EQ);
+    this->indexHandler->filterRelations(relations_right, attrs, ATTR_TUPLE_COMPARE_EQ);
 
     // Count the relations
     long total_relations = 0;
@@ -137,8 +138,8 @@ Relation Bayes::sampleMarginal(std::string e, AttributeBucket& attrs) {
     std::vector<Json::Value> relations_right = this->indexHandler->fetchRelationPrefix("*", e);
 
     // Filter on attribute conditions in AttributeBucket
-    this->indexHandler->filterRelations(relations_left, attrs);
-    this->indexHandler->filterRelations(relations_right, attrs);
+    this->indexHandler->filterRelations(relations_left, attrs, ATTR_TUPLE_COMPARE_EQ);
+    this->indexHandler->filterRelations(relations_right, attrs, ATTR_TUPLE_COMPARE_EQ);
 
     // Randomly select a sample paying attention to frequency of relations
     long count = this->countEntityInRelations(e, attrs);
@@ -185,7 +186,7 @@ Relation Bayes::samplePairwise(std::string x, std::string y, AttributeBucket& at
     std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(x, y);
 
     // Filter relations based on "attrs"
-    this->indexHandler->filterRelations(relations, attrs);
+    this->indexHandler->filterRelations(relations, attrs, ATTR_TUPLE_COMPARE_EQ);
 
     // Randomly select a sample paying attention to frequency of relations
     long count = this->countRelations(x, y, attrs);
@@ -222,7 +223,7 @@ Relation Bayes::samplePairwiseCausal(std::string x, std::string y, AttributeBuck
     std::vector<Json::Value> relations = this->indexHandler->fetchRelationPrefix(x, y);
 
     // Filter relations based on "attrs"
-    this->indexHandler->filterRelations(relations, attrs);
+    this->indexHandler->filterRelations(relations, attrs, ATTR_TUPLE_COMPARE_EQ);
 
     // Randomly select a sample paying attention to frequency of relations
     long count = this->countEntityInRelations(x, attrs, true);
@@ -265,7 +266,7 @@ float Bayes::expectedAttribute(AttributeTuple& attr, AttributeBucket& filter) {
     std::vector<Json::Value> relations = this->indexHandler->fetchAttribute(attr);
 
     // Filter relations based on filter bucket
-    this->indexHandler->filterRelations(relations, filter);
+    this->indexHandler->filterRelations(relations, filter, ATTR_TUPLE_COMPARE_EQ);
 
     long count = 0;
     float expected = 0.0;
@@ -300,7 +301,7 @@ std::string Bayes::modeAttribute(AttributeTuple& attr, AttributeBucket& filter) 
     std::vector<Json::Value> relations = this->indexHandler->fetchAttribute(attr);
 
     // Filter relations based on filter bucket
-    this->indexHandler->filterRelations(relations, filter);
+    this->indexHandler->filterRelations(relations, filter, ATTR_TUPLE_COMPARE_EQ);
 
     // Check left and right field sets; if the attribute is found count the instances for that value
     const char* key;
