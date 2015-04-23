@@ -421,6 +421,7 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
     bool matching = true;
     std::string key, value;
     AttributeTuple currAttr, bucketAttr;
+    std::vector<int> killIndices;
 
     cout << filterAttrs.stringify() << endl;
 
@@ -430,7 +431,7 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
         // Match left hand relations
         for (valpair::iterator it_inner = it->attrs_left.begin(); it_inner != it->attrs_left.end(); ++it_inner) {
             currAttr = AttributeTuple(it->name_left, std::get<0>(*it_inner), std::get<1>(*it_inner), it->types_left[std::get<0>(*it_inner)]);
-
+            cout << currAttr.toString() << endl;
             // If the entity is empty (the entity:attr was not on the bucket) continue, otherwise compare
             if (filterAttrs.isAttribute(currAttr)) {
                 matching = AttributeTuple::compare(bucketAttr, currAttr);
@@ -442,7 +443,7 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
         if (matching)
             for (valpair::iterator it_inner = it->attrs_right.begin(); it_inner != it->attrs_right.end(); ++it_inner) {
                 currAttr = AttributeTuple(it->name_right, std::get<0>(*it_inner), std::get<1>(*it_inner), it->types_right[std::get<0>(*it_inner)]);
-
+                cout << currAttr.toString() << endl;
                 if (filterAttrs.isAttribute(currAttr)) {
                     matching = AttributeTuple::compare(bucketAttr, currAttr);
                     if (!matching) break;
@@ -451,8 +452,13 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
 
         cout << matching << endl;
         if (!matching)
-            relations.erase(relations.begin() + std::distance(relations.begin(), it));
+            killIndices.push_back(std::distance(relations.begin(), it));
+
     }
+
+    // Wipe the unmatched elements
+    for (std::vector<int>::iterator it = killIndices.begin(); it != killIndices.end(); ++it)
+        relations.erase(relations.begin() + *it);
 }
 
 /**
