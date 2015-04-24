@@ -281,6 +281,11 @@ public:
 
     /** Switching logic for attribute tuples - defaults to true in absence of a defined comparator */
     static bool compare(AttributeTuple& lhs, AttributeTuple& rhs, std::string comparator) {
+
+        // TODO - lhs and rhs must have matching types
+        // TODO - lhs and rhs must both be valid
+        // TODO - Convert the types
+
         if (std::strcmp(comparator.c_str(), ATTR_TUPLE_COMPARE_LT) == 0)
             return lhs < rhs;
         else if (std::strcmp(comparator.c_str(), ATTR_TUPLE_COMPARE_GT) == 0)

@@ -12,6 +12,7 @@
 
 #include <string>
 #include <boost/regex.hpp>
+#include "emit.h"
 
 #define COLTYPE_NAME_BASE "base"
 #define COLTYPE_NAME_NULL "null"
@@ -37,6 +38,8 @@ public:
 
     /** Validates the string value as being of this type */
     virtual bool validate(std::string value) { return true; }
+
+    // TODO - overload operators
 };
 
 
@@ -83,6 +86,8 @@ public:
         boost::regex e("^[-+]?[0-9]*\\.?[0-9]+$");
         return boost::regex_match(value.c_str(), e);
     }
+
+    // TODO - overload operators
 };
 
 
@@ -101,6 +106,8 @@ public:
         boost::regex e("[^ ]+$");
         return boost::regex_match(value.c_str(), e);;
     }
+
+    // TODO - overload operators
 };
 
 /** Determines whether a string value is a valid type indicator */
