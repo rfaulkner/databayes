@@ -322,7 +322,8 @@ public:
             return false;
         }
 
-        delete type;
+        delete lval;
+        delete rval;
     }
 
 
