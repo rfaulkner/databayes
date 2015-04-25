@@ -13,6 +13,7 @@
 
 #include "md5.h"
 #include "emit.h"
+#include "column_types.h"
 
 #include <string>
 #include <unordered_map>
@@ -282,9 +283,27 @@ public:
     /** Switching logic for attribute tuples - defaults to true in absence of a defined comparator */
     static bool compare(AttributeTuple& lhs, AttributeTuple& rhs, std::string comparator) {
 
-        // TODO - lhs and rhs must have matching types
-        // TODO - lhs and rhs must both be valid
-        // TODO - Convert the types
+        // lhs and rhs must have matching types
+        if (lhs.type.compare(rhs.type) != 0)
+            return false;
+
+        // lhs and rhs must both be valid
+        // TODO - floats and ints can match
+        if (validateType(lhs.type, lhs.value) || validateType(rhs.type, rhs.value))
+            return false;
+
+        // Convert the types
+        ColumnBase* lval, rval;
+        if (lhs.type.compare(std::string(COLTYPE_NAME_INT))) {
+            lval = new IntegerColumn(lhs.value);
+            rval = new IntegerColumn(rhs.value);
+        } else if (lhs.type.compare(std::string(COLTYPE_NAME_FLOAT))) {
+            lval = new FloatColumn(lhs.value);
+            rval = new FloatColumn(rhs.value);
+        } else if (lhs.type.compare(std::string(COLTYPE_NAME_STRING))) {
+            lval = new StringColumn(lhs.value);
+            rval = new StringColumn(rhs.value);
+        }
 
         if (std::strcmp(comparator.c_str(), ATTR_TUPLE_COMPARE_LT) == 0)
             return lhs < rhs;
@@ -302,6 +321,8 @@ public:
             emitCLIError("Unrecognized comparator on Attribute Tuple comarison");
             return false;
         }
+
+        delete type;
     }
 
 
