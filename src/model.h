@@ -284,11 +284,13 @@ public:
     static bool compare(AttributeTuple& lhs, AttributeTuple& rhs, std::string comparator) {
 
         // lhs and rhs must have matching types
-        if (lhs.type.compare(rhs.type) != 0)
-            return false;
+        if (lhs.type.compare(rhs.type) != 0 &&
+            !((lhs.type.compare(COLTYPE_NAME_INT) == 0 && rhs.type.compare(COLTYPE_NAME_FLOAT)) ||
+             (rhs.type.compare(COLTYPE_NAME_INT) == 0 && lhs.type.compare(COLTYPE_NAME_FLOAT)))
+           )
+           return false;
 
         // lhs and rhs must both be valid
-        // TODO - floats and ints can match
         if (validateType(lhs.type, lhs.value) || validateType(rhs.type, rhs.value))
             return false;
 
