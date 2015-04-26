@@ -291,7 +291,7 @@ public:
            return false;
 
         // lhs and rhs must both be valid
-        if (validateType(lhs.type, lhs.value) || validateType(rhs.type, rhs.value))
+        if (!validateType(lhs.type, lhs.value) || !validateType(rhs.type, rhs.value))
             return false;
 
         // Convert the types
