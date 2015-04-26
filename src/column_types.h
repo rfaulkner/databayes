@@ -38,8 +38,6 @@ public:
 
     /** Validates the string value as being of this type */
     virtual bool validate(std::string value) { return true; }
-
-    // TODO - overload operators
 };
 
 
@@ -69,6 +67,18 @@ public:
         boost::regex e("^[0-9]+$");
         return boost::regex_match(value.c_str(), e);;
     }
+
+    bool operator>(const AttributeTuple &rhs) const { return atoi(this->value.c_str()) > atoi(rhs.value.c_str()); }
+
+    bool operator<(const AttributeTuple &rhs) const { return rhs > *this; }
+
+    bool operator>=(const AttributeTuple &rhs) const { return *this > rhs || *this == rhs; }
+
+    bool operator<=(const AttributeTuple &rhs) const { return *this < rhs || *this == rhs; }
+
+    bool operator==(const AttributeTuple &other) const { return atoi(this->value.c_str()) == atoi(other.value.c_str()); }
+
+    bool operator!=(const AttributeTuple &other) const { return !(*this==other); }
 };
 
 
@@ -87,7 +97,17 @@ public:
         return boost::regex_match(value.c_str(), e);
     }
 
-    // TODO - overload operators
+    bool operator>(const AttributeTuple &rhs) const { return atof(this->value.c_str()) > atof(rhs.value.c_str()); }
+
+    bool operator<(const AttributeTuple &rhs) const { return rhs > *this; }
+
+    bool operator>=(const AttributeTuple &rhs) const { return *this > rhs || *this == rhs; }
+
+    bool operator<=(const AttributeTuple &rhs) const { return *this < rhs || *this == rhs; }
+
+    bool operator==(const AttributeTuple &other) const { return atof(this->value.c_str()) == atof(other.value.c_str()); }
+
+    bool operator!=(const AttributeTuple &other) const { return !(*this==other); }
 };
 
 
@@ -107,7 +127,17 @@ public:
         return boost::regex_match(value.c_str(), e);;
     }
 
-    // TODO - overload operators
+    bool operator>(const AttributeTuple &rhs) const { return this->value.c_str()[0] > rhs.value.c_str()[0]; }
+
+    bool operator<(const AttributeTuple &rhs) const { return rhs > *this; }
+
+    bool operator>=(const AttributeTuple &rhs) const { return *this > rhs || *this == rhs; }
+
+    bool operator<=(const AttributeTuple &rhs) const { return *this < rhs || *this == rhs; }
+
+    bool operator==(const AttributeTuple &other) const { return strcmp(this->value.c_str(), other.value.c_str()) == 0; }
+
+    bool operator!=(const AttributeTuple &other) const { return !(*this==other); }
 };
 
 /** Determines whether a string value is a valid type indicator */
