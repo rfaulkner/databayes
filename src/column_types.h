@@ -61,6 +61,7 @@ class IntegerColumn : public ColumnBase {
 public:
     IntegerColumn() { this->value = 0; }
     IntegerColumn(int value) { this->value = value; }
+    IntegerColumn(std::string value) { this->value = atoi(value.c_str()); }
     string getType() { return COLTYPE_NAME_INT; }
 
     bool validate(std::string value) {
@@ -68,17 +69,17 @@ public:
         return boost::regex_match(value.c_str(), e);;
     }
 
-    bool operator>(const AttributeTuple &rhs) const { return atoi(this->value.c_str()) > atoi(rhs.value.c_str()); }
+    bool operator>(const IntegerColumn &rhs) const { return this->value > rhs.value; }
 
-    bool operator<(const AttributeTuple &rhs) const { return rhs > *this; }
+    bool operator<(const IntegerColumn &rhs) const { return rhs > *this; }
 
-    bool operator>=(const AttributeTuple &rhs) const { return *this > rhs || *this == rhs; }
+    bool operator>=(const IntegerColumn &rhs) const { return *this > rhs || *this == rhs; }
 
-    bool operator<=(const AttributeTuple &rhs) const { return *this < rhs || *this == rhs; }
+    bool operator<=(const IntegerColumn &rhs) const { return *this < rhs || *this == rhs; }
 
-    bool operator==(const AttributeTuple &other) const { return atoi(this->value.c_str()) == atoi(other.value.c_str()); }
+    bool operator==(const IntegerColumn &other) const { return this->value == other.value; }
 
-    bool operator!=(const AttributeTuple &other) const { return !(*this==other); }
+    bool operator!=(const IntegerColumn &other) const { return !(*this==other); }
 };
 
 
@@ -90,6 +91,7 @@ class FloatColumn : public ColumnBase {
 public:
     FloatColumn() { this->value = 0.0; }
     FloatColumn(float value) { this->value = value; }
+    FloatColumn(std::string value) { this->value = atof(value.c_str()); }
     string getType() { return COLTYPE_NAME_FLOAT; }
 
     bool validate(std::string value) {
@@ -97,17 +99,17 @@ public:
         return boost::regex_match(value.c_str(), e);
     }
 
-    bool operator>(const AttributeTuple &rhs) const { return atof(this->value.c_str()) > atof(rhs.value.c_str()); }
+    bool operator>(const FloatColumn &rhs) const { return this->value > rhs.value; }
 
-    bool operator<(const AttributeTuple &rhs) const { return rhs > *this; }
+    bool operator<(const FloatColumn &rhs) const { return rhs > *this; }
 
-    bool operator>=(const AttributeTuple &rhs) const { return *this > rhs || *this == rhs; }
+    bool operator>=(const FloatColumn &rhs) const { return *this > rhs || *this == rhs; }
 
-    bool operator<=(const AttributeTuple &rhs) const { return *this < rhs || *this == rhs; }
+    bool operator<=(const FloatColumn &rhs) const { return *this < rhs || *this == rhs; }
 
-    bool operator==(const AttributeTuple &other) const { return atof(this->value.c_str()) == atof(other.value.c_str()); }
+    bool operator==(const FloatColumn &other) const { return this->value == other.value; }
 
-    bool operator!=(const AttributeTuple &other) const { return !(*this==other); }
+    bool operator!=(const FloatColumn &other) const { return !(*this==other); }
 };
 
 
@@ -127,17 +129,17 @@ public:
         return boost::regex_match(value.c_str(), e);;
     }
 
-    bool operator>(const AttributeTuple &rhs) const { return this->value.c_str()[0] > rhs.value.c_str()[0]; }
+    bool operator>(const StringColumn &rhs) const { return this->value.c_str()[0] > rhs.value.c_str()[0]; }
 
-    bool operator<(const AttributeTuple &rhs) const { return rhs > *this; }
+    bool operator<(const StringColumn &rhs) const { return rhs > *this; }
 
-    bool operator>=(const AttributeTuple &rhs) const { return *this > rhs || *this == rhs; }
+    bool operator>=(const StringColumn &rhs) const { return *this > rhs || *this == rhs; }
 
-    bool operator<=(const AttributeTuple &rhs) const { return *this < rhs || *this == rhs; }
+    bool operator<=(const StringColumn &rhs) const { return *this < rhs || *this == rhs; }
 
-    bool operator==(const AttributeTuple &other) const { return strcmp(this->value.c_str(), other.value.c_str()) == 0; }
+    bool operator==(const StringColumn &other) const { return strcmp(this->value.c_str(), other.value.c_str()) == 0; }
 
-    bool operator!=(const AttributeTuple &other) const { return !(*this==other); }
+    bool operator!=(const StringColumn &other) const { return !(*this==other); }
 };
 
 /** Determines whether a string value is a valid type indicator */

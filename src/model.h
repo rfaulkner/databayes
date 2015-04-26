@@ -295,14 +295,15 @@ public:
             return false;
 
         // Convert the types
-        ColumnBase* lval, rval;
+        ColumnBase* lval;
+        ColumnBase* rval;
         if (lhs.type.compare(std::string(COLTYPE_NAME_INT))) {
             lval = new IntegerColumn(lhs.value);
             rval = new IntegerColumn(rhs.value);
         } else if (lhs.type.compare(std::string(COLTYPE_NAME_FLOAT))) {
             lval = new FloatColumn(lhs.value);
             rval = new FloatColumn(rhs.value);
-        } else if (lhs.type.compare(std::string(COLTYPE_NAME_STRING))) {
+        } else if (lhs.type.compare(std::string(COLTYPE_NAME_STR))) {
             lval = new StringColumn(lhs.value);
             rval = new StringColumn(rhs.value);
         }
