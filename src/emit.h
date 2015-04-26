@@ -11,12 +11,15 @@
 #ifndef _emit_h
 #define _emit_h
 
-void emitCLIError(std::string message) { cout << std::string("ERR: ") + message << endl; }
+#include <iostream>
+#include <string>
 
-void emitCLIWarning(std::string message) { cout << std::string("WARN: ") + message << endl; }
+void emitCLIError(std::string message) { std::cout << std::string("ERR: ") + message << std::endl; }
 
-void emitCLINote(std::string message) { cout << std::string("NOTE: ") + message << endl; }
+void emitCLIWarning(std::string message) { std::cout << std::string("WARN: ") + message << std::endl; }
 
-void emitCLIGeneric(std::string s) { cout << s << endl; }
+void emitCLINote(std::string message) { std::cout << std::string("NOTE: ") + message << std::endl; }
+
+void emitCLIGeneric(std::string s) { std::cout << s << std::endl; }
 
 #endif
