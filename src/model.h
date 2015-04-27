@@ -249,6 +249,8 @@ public:
 
     AttributeTuple() {}
 
+    AttributeTuple(std::string formattedJson) { this->fromString(formattedJson); }
+
     AttributeTuple(std::string entity, std::string attribute, std::string value, std::string type) {
         this->entity = entity;
         this->attribute = attribute;
@@ -277,7 +279,7 @@ public:
             this->entity = json["entity"].asCString();
             this->attribute = json["attribute"].asCString();
             this->value = json["value"].asCString();
-         } else
+        } else
             emitCLIError("Could not parse json from formatted string.");
     }
 
