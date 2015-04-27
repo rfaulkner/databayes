@@ -438,12 +438,15 @@ public:
     }
 
     // Does the attribute exist in this bucket?
-    bool hasKey(AttributeTuple& attr) {
-        if (this->attrs.find(this->makeKey(attr)) != this->attrs.end())
+    bool hasKey(std::string entity, std::string attr) {
+        if (this->attrs.find(this->makeKey(entity, attr)) != this->attrs.end())
             return true;
         else
             return false;
     }
+
+    // Override hasKey to take an AttributeTuple as an arg
+    bool hasKey(AttributeTuple& attr) { return this->hasKey(attr->entity, attr->attribute); }
 
     // Generate a key in the bucket for this item
     std::string makeKey(AttributeTuple& attr) { return md5(attr.entity + attr.attribute); }
