@@ -262,6 +262,7 @@ public:
         json["entity"] = this->entity;
         json["attribute"] = this->attribute;
         json["value"] = this->value;
+        json["type"] = this->type;
         return json.toStyledString();
     }
 
