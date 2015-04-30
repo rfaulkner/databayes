@@ -331,55 +331,6 @@ public:
         delete lval;
         delete rval;
     }
-
-
-    bool operator>(const AttributeTuple &rhs) const {
-        // convert value to column type and make comparison
-        if (strcmp(rhs.type.c_str(), COLTYPE_NAME_INT) == 0) {
-            return atoi(this->value.c_str()) > atoi(rhs.value.c_str());
-        } else if (strcmp(rhs.type.c_str(), COLTYPE_NAME_FLOAT) == 0) {
-            return atof(this->value.c_str()) > atof(rhs.value.c_str());
-        } else if (strcmp(rhs.type.c_str(), COLTYPE_NAME_STR) == 0) {
-            return this->value.c_str()[0] > rhs.value.c_str()[0];
-        }
-
-        // For unknown types emit a warning and return false
-        emitCLIWarning("Could not recognize type \"" + rhs.type + std::string("\"for: ") + rhs.entity + std::string(".") + rhs.attribute);
-        return false;
-    }
-
-    bool operator<(const AttributeTuple &rhs) const {
-        return rhs > *this;
-    }
-
-    bool operator>=(const AttributeTuple &rhs) const {
-        return *this > rhs || *this == rhs;
-    }
-
-    bool operator<=(const AttributeTuple &rhs) const {
-        return *this < rhs || *this == rhs;
-    }
-
-    bool operator==(const AttributeTuple &other) const {
-
-        // convert value to column type and make comparison
-        if (strcmp(other.type.c_str(), COLTYPE_NAME_INT) == 0) {
-            return atoi(this->value.c_str()) == atoi(other.value.c_str());
-        } else if (strcmp(other.type.c_str(), COLTYPE_NAME_FLOAT) == 0) {
-            return atof(this->value.c_str()) == atof(other.value.c_str());
-        } else if (strcmp(other.type.c_str(), COLTYPE_NAME_STR)) {
-            return strcmp(this->value.c_str(), other.value.c_str()) == 0;
-        }
-
-        // For unknown types emit a warning and return false
-        emitCLIWarning(std::string("Could not recognize type \"") + other.type + std::string("\"for: ") + other.entity + std::string(".") + other.attribute);
-        return false;
-    }
-
-    bool operator!=(const AttributeTuple &other) const {
-        return !(*this==other);
-    }
-
 };
 
 /**
