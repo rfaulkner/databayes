@@ -419,6 +419,18 @@ public:
     }
 
     // Remove an existing attribute from the bucket
+    vector<AttributeTuple&> getAttributes(std::string entity, std::string attr) {
+        vector<std::string>* tupleStrings;
+        vector<AttributeTuple&> attrs;
+        if (!hasKey(entity, attr)) {
+            tupleStrings = &(attrs[this->makeKey(entity, attr)]);
+            for (std::vector<std::string>::iterator it = tupleStrings->begin(); it != tupleStrings->end(); ++it)
+                attrs.push_back(AttributeTuple(*it));
+        }
+        return attrs;
+    }
+
+    // Remove an existing attribute from the bucket
     bool removeAttribute(AttributeTuple& attr) { return this->attrs.erase(this->makeKey(attr)) == 0; }
 
     // Get hashmap copy
