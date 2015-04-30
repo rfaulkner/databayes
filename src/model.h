@@ -419,11 +419,11 @@ public:
     }
 
     // Remove an existing attribute from the bucket
-    vector<AttributeTuple&> getAttributes(std::string entity, std::string attr) {
+    vector<AttributeTuple> getAttributes(std::string entity, std::string attr) {
         vector<std::string>* tupleStrings;
-        vector<AttributeTuple&> attrs;
+        vector<AttributeTuple> attrs;
         if (!hasKey(entity, attr)) {
-            tupleStrings = &(attrs[this->makeKey(entity, attr)]);
+            tupleStrings = &(this->attrs[this->makeKey(entity, attr)]);
             for (std::vector<std::string>::iterator it = tupleStrings->begin(); it != tupleStrings->end(); ++it)
                 attrs.push_back(AttributeTuple(*it));
         }
@@ -460,7 +460,7 @@ public:
     }
 
     // Override hasKey to take an AttributeTuple as an arg
-    bool hasKey(AttributeTuple& attr) { return this->hasKey(attr->entity, attr->attribute); }
+    bool hasKey(AttributeTuple& attr) { return this->hasKey(attr.entity, attr.attribute); }
 
     // Generate a key in the bucket for this item
     std::string makeKey(AttributeTuple& attr) { return md5(attr.entity + attr.attribute); }
