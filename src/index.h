@@ -422,6 +422,7 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
     std::string key, value;
     AttributeTuple currAttr, bucketAttr;
     std::vector<int> killIndices;
+    vector<AttributeTuple> attrs;
 
     cout << filterAttrs.stringify() << endl;
 
@@ -431,10 +432,14 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
         // Match left hand relations
         for (valpair::iterator it_inner = it->attrs_left.begin(); it_inner != it->attrs_left.end(); ++it_inner) {
             currAttr = AttributeTuple(it->name_left, std::get<0>(*it_inner), std::get<1>(*it_inner), it->types_left[std::get<0>(*it_inner)]);
-            cout << currAttr.toString() << endl;
+
             // If the entity is empty (the entity:attr was not on the bucket) continue, otherwise compare
-            if (filterAttrs.isAttribute(currAttr)) {
-                matching = AttributeTuple::compare(bucketAttr, currAttr, comparator);
+            if (filterAttrs.hasKey(currAttr)) {
+                attrs = filterAttrs.getAttributes(currAttr.entity, currAttr.attribute);
+                for (vector<AttributeTuple>::iterator itTuple = attrs.begin(); itTuple != attrs.end(); ++itTuple) {
+                    bucketAttr = *itTuple;
+                    matching = matching && AttributeTuple::compare(bucketAttr, currAttr, comparator);
+                }
                 if (!matching) break;
             }
         }
@@ -443,9 +448,15 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
         if (matching)
             for (valpair::iterator it_inner = it->attrs_right.begin(); it_inner != it->attrs_right.end(); ++it_inner) {
                 currAttr = AttributeTuple(it->name_right, std::get<0>(*it_inner), std::get<1>(*it_inner), it->types_right[std::get<0>(*it_inner)]);
-                cout << currAttr.toString() << endl;
-                if (filterAttrs.isAttribute(currAttr)) {
-                    matching = AttributeTuple::compare(bucketAttr, currAttr, comparator);
+                // cout << currAttr.toString() << endl;
+
+                // If the entity is empty (the entity:attr was not on the bucket) continue, otherwise compare
+                if (filterAttrs.hasKey(currAttr)) {
+                    attrs = filterAttrs.getAttributes(currAttr.entity, currAttr.attribute);
+                    for (vector<AttributeTuple>::iterator itTuple = attrs.begin(); itTuple != attrs.end(); ++itTuple) {
+                        bucketAttr = *itTuple;
+                        matching = matching && AttributeTuple::compare(bucketAttr, currAttr, comparator);
+                    }
                     if (!matching) break;
                 }
             }
