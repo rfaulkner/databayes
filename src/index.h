@@ -504,8 +504,8 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
 void IndexHandler::filterRelations(std::vector<Json::Value>& relations, AttributeBucket& filterAttrs, std::string comparator) {
     std::vector<Relation> relationsObj;
     relationsObj = this->Json2RelationVector(relations);
-    this->filterRelations<Type>(relationsObj, filterAttrs, comparator);
-    relations = this->Relation2JsonVector(relations);
+    this->filterRelations(relationsObj, filterAttrs, comparator);
+    relations = this->Relation2JsonVector(relationsObj);
 }
 
 /** Fetch the number of relations existing */
