@@ -419,12 +419,13 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
     if (filterAttrs.getAttributeHash().size() == 0) return;
 
     bool matching = true;
+    bool comparison = true;
     std::string key, value;
     AttributeTuple currAttr, bucketAttr;
     std::vector<int> killIndices;
     vector<AttributeTuple> attrs;
 
-    cout << filterAttrs.stringify() << endl;
+    // cout << filterAttrs.stringify() << endl;
 
     // Iterate over relations
     for (std::vector<Relation>::iterator it = relations.begin(); it != relations.end(); ++it) {
@@ -438,7 +439,18 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
                 attrs = filterAttrs.getAttributes(currAttr.entity, currAttr.attribute);
                 for (vector<AttributeTuple>::iterator itTuple = attrs.begin(); itTuple != attrs.end(); ++itTuple) {
                     bucketAttr = *itTuple;
-                    matching = matching && AttributeTuple::compare(bucketAttr, currAttr, comparator);
+
+                    // Perform the comparison of the attributes
+                    if (currAttr.type.compare(COLTYPE_NAME_INT) == 0)
+                        comparison = AttributeTuple::compare<IntegerColumn>(bucketAttr, currAttr, comparator);
+                    else if (currAttr.type.compare(COLTYPE_NAME_FLOAT) == 0)
+                        comparison = AttributeTuple::compare<FloatColumn>(bucketAttr, currAttr, comparator);
+                    else if (currAttr.type.compare(COLTYPE_NAME_STR) == 0)
+                        comparison = AttributeTuple::compare<StringColumn>(bucketAttr, currAttr, comparator);
+                    else {
+                        matching = matching && comparison;
+                    }
+                    matching = matching && comparison;
                 }
                 if (!matching) break;
             }
@@ -455,13 +467,24 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
                     attrs = filterAttrs.getAttributes(currAttr.entity, currAttr.attribute);
                     for (vector<AttributeTuple>::iterator itTuple = attrs.begin(); itTuple != attrs.end(); ++itTuple) {
                         bucketAttr = *itTuple;
-                        matching = matching && AttributeTuple::compare(bucketAttr, currAttr, comparator);
+
+                        // Perform the comparison of the attributes
+                        if (currAttr.type.compare(COLTYPE_NAME_INT) == 0)
+                            comparison = AttributeTuple::compare<IntegerColumn>(bucketAttr, currAttr, comparator);
+                        else if (currAttr.type.compare(COLTYPE_NAME_FLOAT) == 0)
+                            comparison = AttributeTuple::compare<FloatColumn>(bucketAttr, currAttr, comparator);
+                        else if (currAttr.type.compare(COLTYPE_NAME_STR) == 0)
+                            comparison = AttributeTuple::compare<StringColumn>(bucketAttr, currAttr, comparator);
+                        else {
+                            matching = matching && comparison;
+                        }
+                        matching = matching && comparison;
                     }
                     if (!matching) break;
                 }
             }
 
-        cout << matching << endl;
+        // cout << matching << endl;
         if (!matching)
             killIndices.push_back(std::distance(relations.begin(), it));
 
@@ -481,7 +504,7 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
 void IndexHandler::filterRelations(std::vector<Json::Value>& relations, AttributeBucket& filterAttrs, std::string comparator) {
     std::vector<Relation> relationsObj;
     relationsObj = this->Json2RelationVector(relations);
-    this->filterRelations(relationsObj, filterAttrs, comparator);
+    this->filterRelations<Type>(relationsObj, filterAttrs, comparator);
     relations = this->Relation2JsonVector(relations);
 }
 
