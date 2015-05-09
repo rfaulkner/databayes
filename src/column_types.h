@@ -36,14 +36,9 @@ public:
     /** Returns the object type */
     virtual std::string getType() { return COLTYPE_NAME_BASE; }
 
-    /** Virtual op overload methods */
+    /** Validates the string value as being of this type */
     virtual bool validate(std::string value) { return true; }
-    virtual bool operator>(const IntegerColumn &rhs) const = 0;
-    virtual bool operator<(const IntegerColumn &rhs) const = 0;
-    virtual bool operator>=(const IntegerColumn &rhs) const = 0;
-    virtual bool operator<=(const IntegerColumn &rhs) const = 0;
-    virtual bool operator==(const IntegerColumn &other) const = 0;
-    virtual bool operator!=(const IntegerColumn &other) const = 0;
+
 };
 
 
