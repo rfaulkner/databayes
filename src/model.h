@@ -284,6 +284,7 @@ public:
     }
 
     /** Switching logic for attribute tuples - defaults to true in absence of a defined comparator */
+    template <class Type>
     static bool compare(AttributeTuple& lhs, AttributeTuple& rhs, std::string comparator) {
 
         // lhs and rhs must have matching types
@@ -298,38 +299,26 @@ public:
             return false;
 
         // Convert the types
-        ColumnBase &lval;
-        ColumnBase &rval;
-        if (lhs.type.compare(std::string(COLTYPE_NAME_INT))) {
-            lval = IntegerColumn(lhs.value);
-            rval = IntegerColumn(rhs.value);
-        } else if (lhs.type.compare(std::string(COLTYPE_NAME_FLOAT))) {
-            lval = FloatColumn(lhs.value);
-            rval = FloatColumn(rhs.value);
-        } else if (lhs.type.compare(std::string(COLTYPE_NAME_STR))) {
-            lval = StringColumn(lhs.value);
-            rval = StringColumn(rhs.value);
-        }
+        Type lval = Type(lhs.value);
+        Type rval = Type(rhs.value);
 
         if (std::strcmp(comparator.c_str(), ATTR_TUPLE_COMPARE_LT) == 0)
-            return lhs < rhs;
+            return lval < rval;
         else if (std::strcmp(comparator.c_str(), ATTR_TUPLE_COMPARE_GT) == 0)
-            return lhs > rhs;
+            return lval > rval;
         else if (std::strcmp(comparator.c_str(), ATTR_TUPLE_COMPARE_LTE) == 0)
-            return lhs <= rhs;
+            return lval <= rval;
         else if (std::strcmp(comparator.c_str(), ATTR_TUPLE_COMPARE_GTE) == 0)
-            return lhs >= rhs;
+            return lval >= rval;
         else if (std::strcmp(comparator.c_str(), ATTR_TUPLE_COMPARE_NE) == 0)
-            return lhs != rhs;
+            return lval != rval;
         else if (std::strcmp(comparator.c_str(), ATTR_TUPLE_COMPARE_EQ) == 0)
-            return lhs == rhs;
+            return lval == rval;
         else {   // Error - unrecognized operator
             emitCLIError("Unrecognized comparator on Attribute Tuple comarison");
             return false;
         }
 
-        delete lval;
-        delete rval;
     }
 };
 
