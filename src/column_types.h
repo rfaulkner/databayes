@@ -40,7 +40,7 @@ public:
     virtual bool validate(std::string value) { return true; }
 
     /** Convert the type value to a string */
-    virtual std:string toString() = 0
+    virtual std::string toString() { return ""; };
 
 };
 
@@ -54,7 +54,7 @@ public:
     NullColumn() { this->value = NULL; }
     string getType() { return COLTYPE_NAME_NULL; }
     bool validate(std::string value) { return true; }
-    std:string toString() { return "null column"; }
+    std::string toString() { return "null column"; }
 };
 
 
@@ -74,7 +74,7 @@ public:
         return boost::regex_match(value.c_str(), e);;
     }
 
-    std:string toString() { return std::string(COLTYPE_NAME_INT) + std:string(":") + std:string(value); }
+    std::string toString() { return std::string(COLTYPE_NAME_INT) + std::string(":") + std::to_string(value); }
 
     bool operator>(const IntegerColumn &rhs) const { return this->value > rhs.value; }
 
@@ -106,7 +106,7 @@ public:
         return boost::regex_match(value.c_str(), e);
     }
 
-    std:string toString() { return std::string(COLTYPE_NAME_FLOAT) + std:string(":") + std:string(value); }
+    std::string toString() { return std::string(COLTYPE_NAME_FLOAT) + std::string(":") + std::to_string(value); }
 
     bool operator>(const FloatColumn &rhs) const { return this->value > rhs.value; }
 
@@ -138,7 +138,7 @@ public:
         return boost::regex_match(value.c_str(), e);;
     }
 
-    std:string toString() { return std::string(COLTYPE_NAME_STR) + std:string(":") + value; }
+    std::string toString() { return std::string(COLTYPE_NAME_STR) + std::string(":") + value; }
 
     bool operator>(const StringColumn &rhs) const { return this->value.c_str()[0] > rhs.value.c_str()[0]; }
 
