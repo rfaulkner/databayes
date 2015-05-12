@@ -279,6 +279,7 @@ public:
             this->entity = json["entity"].asCString();
             this->attribute = json["attribute"].asCString();
             this->value = json["value"].asCString();
+            this->type = json["type"].asCString();
         } else
             emitCLIError("Could not parse json from formatted string.");
     }
@@ -362,7 +363,7 @@ public:
     vector<AttributeTuple> getAttributes(std::string entity, std::string attr) {
         vector<std::string>* tupleStrings;
         vector<AttributeTuple> attrs;
-        if (!hasKey(entity, attr)) {
+        if (hasKey(entity, attr)) {
             tupleStrings = &(this->attrs[this->makeKey(entity, attr)]);
             for (std::vector<std::string>::iterator it = tupleStrings->begin(); it != tupleStrings->end(); ++it)
                 attrs.push_back(AttributeTuple(*it));
