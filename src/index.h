@@ -425,8 +425,6 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
     std::vector<int> killIndices;
     vector<AttributeTuple> attrs;
 
-    // cout << filterAttrs.stringify() << endl;
-
     // Iterate over relations
     for (std::vector<Relation>::iterator it = relations.begin(); it != relations.end(); ++it) {
 
@@ -436,6 +434,7 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
 
             // If the entity is empty (the entity:attr was not on the bucket) continue, otherwise compare
             if (filterAttrs.hasKey(currAttr)) {
+
                 attrs = filterAttrs.getAttributes(currAttr.entity, currAttr.attribute);
                 for (vector<AttributeTuple>::iterator itTuple = attrs.begin(); itTuple != attrs.end(); ++itTuple) {
                     bucketAttr = *itTuple;
@@ -460,7 +459,6 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
         if (matching)
             for (valpair::iterator it_inner = it->attrs_right.begin(); it_inner != it->attrs_right.end(); ++it_inner) {
                 currAttr = AttributeTuple(it->name_right, std::get<0>(*it_inner), std::get<1>(*it_inner), it->types_right[std::get<0>(*it_inner)]);
-                // cout << currAttr.toString() << endl;
 
                 // If the entity is empty (the entity:attr was not on the bucket) continue, otherwise compare
                 if (filterAttrs.hasKey(currAttr)) {
@@ -484,7 +482,6 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
                 }
             }
 
-        // cout << matching << endl;
         if (!matching)
             killIndices.push_back(std::distance(relations.begin(), it));
 
