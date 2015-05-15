@@ -344,14 +344,14 @@ void testComputeMarginal() {
  *  Tests that removal of entities functions properly
  */
 void testEntityRemoval() {
-    
+
     IndexHandler ih;
     std::vector<std::pair<ColumnBase, std::string>> fields_ent;
-    
+
     // declare three entities
     Entity e("_w", fields_ent);
 
-    if (ih.existsEntity(e)) 
+    if (ih.existsEntity(e))
         ih.removeEntity(e);
     ih.writeEntity(e);
     ih.removeEntity(e);
@@ -474,7 +474,7 @@ void testSamplePairwiseCausal() {
 /**
  *  Ensure that the relation filtering is functioning correclty
  */
-void testIndexFilterRelations() {
+void testIndexFilterRelationsEQ() {
 
     AttributeBucket ab;
     AttributeTuple at;
@@ -520,6 +520,17 @@ void testIndexFilterRelations() {
     rel_out = relations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_EQ);
     assert(rel_out.size() == 0);
+
+    // Third filter test - one filtered, one retained
+    ab = AttributeBucket();
+    at = AttributeTuple("_x", "a", "0", COLTYPE_NAME_INT);
+    ab.addAttribute(at);
+    at = AttributeTuple("_x", "a", "1", COLTYPE_NAME_INT);
+    ab.addAttribute(at);
+    rel_out = relations;
+    ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_EQ);
+    assert(rel_out.size() == 1);
+
 
     // TODO - more tests!
 
