@@ -542,6 +542,23 @@ void testIndexFilterRelationsEQ() {
 
 }
 
+
+/** Test filtering for > */
+void testIndexFilterRelationsGT() { return true; }
+
+
+/** Test filtering for < */
+void testIndexFilterRelationsLT() { return true; }
+
+
+/** Test filtering for >= */
+void testIndexFilterRelationsGTE() { return true; }
+
+
+/** Test filtering for <= */
+void testIndexFilterRelationsLTE() { return true; }
+
+
 /**
  *  Initialize tests that should (and should not) run
  */
