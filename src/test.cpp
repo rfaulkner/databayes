@@ -30,6 +30,43 @@ typedef void (*FnPtr)();
 std::unordered_map<std::string, std::pair<bool, FnPtr>> tests =
     std::unordered_map<std::string, std::pair<bool, FnPtr>>();
 
+/* -- SETUP FUNCTIONS -- */
+
+/* Builds a vector of relations */
+std::vector<Relation> getRelationsList() {
+
+    AttributeBucket ab;
+    std::vector<Relation> relations, rel_out;
+
+    // Initialize fields and types
+    std::vector<std::pair<ColumnBase, std::string>> fields_ent_1, fields_ent_2;
+    std::vector<std::pair<std::string, std::string>> fields_rel_1, fields_rel_2, fields_rel_3;
+    std::unordered_map<std::string, std::string> types_rel_1, types_rel_2;
+
+    fields_ent_1.push_back(std::make_pair(IntegerColumn(), "a"));
+    fields_ent_2.push_back(std::make_pair(StringColumn(), "b"));
+
+    fields_rel_1.push_back(std::make_pair("a", "1"));
+    fields_rel_2.push_back(std::make_pair("b", "hello"));
+    fields_rel_3.push_back(std::make_pair("b", "goodbye"));
+
+    types_rel_1.insert(std::make_pair("a", COLTYPE_NAME_INT));
+    types_rel_2.insert(std::make_pair("b", COLTYPE_NAME_FLOAT));
+
+    // Initialize entities
+    Entity e1("_x", fields_ent_1), e2("_y", fields_ent_2);
+
+    // Add relation set
+    Relation r1(e1, e2, fields_rel_1, fields_rel_2, types_rel_1, types_rel_2);
+    Relation r2(e1, e2, fields_rel_1, fields_rel_3, types_rel_1, types_rel_2);
+
+    // Populate the relation set
+    relations.push_back(r1);
+
+    return relations;
+}
+
+
 /** Test to ensure that redis keys are correctly returned */
 void testRedisSet() {
     RedisHandler r;
@@ -472,7 +509,7 @@ void testSamplePairwiseCausal() {
 }
 
 /**
- *  Ensure that the relation filtering is functioning correclty
+ *  Ensure that the relation filtering is functioning correctly
  */
 void testIndexFilterRelationsEQ() {
 
@@ -481,30 +518,7 @@ void testIndexFilterRelationsEQ() {
     IndexHandler ih;
     std::vector<Relation> relations, rel_out;
 
-    // Initialize fields and types
-    std::vector<std::pair<ColumnBase, std::string>> fields_ent_1, fields_ent_2;
-    std::vector<std::pair<std::string, std::string>> fields_rel_1, fields_rel_2, fields_rel_3;
-    std::unordered_map<std::string, std::string> types_rel_1, types_rel_2;
-
-    fields_ent_1.push_back(std::make_pair(IntegerColumn(), "a"));
-    fields_ent_2.push_back(std::make_pair(StringColumn(), "b"));
-
-    fields_rel_1.push_back(std::make_pair("a", "1"));
-    fields_rel_2.push_back(std::make_pair("b", "hello"));
-    fields_rel_3.push_back(std::make_pair("b", "goodbye"));
-
-    types_rel_1.insert(std::make_pair("a", COLTYPE_NAME_INT));
-    types_rel_2.insert(std::make_pair("b", COLTYPE_NAME_FLOAT));
-
-    // Initialize entities
-    Entity e1("_x", fields_ent_1), e2("_y", fields_ent_2);
-
-    // Add relation set
-    Relation r1(e1, e2, fields_rel_1, fields_rel_2, types_rel_1, types_rel_2);
-    Relation r2(e1, e2, fields_rel_1, fields_rel_3, types_rel_1, types_rel_2);
-
-    // Populate the relation set
-    relations.push_back(r1);
+    relations = getRelationsList();
 
     // First filter test - One relation meets a single condition
     at = AttributeTuple("_x", "a", "1", COLTYPE_NAME_INT);
@@ -577,7 +591,7 @@ void initTests() {
     tests.insert(std::make_pair("testFieldAssignTypeMismatchFloat", std::make_pair(false, testFieldAssignTypeMismatchFloat)));
     tests.insert(std::make_pair("testFieldAssignTypeMismatchString", std::make_pair(false, testFieldAssignTypeMismatchString)));
     tests.insert(std::make_pair("testCountRelations", std::make_pair(false, testCountRelations)));
-    tests.insert(std::make_pair("testIndexFilterRelations", std::make_pair(true, testIndexFilterRelations)));
+    tests.insert(std::make_pair("testIndexFilterRelationsEQ", std::make_pair(true, testIndexFilterRelations)));
     tests.insert(std::make_pair("testRelation_toJson", std::make_pair(false, testRelation_toJson)));
 }
 
