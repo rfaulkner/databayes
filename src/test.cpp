@@ -591,7 +591,11 @@ void initTests() {
     tests.insert(std::make_pair("testFieldAssignTypeMismatchFloat", std::make_pair(false, testFieldAssignTypeMismatchFloat)));
     tests.insert(std::make_pair("testFieldAssignTypeMismatchString", std::make_pair(false, testFieldAssignTypeMismatchString)));
     tests.insert(std::make_pair("testCountRelations", std::make_pair(false, testCountRelations)));
-    tests.insert(std::make_pair("testIndexFilterRelationsEQ", std::make_pair(true, testIndexFilterRelations)));
+    tests.insert(std::make_pair("testIndexFilterRelationsEQ", std::make_pair(true, testIndexFilterRelationsEQ)));
+    tests.insert(std::make_pair("testIndexFilterRelationsGT", std::make_pair(false, testIndexFilterRelationsGT)));
+    tests.insert(std::make_pair("testIndexFilterRelationsLT", std::make_pair(false, testIndexFilterRelationsLT)));
+    tests.insert(std::make_pair("testIndexFilterRelationsGTE", std::make_pair(false, testIndexFilterRelationsGTE)));
+    tests.insert(std::make_pair("testIndexFilterRelationsLTE", std::make_pair(false, testIndexFilterRelationsLTE)));
     tests.insert(std::make_pair("testRelation_toJson", std::make_pair(false, testRelation_toJson)));
 }
 
