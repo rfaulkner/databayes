@@ -526,6 +526,7 @@ void testIndexFilterRelationsEQ() {
     rel_out = relations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_EQ);
     assert(rel_out.size() == 1);
+    assert(rel_out[0].getValue("_x", "a") == 1);
 
     // Second filter test - One relation fails to meet all conditions
     at = AttributeTuple("_x", "a", "0", COLTYPE_NAME_INT);
@@ -544,6 +545,7 @@ void testIndexFilterRelationsEQ() {
     rel_out = relations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_EQ);
     assert(rel_out.size() == 1);
+    assert(rel_out[0].getValue("_x", "a") == 1);
 
 
     // TODO - more tests!
