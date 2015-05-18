@@ -547,9 +547,6 @@ void testIndexFilterRelationsEQ() {
     assert(rel_out.size() == 1);
     assert(rel_out[0].getValue("_x", "a") == 1);
 
-
-    // TODO - more tests!
-
     // Cleanup
     ih.removeEntity(e1);
     ih.removeEntity(e2);
@@ -560,7 +557,25 @@ void testIndexFilterRelationsEQ() {
 
 
 /** Test filtering for > */
-void testIndexFilterRelationsGT() { return true; }
+void testIndexFilterRelationsGT() {
+
+    AttributeBucket ab;
+    AttributeTuple at;
+    IndexHandler ih;
+    std::vector<Relation> relations, rel_out;
+
+    relations = getRelationsList();
+
+    // First filter test - One relation meets a single condition
+    at = AttributeTuple("_x", "a", "2", COLTYPE_NAME_INT);
+    ab.addAttribute(at);
+    rel_out = relations;
+    ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_GT);
+    assert(rel_out.size() == 1);
+    assert(rel_out[0].getValue("_x", "a") == 1);
+
+    return true;
+}
 
 
 /** Test filtering for < */
