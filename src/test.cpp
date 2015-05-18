@@ -526,7 +526,7 @@ void testIndexFilterRelationsEQ() {
     rel_out = relations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_EQ);
     assert(rel_out.size() == 1);
-    assert(rel_out[0].getValue("_x", "a") == 1);
+    assert(rel_out[0].getValue("_x", "a").compare("1") == 0);
 
     // Second filter test - One relation fails to meet all conditions
     at = AttributeTuple("_x", "a", "0", COLTYPE_NAME_INT);
@@ -545,13 +545,13 @@ void testIndexFilterRelationsEQ() {
     rel_out = relations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_EQ);
     assert(rel_out.size() == 1);
-    assert(rel_out[0].getValue("_x", "a") == 1);
+    assert(rel_out[0].getValue("_x", "a").compare("1") == 0);
 
     // Cleanup
-    ih.removeEntity(e1);
-    ih.removeEntity(e2);
-    ih.removeRelation(r1);
-    ih.removeRelation(r2);
+    // ih.removeEntity(e1);
+    // ih.removeEntity(e2);
+    // ih.removeRelation(r1);
+    // ih.removeRelation(r2);
 
 }
 
@@ -567,27 +567,26 @@ void testIndexFilterRelationsGT() {
     relations = getRelationsList();
 
     // First filter test - One relation meets a single condition
-    at = AttributeTuple("_x", "a", "2", COLTYPE_NAME_INT);
+    at = AttributeTuple("_x", "a", "0", COLTYPE_NAME_INT);
     ab.addAttribute(at);
     rel_out = relations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_GT);
     assert(rel_out.size() == 1);
-    assert(rel_out[0].getValue("_x", "a") == 1);
+    assert(rel_out[0].getValue("_x", "a").compare("1") == 0);
 
-    return true;
 }
 
 
 /** Test filtering for < */
-void testIndexFilterRelationsLT() { return true; }
+void testIndexFilterRelationsLT() { }
 
 
 /** Test filtering for >= */
-void testIndexFilterRelationsGTE() { return true; }
+void testIndexFilterRelationsGTE() { }
 
 
 /** Test filtering for <= */
-void testIndexFilterRelationsLTE() { return true; }
+void testIndexFilterRelationsLTE() { }
 
 
 /**
