@@ -30,6 +30,28 @@ typedef void (*FnPtr)();
 std::unordered_map<std::string, std::pair<bool, FnPtr>> tests =
     std::unordered_map<std::string, std::pair<bool, FnPtr>>();
 
+// Global vectors to manage created entities and relations
+std::vector<Entities> openEntities;
+std::vector<Relations> openEntities;
+
+
+/** Create an entity for testing */
+void makeTestEntity(std::string name, defpair cols) {
+    // TODO
+}
+
+
+/** Create a relations for testing */
+void makeTestRelation(std::string e1,
+                      std::string e2,
+                      valpair e1Vals,
+                      valpair e2Vals
+                      std::unordered_map<std::string, std::string> e1Types,
+                      std::unordered_map<std::string, std::string> e2Types) {
+    // TODO
+}
+
+
 /* -- SETUP FUNCTIONS -- */
 
 /* Builds a vector of relations */
@@ -66,6 +88,9 @@ std::vector<Relation> getRelationsList() {
     return relations;
 }
 
+
+
+/* -- TEST FUNCTIONS -- */
 
 /** Test to ensure that redis keys are correctly returned */
 void testRedisSet() {
