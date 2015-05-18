@@ -234,17 +234,20 @@ public:
         return jsonVal;
     }
 
-    /** Fetch an attribute value from the relation */
+    /** Fetch an attribute value from the relation
+            TODO - return something more informative than "" on fail
+    */
     std::string getValue(std::string entity, std::string attribute) {
-
         if (this->name_left.compare(entity)) {
-            // TODO - ensure that this attribute is present
-            return attrs_left[attribute];
+            for (valpair::iterator it = attrs_left.begin(); it != attrs_left.end(); ++it)
+                if (it->first.compare(attribute))
+                    return it->second;
         } else if (this->name_right.compare(entity)) {
-            // TODO - ensure that this attribute is present
-            return attrs_right[attribute];
+            for (valpair::iterator it = attrs_right.begin(); it != attrs_right.end(); ++it)
+                if (it->first.compare(attribute))
+                    return it->second;
         }
-
+        // Attribute not found
         return std::string("");
     }
 };
