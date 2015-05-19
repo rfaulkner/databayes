@@ -32,7 +32,7 @@ std::unordered_map<std::string, std::pair<bool, FnPtr>> tests =
 
 // Global vectors to manage created entities and relations
 std::vector<Entities> openEntities;
-std::vector<Relations> openEntities;
+std::vector<Relations> openRelations;
 
 
 /** Create an entity for testing */
