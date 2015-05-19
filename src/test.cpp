@@ -49,7 +49,8 @@ void makeTestRelation(std::string e1,
                       valpair e2Vals
                       std::unordered_map<std::string, std::string> e1Types,
                       std::unordered_map<std::string, std::string> e2Types) {
-    // TODO
+    Relation r(e1, e2, e1Vals, e2Vals, e1Types, e2Types);
+    openRelations.push_back(r);
 }
 
 
