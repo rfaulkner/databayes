@@ -37,7 +37,8 @@ std::vector<Relations> openRelations;
 
 /** Create an entity for testing */
 void makeTestEntity(std::string name, defpair cols) {
-    // TODO
+    Entity e(name, cols);
+    openEntities.push_back(e);
 }
 
 
