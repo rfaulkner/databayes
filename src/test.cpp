@@ -87,11 +87,12 @@ std::vector<Relation> getRelationsList() {
     types_rel_2.insert(std::make_pair("b", COLTYPE_NAME_FLOAT));
 
     // Initialize entities
-    Entity e1("_x", fields_ent_1), e2("_y", fields_ent_2);
+    makeTestEntity("_x", fields_ent_1);
+    makeTestEntity("_y", fields_ent_2);
 
     // Add relation set
-    Relation r1(e1, e2, fields_rel_1, fields_rel_2, types_rel_1, types_rel_2);
-    Relation r2(e1, e2, fields_rel_1, fields_rel_3, types_rel_1, types_rel_2);
+    makeTestRelation(e1, e2, fields_rel_1, fields_rel_2, types_rel_1, types_rel_2);
+    makeTestRelation(e1, e2, fields_rel_1, fields_rel_3, types_rel_1, types_rel_2);
 
     // Populate the relation set
     relations.push_back(r1);
@@ -583,6 +584,7 @@ void testIndexFilterRelationsEQ() {
     assert(rel_out.size() == 1);
     assert(rel_out[0].getValue("_x", "a").compare("1") == 0);
 
+    releaseObjects();
 }
 
 
