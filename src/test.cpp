@@ -31,8 +31,8 @@ std::unordered_map<std::string, std::pair<bool, FnPtr>> tests =
     std::unordered_map<std::string, std::pair<bool, FnPtr>>();
 
 // Global vectors to manage created entities and relations
-std::vector<Entities> openEntities;
-std::vector<Relations> openRelations;
+std::vector<Entity> openEntities;
+std::vector<Relation> openRelations;
 
 
 /** Create an entity for testing */
@@ -51,6 +51,15 @@ void makeTestRelation(std::string e1,
                       std::unordered_map<std::string, std::string> e2Types) {
     Relation r(e1, e2, e1Vals, e2Vals, e1Types, e2Types);
     openRelations.push_back(r);
+}
+
+/** Free the allocated entities and relations */
+void releaseObjects() {
+    IndexHandler ih;
+    for (std::vector<std::Entity>::iterator it = openEntities.begin(); it != openEntities.end(); ++it)
+        ih.removeEntity(*it);
+    for (std::vector<std::Relation>::iterator it = openRelations.begin(); it != openRelations.end(); ++it)
+        ih.removeRelation(*it);
 }
 
 
@@ -573,12 +582,6 @@ void testIndexFilterRelationsEQ() {
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_EQ);
     assert(rel_out.size() == 1);
     assert(rel_out[0].getValue("_x", "a").compare("1") == 0);
-
-    // Cleanup
-    // ih.removeEntity(e1);
-    // ih.removeEntity(e2);
-    // ih.removeRelation(r1);
-    // ih.removeRelation(r2);
 
 }
 
