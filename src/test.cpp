@@ -46,7 +46,7 @@ void makeTestEntity(std::string name, defpair cols) {
 void makeTestRelation(std::string e1,
                       std::string e2,
                       valpair e1Vals,
-                      valpair e2Vals
+                      valpair e2Vals,
                       std::unordered_map<std::string, std::string> e1Types,
                       std::unordered_map<std::string, std::string> e2Types) {
     Relation r(e1, e2, e1Vals, e2Vals, e1Types, e2Types);
@@ -56,9 +56,9 @@ void makeTestRelation(std::string e1,
 /** Free the allocated entities and relations */
 void releaseObjects() {
     IndexHandler ih;
-    for (std::vector<std::Entity>::iterator it = openEntities.begin(); it != openEntities.end(); ++it)
+    for (std::vector<Entity>::iterator it = openEntities.begin(); it != openEntities.end(); ++it)
         ih.removeEntity(*it);
-    for (std::vector<std::Relation>::iterator it = openRelations.begin(); it != openRelations.end(); ++it)
+    for (std::vector<Relation>::iterator it = openRelations.begin(); it != openRelations.end(); ++it)
         ih.removeRelation(*it);
 }
 
@@ -66,7 +66,7 @@ void releaseObjects() {
 /* -- SETUP FUNCTIONS -- */
 
 /* Builds a vector of relations */
-std::vector<Relation> getRelationsList() {
+std::vector<Relation> setRelationsList1() {
 
     AttributeBucket ab;
     std::vector<Relation> relations, rel_out;
@@ -91,13 +91,8 @@ std::vector<Relation> getRelationsList() {
     makeTestEntity("_y", fields_ent_2);
 
     // Add relation set
-    makeTestRelation(e1, e2, fields_rel_1, fields_rel_2, types_rel_1, types_rel_2);
-    makeTestRelation(e1, e2, fields_rel_1, fields_rel_3, types_rel_1, types_rel_2);
-
-    // Populate the relation set
-    relations.push_back(r1);
-
-    return relations;
+    makeTestRelation("_x", "_y", fields_rel_1, fields_rel_2, types_rel_1, types_rel_2);
+    makeTestRelation("_x", "_y", fields_rel_1, fields_rel_3, types_rel_1, types_rel_2);
 }
 
 
@@ -553,14 +548,14 @@ void testIndexFilterRelationsEQ() {
     AttributeBucket ab;
     AttributeTuple at;
     IndexHandler ih;
-    std::vector<Relation> relations, rel_out;
+    std::vector<Relation> rel_out;
 
-    relations = getRelationsList();
+    setRelationsList1();
 
     // First filter test - One relation meets a single condition
     at = AttributeTuple("_x", "a", "1", COLTYPE_NAME_INT);
     ab.addAttribute(at);
-    rel_out = relations;
+    rel_out = openRelations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_EQ);
     assert(rel_out.size() == 1);
     assert(rel_out[0].getValue("_x", "a").compare("1") == 0);
@@ -569,7 +564,7 @@ void testIndexFilterRelationsEQ() {
     at = AttributeTuple("_x", "a", "0", COLTYPE_NAME_INT);
     ab = AttributeBucket();
     ab.addAttribute(at);
-    rel_out = relations;
+    rel_out = openRelations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_EQ);
     assert(rel_out.size() == 0);
 
@@ -579,7 +574,7 @@ void testIndexFilterRelationsEQ() {
     ab.addAttribute(at);
     at = AttributeTuple("_x", "a", "1", COLTYPE_NAME_INT);
     ab.addAttribute(at);
-    rel_out = relations;
+    rel_out = openRelations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_EQ);
     assert(rel_out.size() == 1);
     assert(rel_out[0].getValue("_x", "a").compare("1") == 0);
