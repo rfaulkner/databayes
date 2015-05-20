@@ -66,7 +66,7 @@ void releaseObjects() {
 /* -- SETUP FUNCTIONS -- */
 
 /* Builds a vector of relations */
-std::vector<Relation> setRelationsList1() {
+void setRelationsList1() {
 
     AttributeBucket ab;
     std::vector<Relation> relations, rel_out;
@@ -591,7 +591,7 @@ void testIndexFilterRelationsGT() {
     IndexHandler ih;
     std::vector<Relation> relations, rel_out;
 
-    relations = getRelationsList();
+    setRelationsList1();
 
     // First filter test - One relation meets a single condition
     at = AttributeTuple("_x", "a", "0", COLTYPE_NAME_INT);
