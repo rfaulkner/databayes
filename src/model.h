@@ -238,13 +238,13 @@ public:
             TODO - return something more informative than "" on fail
     */
     std::string getValue(std::string entity, std::string attribute) {
-        if (this->name_left.compare(entity)) {
+        if (this->name_left.compare(entity) == 0) {
             for (valpair::iterator it = attrs_left.begin(); it != attrs_left.end(); ++it)
-                if (it->first.compare(attribute))
+                if (it->first.compare(attribute) == 0)
                     return it->second;
-        } else if (this->name_right.compare(entity)) {
+        } else if (this->name_right.compare(entity) == 0) {
             for (valpair::iterator it = attrs_right.begin(); it != attrs_right.end(); ++it)
-                if (it->first.compare(attribute))
+                if (it->first.compare(attribute) == 0 )
                     return it->second;
         }
         // Attribute not found

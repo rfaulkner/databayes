@@ -560,6 +560,7 @@ void testIndexFilterRelationsEQ() {
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_EQ);
     cout << rel_out.size() << endl;
     assert(rel_out.size() == 2);
+    cout << rel_out[0].getValue("_x", "a") << endl;
     assert(rel_out[0].getValue("_x", "a").compare("1") == 0);
 
     // Second filter test - One relation fails to meet all conditions
