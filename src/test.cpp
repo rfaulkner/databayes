@@ -572,7 +572,7 @@ void testIndexFilterRelationsEQ() {
 
     // Third filter test - one filtered, one retained
     ab = AttributeBucket();
-    at = AttributeTuple("_x", "a", "0", COLTYPE_NAME_INT);
+    at = AttributeTuple("_y", "b", "hello", COLTYPE_NAME_INT);
     ab.addAttribute(at);
     at = AttributeTuple("_x", "a", "1", COLTYPE_NAME_INT);
     ab.addAttribute(at);
