@@ -418,8 +418,8 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
 
     if (filterAttrs.getAttributeHash().size() == 0) return;
 
-    bool matching = true;
-    bool comparison = true;
+    bool matching;
+    bool comparison;
     std::string key, value;
     AttributeTuple currAttr, bucketAttr;
     std::vector<int> killIndices;
@@ -428,6 +428,9 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
     // Iterate over relations
     for (std::vector<Relation>::iterator it = relations.begin(); it != relations.end(); ++it) {
 
+        // reset overall match for this Relation
+        matching = true;
+
         // Match left hand relations
         for (valpair::iterator it_inner = it->attrs_left.begin(); it_inner != it->attrs_left.end(); ++it_inner) {
             currAttr = AttributeTuple(it->name_left, std::get<0>(*it_inner), std::get<1>(*it_inner), it->types_left[std::get<0>(*it_inner)]);
@@ -435,7 +438,9 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
             // If the entity is empty (the entity:attr was not on the bucket) continue, otherwise compare
             if (filterAttrs.hasKey(currAttr)) {
 
+                // Fetch all attributes from the bucket matching the cuurent attribute from the relation
                 attrs = filterAttrs.getAttributes(currAttr.entity, currAttr.attribute);
+
                 for (vector<AttributeTuple>::iterator itTuple = attrs.begin(); itTuple != attrs.end(); ++itTuple) {
                     bucketAttr = *itTuple;
 
@@ -449,8 +454,11 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
                     else {
                         matching = matching && comparison;
                     }
+
                     matching = matching && comparison;
                 }
+
+                // If the comparison fails the match fails
                 if (!matching) break;
             }
         }
