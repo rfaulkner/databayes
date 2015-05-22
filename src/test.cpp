@@ -84,7 +84,7 @@ void setRelationsList1() {
     fields_rel_3.push_back(std::make_pair("b", "goodbye"));
 
     types_rel_1.insert(std::make_pair("a", COLTYPE_NAME_INT));
-    types_rel_2.insert(std::make_pair("b", COLTYPE_NAME_FLOAT));
+    types_rel_2.insert(std::make_pair("b", COLTYPE_NAME_STR));
 
     // Initialize entities
     makeTestEntity("_x", fields_ent_1);
@@ -556,11 +556,8 @@ void testIndexFilterRelationsEQ() {
     at = AttributeTuple("_x", "a", "1", COLTYPE_NAME_INT);
     ab.addAttribute(at);
     rel_out = openRelations;
-    cout << rel_out.size() << endl;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_EQ);
-    cout << rel_out.size() << endl;
     assert(rel_out.size() == 2);
-    cout << rel_out[0].getValue("_x", "a") << endl;
     assert(rel_out[0].getValue("_x", "a").compare("1") == 0);
 
     // Second filter test - One relation fails to meet all conditions
@@ -570,15 +567,18 @@ void testIndexFilterRelationsEQ() {
     rel_out = openRelations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_EQ);
     assert(rel_out.size() == 0);
+    releaseObjects();
+    setRelationsList1();
 
     // Third filter test - one filtered, one retained
     ab = AttributeBucket();
-    at = AttributeTuple("_y", "b", "hello", COLTYPE_NAME_INT);
+    at = AttributeTuple("_y", "b", "hello", COLTYPE_NAME_STR);
     ab.addAttribute(at);
     at = AttributeTuple("_x", "a", "1", COLTYPE_NAME_INT);
     ab.addAttribute(at);
     rel_out = openRelations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_EQ);
+    cout << rel_out.size() << endl;
     assert(rel_out.size() == 1);
     assert(rel_out[0].getValue("_x", "a").compare("1") == 0);
 
