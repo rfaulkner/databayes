@@ -567,8 +567,6 @@ void testIndexFilterRelationsEQ() {
     rel_out = openRelations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_EQ);
     assert(rel_out.size() == 0);
-    releaseObjects();
-    setRelationsList1();
 
     // Third filter test - one filtered, one retained
     ab = AttributeBucket();
@@ -578,7 +576,6 @@ void testIndexFilterRelationsEQ() {
     ab.addAttribute(at);
     rel_out = openRelations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_EQ);
-    cout << rel_out.size() << endl;
     assert(rel_out.size() == 1);
     assert(rel_out[0].getValue("_x", "a").compare("1") == 0);
 
