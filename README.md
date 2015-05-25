@@ -100,7 +100,17 @@ Relations
 Relations are defined across entities and allow a relationship among _entity attribute_ values to be established.  The 
 relation defines two sets of fields with attribute values assigned to _entity attributes_, see the sample below:
 
-    {"cause" : "e1", "entity_left" : "e1", "entity_right" : "e2", "fields_left" : { "#x" : "integer", "_itemcount" : 1, "x" : "1"},   "fields_right" : {"#y" : "float\", "_itemcount" : 1, "y" : "1.0"},   "instance_count" : 1}
+    {"cause" : "e1", "entity_left" : "e1", "entity_right" : "e2", "fields_left" : { "#x" : "integer", "_itemcount" : 1, "x" : "1"},   "fields_right" : {"#y" : "float", "_itemcount" : 1, "y" : "1.0"},   "instance_count" : 1}
+
+The meta data has the following definitions 
+
+ * **entity_left**, specifies the left hand entity that defines the "left" attributes
+ * **entity_right**, specifies the right hand entity that defines the "right" attributes
+ * **cause**, for causal relations this defines the causal entity attribute
+ * **fields_left**, defines the list of left-hand attributes with attribute types and values
+ * **fields_right**, defines the list of right-hand attributes with attribute types and values
+ * **#<entity>**, key indicating the type of an attribute
+ * **itemcount**, stores the integer count of the number of entity attributes in the list
 
 
 Filtering
