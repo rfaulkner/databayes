@@ -79,12 +79,29 @@ The general parser syntax has the following definition:
 More details on how to use these to build entities, relations and how to use generative commands to sample.
 
 
+Entities
+--------
+
+Entities are the core artifacts of _databayes_ that are defined by _entity names_ and _entity attributes_.  They correspond
+closely to what could be thought of as types in _databayes_.  Attributes are given a type and may take on values of that type 
+when defined in relations (below). 
+
+Below is a sample entity representation:
+
+    {"entity" : "e1",   "fields" : {"_itemcount" : 1, "x" : "integer" } }
+
+The key _"entity"_ defines the entity name while _"fields"_ contains a list of keys that correspond to attribute names 
+with their respective types.  The _itemcount_ field simply stores the integer count of the number of entity attributes.
+
+
 Filtering
 ---------
 
 The index provides a means to filter a set of relations via the following method:
 
-    void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBucket& filterAttrs, std::string comparator)
+```
+void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBucket& filterAttrs, std::string comparator)
+```
 
 Given a set of relations and a bucket of attributes each relation in the set is compared against each attribute in the
 bucket.  Only if the relation contains the given attribute is a comparison made.  If the attribute does exist in the relation,
@@ -92,12 +109,14 @@ then the value is compared to that of the bucket attribute given the comparator 
 
 Comparators are defined by the following string values:
 
-    #define ATTR_TUPLE_COMPARE_EQ "="
-    #define ATTR_TUPLE_COMPARE_LT "<"
-    #define ATTR_TUPLE_COMPARE_GT ">"
-    #define ATTR_TUPLE_COMPARE_LTE "<="
-    #define ATTR_TUPLE_COMPARE_GTE ">="
-    #define ATTR_TUPLE_COMPARE_NE "!="
+```
+#define ATTR_TUPLE_COMPARE_EQ "="
+#define ATTR_TUPLE_COMPARE_LT "<"
+#define ATTR_TUPLE_COMPARE_GT ">"
+#define ATTR_TUPLE_COMPARE_LTE "<="
+#define ATTR_TUPLE_COMPARE_GTE ">="
+#define ATTR_TUPLE_COMPARE_NE "!="
+```
 
 Only if the relation returns true on compare for all bucket attributes is the relation retained in the filtered list.  The
 reference to the relations vector is mutated accordingly.
