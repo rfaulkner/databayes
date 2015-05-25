@@ -109,7 +109,7 @@ The meta data has the following definitions
  * **cause**, for causal relations this defines the causal entity attribute
  * **fields_left**, defines the list of left-hand attributes with attribute types and values
  * **fields_right**, defines the list of right-hand attributes with attribute types and values
- * **#<entity>**, key indicating the type of an attribute
+ * **#_entityname_**, key indicating the type of an attribute
  * **itemcount**, stores the integer count of the number of entity attributes in the list
 
 
