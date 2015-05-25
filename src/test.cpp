@@ -111,11 +111,11 @@ void setRelationsList2() {
 
     fields_rel_1.push_back(std::make_pair("a", "1"));
     fields_rel_2.push_back(std::make_pair("b", "2.0"));
-    fields_rel_3.push_back(std::make_pair("b", "goodbye"));
-    fields_rel_3.push_back(std::make_pair("b", "goodbye"));
+    fields_rel_3.push_back(std::make_pair("a", "11"));
+    fields_rel_4.push_back(std::make_pair("b", "12.0"));
 
     types_rel_1.insert(std::make_pair("a", COLTYPE_NAME_INT));
-    types_rel_2.insert(std::make_pair("b", COLTYPE_NAME_STR));
+    types_rel_2.insert(std::make_pair("b", COLTYPE_NAME_FLOAT));
 
     // Initialize entities
     makeTestEntity("_x", fields_ent_1);
@@ -123,7 +123,7 @@ void setRelationsList2() {
 
     // Add relation set
     makeTestRelation("_x", "_y", fields_rel_1, fields_rel_2, types_rel_1, types_rel_2);
-    makeTestRelation("_x", "_y", fields_rel_1, fields_rel_3, types_rel_1, types_rel_2);
+    makeTestRelation("_x", "_y", fields_rel_3, fields_rel_4, types_rel_1, types_rel_2);
 }
 
 /* -- TEST FUNCTIONS -- */
