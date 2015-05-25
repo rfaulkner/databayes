@@ -94,6 +94,15 @@ The key _"entity"_ defines the entity name while _"fields"_ contains a list of k
 with their respective types.  The _itemcount_ field simply stores the integer count of the number of entity attributes.
 
 
+Relations
+---------
+
+Relations are defined across entities and allow a relationship among _entity attribute_ values to be established.  The 
+relation defines two sets of fields with attribute values assigned to _entity attributes_, see the sample below:
+
+    {"cause" : "e1", "entity_left" : "e1", "entity_right" : "e2", "fields_left" : { "#x" : "integer", "_itemcount" : 1, "x" : "1"},   "fields_right" : {"#y" : "float\", "_itemcount" : 1, "y" : "1.0"},   "instance_count" : 1}
+
+
 Filtering
 ---------
 
