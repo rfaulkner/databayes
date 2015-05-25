@@ -95,7 +95,36 @@ void setRelationsList1() {
     makeTestRelation("_x", "_y", fields_rel_1, fields_rel_3, types_rel_1, types_rel_2);
 }
 
+/* Builds a vector of relations */
+void setRelationsList2() {
 
+    AttributeBucket ab;
+    std::vector<Relation> relations, rel_out;
+
+    // Initialize fields and types
+    std::vector<std::pair<ColumnBase, std::string>> fields_ent_1, fields_ent_2;
+    std::vector<std::pair<std::string, std::string>> fields_rel_1, fields_rel_2, fields_rel_3, fields_rel_4;
+    std::unordered_map<std::string, std::string> types_rel_1, types_rel_2;
+
+    fields_ent_1.push_back(std::make_pair(IntegerColumn(), "a"));
+    fields_ent_2.push_back(std::make_pair(FloatColumn(), "b"));
+
+    fields_rel_1.push_back(std::make_pair("a", "1"));
+    fields_rel_2.push_back(std::make_pair("b", "2.0"));
+    fields_rel_3.push_back(std::make_pair("b", "goodbye"));
+    fields_rel_3.push_back(std::make_pair("b", "goodbye"));
+
+    types_rel_1.insert(std::make_pair("a", COLTYPE_NAME_INT));
+    types_rel_2.insert(std::make_pair("b", COLTYPE_NAME_STR));
+
+    // Initialize entities
+    makeTestEntity("_x", fields_ent_1);
+    makeTestEntity("_y", fields_ent_2);
+
+    // Add relation set
+    makeTestRelation("_x", "_y", fields_rel_1, fields_rel_2, types_rel_1, types_rel_2);
+    makeTestRelation("_x", "_y", fields_rel_1, fields_rel_3, types_rel_1, types_rel_2);
+}
 
 /* -- TEST FUNCTIONS -- */
 
@@ -591,7 +620,7 @@ void testIndexFilterRelationsGT() {
     IndexHandler ih;
     std::vector<Relation> relations, rel_out;
 
-    setRelationsList1();
+    setRelationsList2();
 
     // First filter test - One relation meets a single condition
     at = AttributeTuple("_x", "a", "0", COLTYPE_NAME_INT);
