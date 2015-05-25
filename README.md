@@ -79,6 +79,30 @@ The general parser syntax has the following definition:
 More details on how to use these to build entities, relations and how to use generative commands to sample.
 
 
+Filtering
+---------
+
+The index provides a means to filter a set of relations via the following method:
+
+    void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBucket& filterAttrs, std::string comparator)
+
+Given a set of relations and a bucket of attributes each relation in the set is compared against each attribute in the
+bucket.  Only if the relation contains the given attribute is a comparison made.  If the attribute does exist in the relation,
+then the value is compared to that of the bucket attribute given the comparator passed.
+
+Comparators are defined by the following string values:
+
+    #define ATTR_TUPLE_COMPARE_EQ "="
+    #define ATTR_TUPLE_COMPARE_LT "<"
+    #define ATTR_TUPLE_COMPARE_GT ">"
+    #define ATTR_TUPLE_COMPARE_LTE "<="
+    #define ATTR_TUPLE_COMPARE_GTE ">="
+    #define ATTR_TUPLE_COMPARE_NE "!="
+
+Only if the relation returns true on compare for all bucket attributes is the relation retained in the filtered list.  The
+reference to the relations vector is mutated accordingly.
+
+
 Examples
 --------
 
