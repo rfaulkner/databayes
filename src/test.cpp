@@ -58,7 +58,7 @@ void releaseObjects() {
     IndexHandler ih;
     for (std::vector<Entity>::iterator it = openEntities.begin(); it != openEntities.end(); ++it)
         ih.removeEntity(*it);
-    for (std::vector<Relation>::iterator it = openRelations.begin(); it != openRelations.end(); ++it) {
+    for (std::vector<Relation>::iterator it = openRelations.begin(); it != openRelations.end(); ++it)
         ih.removeRelation(*it);
     openEntities.clear();
     openRelations.clear();
@@ -614,36 +614,35 @@ void testIndexFilterRelationsGT() {
     AttributeBucket ab;
     AttributeTuple at;
     IndexHandler ih;
-    std::vector<Relation> relations, rel_out;
+    std::vector<Relation> rel_out;
 
     setRelationsList2();
 
     // First filter test - All relations greater
     at = AttributeTuple("_x", "a", "0", COLTYPE_NAME_INT);
     ab.addAttribute(at);
-    rel_out = relations;
+    rel_out = openRelations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_GT);
-    cout << rel_out.size() << endl;
     assert(rel_out.size() == 2);
 
     // First filter test - One relation greater
     at = AttributeTuple("_x", "a", "5", COLTYPE_NAME_INT);
     ab.addAttribute(at);
-    rel_out = relations;
+    rel_out = openRelations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_GT);
     assert(rel_out.size() == 1);
 
     // First filter test - Neither relation greater
     at = AttributeTuple("_x", "a", "20", COLTYPE_NAME_INT);
     ab.addAttribute(at);
-    rel_out = relations;
+    rel_out = openRelations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_GT);
     assert(rel_out.size() == 0);
 
     // First filter test - Float type test
     at = AttributeTuple("_y", "b", "5.0", COLTYPE_NAME_FLOAT);
     ab.addAttribute(at);
-    rel_out = relations;
+    rel_out = openRelations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_GT);
     assert(rel_out.size() == 1);
 
