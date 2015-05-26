@@ -58,8 +58,10 @@ void releaseObjects() {
     IndexHandler ih;
     for (std::vector<Entity>::iterator it = openEntities.begin(); it != openEntities.end(); ++it)
         ih.removeEntity(*it);
-    for (std::vector<Relation>::iterator it = openRelations.begin(); it != openRelations.end(); ++it)
+    for (std::vector<Relation>::iterator it = openRelations.begin(); it != openRelations.end(); ++it) {
         ih.removeRelation(*it);
+    openEntities.clear();
+    openRelations.clear();
 }
 
 
@@ -627,6 +629,7 @@ void testIndexFilterRelationsGT() {
     ab.addAttribute(at);
     rel_out = relations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_GT);
+    cout << rel_out.size() << endl;
     assert(rel_out.size() == 2);
 
     // First filter test - One relation greater
@@ -649,6 +652,8 @@ void testIndexFilterRelationsGT() {
     rel_out = relations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_GT);
     assert(rel_out.size() == 1);
+
+    releaseObjects();
 }
 
 
@@ -683,7 +688,7 @@ void initTests() {
     tests.insert(std::make_pair("testFieldAssignTypeMismatchString", std::make_pair(false, testFieldAssignTypeMismatchString)));
     tests.insert(std::make_pair("testCountRelations", std::make_pair(false, testCountRelations)));
     tests.insert(std::make_pair("testIndexFilterRelationsEQ", std::make_pair(true, testIndexFilterRelationsEQ)));
-    tests.insert(std::make_pair("testIndexFilterRelationsGT", std::make_pair(false, testIndexFilterRelationsGT)));
+    tests.insert(std::make_pair("testIndexFilterRelationsGT", std::make_pair(true, testIndexFilterRelationsGT)));
     tests.insert(std::make_pair("testIndexFilterRelationsLT", std::make_pair(false, testIndexFilterRelationsLT)));
     tests.insert(std::make_pair("testIndexFilterRelationsGTE", std::make_pair(false, testIndexFilterRelationsGTE)));
     tests.insert(std::make_pair("testIndexFilterRelationsLTE", std::make_pair(false, testIndexFilterRelationsLTE)));
