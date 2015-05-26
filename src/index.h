@@ -446,11 +446,11 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
 
                     // Perform the comparison of the attributes
                     if (currAttr.type.compare(COLTYPE_NAME_INT) == 0)
-                        comparison = AttributeTuple::compare<IntegerColumn>(bucketAttr, currAttr, comparator);
+                        comparison = AttributeTuple::compare<IntegerColumn>(currAttr, bucketAttr, comparator);
                     else if (currAttr.type.compare(COLTYPE_NAME_FLOAT) == 0)
-                        comparison = AttributeTuple::compare<FloatColumn>(bucketAttr, currAttr, comparator);
+                        comparison = AttributeTuple::compare<FloatColumn>(currAttr, bucketAttr, comparator);
                     else if (currAttr.type.compare(COLTYPE_NAME_STR) == 0)
-                        comparison = AttributeTuple::compare<StringColumn>(bucketAttr, currAttr, comparator);
+                        comparison = AttributeTuple::compare<StringColumn>(currAttr, bucketAttr, comparator);
                     else {
                         matching = matching && comparison;
                     }
