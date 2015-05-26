@@ -626,6 +626,7 @@ void testIndexFilterRelationsGT() {
     assert(rel_out.size() == 2);
 
     // First filter test - One relation greater
+    ab = AttributeBucket();
     at = AttributeTuple("_x", "a", "5", COLTYPE_NAME_INT);
     ab.addAttribute(at);
     rel_out = openRelations;
@@ -633,6 +634,7 @@ void testIndexFilterRelationsGT() {
     assert(rel_out.size() == 1);
 
     // First filter test - Neither relation greater
+    ab = AttributeBucket();
     at = AttributeTuple("_x", "a", "20", COLTYPE_NAME_INT);
     ab.addAttribute(at);
     rel_out = openRelations;
@@ -640,6 +642,7 @@ void testIndexFilterRelationsGT() {
     assert(rel_out.size() == 0);
 
     // First filter test - Float type test
+    ab = AttributeBucket();
     at = AttributeTuple("_y", "b", "5.0", COLTYPE_NAME_FLOAT);
     ab.addAttribute(at);
     rel_out = openRelations;
