@@ -70,9 +70,6 @@ void releaseObjects() {
 /* Builds a vector of relations */
 void setRelationsList1() {
 
-    AttributeBucket ab;
-    std::vector<Relation> relations, rel_out;
-
     // Initialize fields and types
     std::vector<std::pair<ColumnBase, std::string>> fields_ent_1, fields_ent_2;
     std::vector<std::pair<std::string, std::string>> fields_rel_1, fields_rel_2, fields_rel_3;
@@ -99,9 +96,6 @@ void setRelationsList1() {
 
 /* Builds a vector of relations */
 void setRelationsList2() {
-
-    AttributeBucket ab;
-    std::vector<Relation> relations, rel_out;
 
     // Initialize fields and types
     std::vector<std::pair<ColumnBase, std::string>> fields_ent_1, fields_ent_2;
