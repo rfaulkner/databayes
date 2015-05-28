@@ -654,7 +654,47 @@ void testIndexFilterRelationsGT() {
 
 
 /** Test filtering for < */
-void testIndexFilterRelationsLT() { }
+void testIndexFilterRelationsLT() {
+    AttributeBucket ab;
+    AttributeTuple at;
+    IndexHandler ih;
+    std::vector<Relation> rel_out;
+
+    setRelationsList2();
+
+    // First filter test - All relations greater
+    at = AttributeTuple("_x", "a", "0", COLTYPE_NAME_INT);
+    ab.addAttribute(at);
+    rel_out = openRelations;
+    ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_LT);
+    assert(rel_out.size() == 0);
+
+    // First filter test - One relation greater
+    ab = AttributeBucket();
+    at = AttributeTuple("_x", "a", "5", COLTYPE_NAME_INT);
+    ab.addAttribute(at);
+    rel_out = openRelations;
+    ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_LT);
+    assert(rel_out.size() == 1);
+
+    // First filter test - Neither relation greater
+    ab = AttributeBucket();
+    at = AttributeTuple("_x", "a", "20", COLTYPE_NAME_INT);
+    ab.addAttribute(at);
+    rel_out = openRelations;
+    ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_LT);
+    assert(rel_out.size() == 2);
+
+    // First filter test - Float type test
+    ab = AttributeBucket();
+    at = AttributeTuple("_y", "b", "5.0", COLTYPE_NAME_FLOAT);
+    ab.addAttribute(at);
+    rel_out = openRelations;
+    ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_LT);
+    assert(rel_out.size() == 1);
+
+    releaseObjects();
+}
 
 
 /** Test filtering for >= */
