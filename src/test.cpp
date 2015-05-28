@@ -698,11 +698,61 @@ void testIndexFilterRelationsLT() {
 
 
 /** Test filtering for >= */
-void testIndexFilterRelationsGTE() { }
+void testIndexFilterRelationsGTE() {
+
+    AttributeBucket ab;
+    AttributeTuple at;
+    IndexHandler ih;
+    std::vector<Relation> rel_out;
+
+    setRelationsList2();
+
+    // First filter test - All relations greater
+    at = AttributeTuple("_x", "a", "1", COLTYPE_NAME_INT);
+    ab.addAttribute(at);
+    rel_out = openRelations;
+    ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_GTE);
+    assert(rel_out.size() == 2);
+
+    // First filter test - Neither relation greater
+    ab = AttributeBucket();
+    at = AttributeTuple("_x", "a", "10", COLTYPE_NAME_INT);
+    ab.addAttribute(at);
+    rel_out = openRelations;
+    ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_GTE);
+    assert(rel_out.size() == 1);
+
+    releaseObjects();
+}
 
 
 /** Test filtering for <= */
-void testIndexFilterRelationsLTE() { }
+void testIndexFilterRelationsLTE() {
+
+    AttributeBucket ab;
+    AttributeTuple at;
+    IndexHandler ih;
+    std::vector<Relation> rel_out;
+
+    setRelationsList2();
+
+    // First filter test - All relations greater
+    at = AttributeTuple("_x", "a", "1", COLTYPE_NAME_INT);
+    ab.addAttribute(at);
+    rel_out = openRelations;
+    ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_LTE);
+    assert(rel_out.size() == 1);
+
+    // First filter test - Neither relation greater
+    ab = AttributeBucket();
+    at = AttributeTuple("_x", "a", "10", COLTYPE_NAME_INT);
+    ab.addAttribute(at);
+    rel_out = openRelations;
+    ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_LTE);
+    assert(rel_out.size() == 2);
+
+    releaseObjects();
+}
 
 
 /**
