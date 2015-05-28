@@ -625,7 +625,7 @@ void testIndexFilterRelationsGT() {
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_GT);
     assert(rel_out.size() == 2);
 
-    // First filter test - One relation greater
+    // Second filter test - One relation greater
     ab = AttributeBucket();
     at = AttributeTuple("_x", "a", "5", COLTYPE_NAME_INT);
     ab.addAttribute(at);
@@ -633,7 +633,7 @@ void testIndexFilterRelationsGT() {
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_GT);
     assert(rel_out.size() == 1);
 
-    // First filter test - Neither relation greater
+    // Third filter test - Neither relation greater
     ab = AttributeBucket();
     at = AttributeTuple("_x", "a", "20", COLTYPE_NAME_INT);
     ab.addAttribute(at);
@@ -641,7 +641,7 @@ void testIndexFilterRelationsGT() {
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_GT);
     assert(rel_out.size() == 0);
 
-    // First filter test - Float type test
+    // Fourth filter test - Float type test
     ab = AttributeBucket();
     at = AttributeTuple("_y", "b", "5.0", COLTYPE_NAME_FLOAT);
     ab.addAttribute(at);
@@ -669,7 +669,7 @@ void testIndexFilterRelationsLT() {
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_LT);
     assert(rel_out.size() == 0);
 
-    // First filter test - One relation greater
+    // Second filter test - One relation greater
     ab = AttributeBucket();
     at = AttributeTuple("_x", "a", "5", COLTYPE_NAME_INT);
     ab.addAttribute(at);
@@ -677,7 +677,7 @@ void testIndexFilterRelationsLT() {
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_LT);
     assert(rel_out.size() == 1);
 
-    // First filter test - Neither relation greater
+    // Third filter test - Neither relation greater
     ab = AttributeBucket();
     at = AttributeTuple("_x", "a", "20", COLTYPE_NAME_INT);
     ab.addAttribute(at);
@@ -685,7 +685,7 @@ void testIndexFilterRelationsLT() {
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_LT);
     assert(rel_out.size() == 2);
 
-    // First filter test - Float type test
+    // Fourth filter test - Float type test
     ab = AttributeBucket();
     at = AttributeTuple("_y", "b", "5.0", COLTYPE_NAME_FLOAT);
     ab.addAttribute(at);
@@ -707,14 +707,14 @@ void testIndexFilterRelationsGTE() {
 
     setRelationsList2();
 
-    // First filter test - All relations greater
+    // First filter test - Both relations greater or equal
     at = AttributeTuple("_x", "a", "1", COLTYPE_NAME_INT);
     ab.addAttribute(at);
     rel_out = openRelations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_GTE);
     assert(rel_out.size() == 2);
 
-    // First filter test - Neither relation greater
+    // Second filter test - One relation greater than or equal
     ab = AttributeBucket();
     at = AttributeTuple("_x", "a", "10", COLTYPE_NAME_INT);
     ab.addAttribute(at);
@@ -736,14 +736,14 @@ void testIndexFilterRelationsLTE() {
 
     setRelationsList2();
 
-    // First filter test - All relations greater
+    // First filter test - One relation less than or equal
     at = AttributeTuple("_x", "a", "1", COLTYPE_NAME_INT);
     ab.addAttribute(at);
     rel_out = openRelations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_LTE);
     assert(rel_out.size() == 1);
 
-    // First filter test - Neither relation greater
+    // Second filter test - Both relations less than or equal
     ab = AttributeBucket();
     at = AttributeTuple("_x", "a", "10", COLTYPE_NAME_INT);
     ab.addAttribute(at);
