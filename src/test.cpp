@@ -67,8 +67,27 @@ void releaseObjects() {
 
 /* -- SETUP FUNCTIONS -- */
 
-/* Builds a vector of relations */
-void setRelationsList1() {
+
+/* Generic way to set test entities and relations.  This creates a set of
+    relations that each contain one attribute per left and right node.
+*/
+void setRelationsList(
+    std::vector<std::string> entityNames,
+    std::vector<std::string> entityTypes,
+    std::vector<std::string> varsLeft,
+    std::vector<std::string> valuesLeft,
+    std::vector<std::string> varsRight,
+    std::vector<std::string> valuesRight,
+                    ) {
+    //
+
+    //
+
+    //
+}
+
+/*  Builds a vector of relations */
+void setRelationsList1(std::vector<std::string> vars, std::vector<std::string> values) {
 
     // Initialize fields and types
     std::vector<std::pair<ColumnBase, std::string>> fields_ent_1, fields_ent_2;
