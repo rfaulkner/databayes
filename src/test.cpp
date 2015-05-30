@@ -623,6 +623,7 @@ void testIndexFilterRelationsGT() {
     ab.addAttribute(at);
     rel_out = openRelations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_GT);
+    // TODO - add value asserts here
     assert(rel_out.size() == 2);
 
     // Second filter test - One relation greater
@@ -631,6 +632,7 @@ void testIndexFilterRelationsGT() {
     ab.addAttribute(at);
     rel_out = openRelations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_GT);
+    assert(rel_out[0].getValue("_x", "a").compare("11") == 0);
     assert(rel_out.size() == 1);
 
     // Third filter test - Neither relation greater
@@ -647,6 +649,7 @@ void testIndexFilterRelationsGT() {
     ab.addAttribute(at);
     rel_out = openRelations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_GT);
+    assert(rel_out[0].getValue("_y", "b").compare("12.0") == 0);
     assert(rel_out.size() == 1);
 
     releaseObjects();
@@ -675,6 +678,7 @@ void testIndexFilterRelationsLT() {
     ab.addAttribute(at);
     rel_out = openRelations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_LT);
+    assert(rel_out[0].getValue("_x", "a").compare("1") == 0);
     assert(rel_out.size() == 1);
 
     // Third filter test - Neither relation greater
@@ -683,6 +687,7 @@ void testIndexFilterRelationsLT() {
     ab.addAttribute(at);
     rel_out = openRelations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_LT);
+    // TODO - add value asserts here
     assert(rel_out.size() == 2);
 
     // Fourth filter test - Float type test
@@ -691,6 +696,7 @@ void testIndexFilterRelationsLT() {
     ab.addAttribute(at);
     rel_out = openRelations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_LT);
+    assert(rel_out[0].getValue("_y", "b").compare("2.0") == 0);
     assert(rel_out.size() == 1);
 
     releaseObjects();
@@ -712,14 +718,16 @@ void testIndexFilterRelationsGTE() {
     ab.addAttribute(at);
     rel_out = openRelations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_GTE);
+    // TODO - add value asserts here
     assert(rel_out.size() == 2);
 
     // Second filter test - One relation greater than or equal
     ab = AttributeBucket();
-    at = AttributeTuple("_x", "a", "10", COLTYPE_NAME_INT);
+    at = AttributeTuple("_x", "a", "11", COLTYPE_NAME_INT);
     ab.addAttribute(at);
     rel_out = openRelations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_GTE);
+    assert(rel_out[0].getValue("_x", "a").compare("11") == 0);
     assert(rel_out.size() == 1);
 
     releaseObjects();
@@ -741,6 +749,8 @@ void testIndexFilterRelationsLTE() {
     ab.addAttribute(at);
     rel_out = openRelations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_LTE);
+    ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_GTE);
+    assert(rel_out[0].getValue("_x", "a").compare("1") == 0);
     assert(rel_out.size() == 1);
 
     // Second filter test - Both relations less than or equal
@@ -749,6 +759,7 @@ void testIndexFilterRelationsLTE() {
     ab.addAttribute(at);
     rel_out = openRelations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_LTE);
+    // TODO - add value asserts here
     assert(rel_out.size() == 2);
 
     releaseObjects();
