@@ -72,18 +72,16 @@ void releaseObjects() {
     relations that each contain one attribute per left and right node.
 */
 void setRelationsList(
-    std::vector<std::string> entityNames,
-    std::vector<std::string> entityTypes,
+    std::vector<std::pair<std::string, ColumnBase*>> entityFields,
     std::vector<std::string> varsLeft,
     std::vector<std::string> valuesLeft,
     std::vector<std::string> varsRight,
     std::vector<std::string> valuesRight,
                     ) {
-    //
+    // Create entities
 
-    //
+    // Create relations
 
-    //
 }
 
 /*  Builds a vector of relations */
