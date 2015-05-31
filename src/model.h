@@ -63,6 +63,8 @@ public:
 
     std::string name;
     defpair attrs;
+
+    void addAttribute(std::string name, ColumnBase* colType) { /* TODO implement */ }
 };
 
 /**
@@ -136,27 +138,6 @@ public:
         for (valpair::iterator it = attrs_right.begin() ; it != attrs_right.end(); ++it)
             s += it->first + std::string(":") + types_right[it->first] + std::string(":") + it->second;
         return s;
-    }
-
-    /** Set the causal entity */
-    bool setCause(std::string cause) {
-        if (std::strcmp(cause.c_str(), this->name_left.c_str()) != 0 && std::strcmp(cause.c_str(), this->name_right.c_str()) != 0)
-            return false;
-        else if (std::strcmp(cause.c_str(), this->name_left.c_str()) == 0) {
-            this->cause = this->name_left;
-        } else {
-            this->cause = this->name_right;
-        }
-        return true;
-    }
-
-    /** Set the instance count */
-    bool setInstanceCount(int count) {
-        if (count < 1)
-            return false;
-        else
-            this->instance_count = count;
-        return true;
     }
 
     /** Build relation from Json */
@@ -249,6 +230,35 @@ public:
         }
         // Attribute not found
         return std::string("");
+    }
+
+    /* ORM methods */
+
+    /* Adds a left-hand attribute */
+    void addLeftAttribute(std::string name, std::string value) { /* TODO implement */ }
+
+    /* Adds a right-hand attribute */
+    void addRightAttribute(std::string name, std::string value) { /* TODO implement */ }
+
+    /** Set the causal entity */
+    bool setCause(std::string cause) {
+        if (std::strcmp(cause.c_str(), this->name_left.c_str()) != 0 && std::strcmp(cause.c_str(), this->name_right.c_str()) != 0)
+            return false;
+        else if (std::strcmp(cause.c_str(), this->name_left.c_str()) == 0) {
+            this->cause = this->name_left;
+        } else {
+            this->cause = this->name_right;
+        }
+        return true;
+    }
+
+    /** Set the instance count */
+    bool setInstanceCount(int count) {
+        if (count < 1)
+            return false;
+        else
+            this->instance_count = count;
+        return true;
     }
 };
 
