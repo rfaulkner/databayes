@@ -65,6 +65,10 @@ public:
     defpair attrs;
 
     void addAttribute(std::string name, ColumnBase* colType) { /* TODO implement */ }
+
+    void write() { /* TODO implement */ }
+
+    void remove() { /* TODO implement */ }
 };
 
 /**
@@ -260,6 +264,10 @@ public:
             this->instance_count = count;
         return true;
     }
+
+    void write() { /* TODO implement */ }
+
+    void remove() { /* TODO implement */ }
 };
 
 /**
