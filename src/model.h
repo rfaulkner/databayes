@@ -344,10 +344,10 @@ public:
     template <class Type>
     static bool compare(AttributeTuple& lhs, AttributeTuple& rhs, std::string comparator) {
 
-        // lhs and rhs must have matching types
+        // lhs and rhs must have matching types -- floats can be compared to ints
         if (lhs.type.compare(rhs.type) != 0 &&
-            !((lhs.type.compare(COLTYPE_NAME_INT) == 0 && rhs.type.compare(COLTYPE_NAME_FLOAT)) ||
-             (rhs.type.compare(COLTYPE_NAME_INT) == 0 && lhs.type.compare(COLTYPE_NAME_FLOAT)))
+            !((lhs.type.compare(COLTYPE_NAME_INT) == 0 && rhs.type.compare(COLTYPE_NAME_FLOAT) == 0) ||
+             (rhs.type.compare(COLTYPE_NAME_INT) == 0 && lhs.type.compare(COLTYPE_NAME_FLOAT) == 0))
            )
            return false;
 
