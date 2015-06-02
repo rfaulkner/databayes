@@ -143,10 +143,7 @@ std::string IndexHandler::generateRelationHash(Json::Value val) {
  *
  *  e.g. {"entity": <string:entname>, "fields": <string_array:[<f1,f2,...>]>}
  */
-void IndexHandler::writeEntity(Entity& e) {
-    e.write(*(this->redisHandler));
-    return true;
-}
+void IndexHandler::writeEntity(Entity& e) { e.write(*(this->redisHandler), this->generateEntityKey(e.name)); }
 
 /** Remove entity key from redis */
 bool IndexHandler::removeEntity(Entity& e) { this->removeEntity(e.name); }
@@ -161,8 +158,10 @@ bool IndexHandler::removeEntity(std::string entity) {
         // Delete all relations containing this entity
         std::vector<Json::Value> relations_left = this->fetchRelationPrefix(entity, "*");
         std::vector<Json::Value> relations_right = this->fetchRelationPrefix("*", entity);
-        for (std::vector<Json::Value>::iterator it = relations_left.begin() ; it != relations_left.end(); ++it) this->removeRelation(*it);
-        for (std::vector<Json::Value>::iterator it = relations_right.begin() ; it != relations_right.end(); ++it) this->removeRelation(*it);
+        for (std::vector<Json::Value>::iterator it = relations_left.begin() ; it != relations_left.end(); ++it)
+            this->removeRelation(*it);
+        for (std::vector<Json::Value>::iterator it = relations_right.begin() ; it != relations_right.end(); ++it)
+            this->removeRelation(*it);
 
         return true;
     }

@@ -78,7 +78,7 @@ public:
     }
 
     /** Handles writing the entity JSON representation to redis */
-    void write(RedisHandler rds) {
+    void write(RedisHandler rds, std::string key) {
         Json::Value jsonVal;
         Json::Value jsonValFields;
         jsonVal[JSON_ATTR_ENT_ENT] = this->name;
@@ -86,7 +86,7 @@ public:
         jsonVal[JSON_ATTR_ENT_FIELDS] = jsonValFields;
 
         rds.connect();
-        rds.write(this->generateEntityKey(e.name), jsonVal.toStyledString());
+        rds.write(key, jsonVal.toStyledString());
     }
 
     void remove() { /* TODO implement */ }
