@@ -138,29 +138,13 @@ std::string IndexHandler::generateRelationHash(Json::Value val) {
     return md5(out);
 }
 
-/** Handles forming the json for field vectors in the index */
-void IndexHandler::buildFieldJSONDefinition(Json::Value& value, defpair& fields) {
-    int count = 0;
-    for (defpair::iterator it = fields.begin() ; it != fields.end(); ++it) {
-        value[(*it).second] = (*it).first.getType();
-        count++;
-    }
-    value[JSON_ATTR_FIELDS_COUNT] = count;
-}
-
 /**
  * Writes of entities to in memory index.
  *
  *  e.g. {"entity": <string:entname>, "fields": <string_array:[<f1,f2,...>]>}
  */
 bool IndexHandler::writeEntity(Entity& e) {
-    Json::Value jsonVal;
-    Json::Value jsonValFields;
-    jsonVal[JSON_ATTR_ENT_ENT] = e.name;
-    this->buildFieldJSONDefinition(jsonValFields, e.attrs);
-    jsonVal[JSON_ATTR_ENT_FIELDS] = jsonValFields;
-    this->redisHandler->connect();
-    this->redisHandler->write(this->generateEntityKey(e.name), jsonVal.toStyledString());
+    e.write(*(this->redisHandler));
     return true;
 }
 

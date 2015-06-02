@@ -14,6 +14,7 @@
 #include "md5.h"
 #include "emit.h"
 #include "column_types.h"
+#include "redis.h"
 
 #include <string>
 #include <unordered_map>
@@ -66,7 +67,27 @@ public:
 
     void addAttribute(std::string name, ColumnBase colType) { attrs.push_back(std::make_pair(colType, name)); }
 
-    void write() { /* TODO implement */ }
+    /** Handles forming the json for field vectors in the index */
+    void createJSON(Json::Value& value, defpair& fields) {
+        int count = 0;
+        for (defpair::iterator it = fields.begin() ; it != fields.end(); ++it) {
+            value[(*it).second] = (*it).first.getType();
+            count++;
+        }
+        value[JSON_ATTR_FIELDS_COUNT] = count;
+    }
+
+    /** Handles writing the entity JSON representation to redis */
+    void write(RedisHandler rds) {
+        Json::Value jsonVal;
+        Json::Value jsonValFields;
+        jsonVal[JSON_ATTR_ENT_ENT] = this->name;
+        this->createJSON(jsonValFields, this->attrs);
+        jsonVal[JSON_ATTR_ENT_FIELDS] = jsonValFields;
+
+        rds.connect();
+        rds.write(this->generateEntityKey(e.name), jsonVal.toStyledString());
+    }
 
     void remove() { /* TODO implement */ }
 };
