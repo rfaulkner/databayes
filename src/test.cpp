@@ -69,7 +69,7 @@ void releaseObjects() {
 
 
 /*  Builds a vector of relations */
-void setRelationsList1(std::vector<std::string> vars, std::vector<std::string> values) {
+void setRelationsList1() {
 
     // Initialize fields and types
     std::vector<std::pair<ColumnBase, std::string>> fields_ent_1, fields_ent_2;
