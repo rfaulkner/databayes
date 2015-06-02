@@ -48,7 +48,7 @@ public:
     IndexHandler() { this->redisHandler = new RedisHandler(REDISHOST, REDISPORT); }
     ~IndexHandler() { delete redisHandler; }
 
-    bool writeEntity(Entity&);
+    void writeEntity(Entity&);
     bool writeRelation(Relation&);
     bool writeRelation(Json::Value&);
     bool writeToDisk(int);
@@ -143,7 +143,7 @@ std::string IndexHandler::generateRelationHash(Json::Value val) {
  *
  *  e.g. {"entity": <string:entname>, "fields": <string_array:[<f1,f2,...>]>}
  */
-bool IndexHandler::writeEntity(Entity& e) {
+void IndexHandler::writeEntity(Entity& e) {
     e.write(*(this->redisHandler));
     return true;
 }
