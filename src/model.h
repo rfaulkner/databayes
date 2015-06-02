@@ -64,7 +64,7 @@ public:
     std::string name;
     defpair attrs;
 
-    void addAttribute(std::string name, ColumnBase* colType) { /* TODO implement */ }
+    void addAttribute(std::string name, ColumnBase colType) { attrs.push_back(std::make_pair(colType, name)); }
 
     void write() { /* TODO implement */ }
 
