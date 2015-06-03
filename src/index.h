@@ -417,7 +417,7 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
         // Match left hand relations
         for (valpair::iterator it_inner = it->attrs_left.begin(); it_inner != it->attrs_left.end(); ++it_inner) {
             currAttr = AttributeTuple(it->name_left, std::get<0>(*it_inner), std::get<1>(*it_inner), it->types_left[std::get<0>(*it_inner)]);
-
+            cout << "Left: " << currAttr.toString() << endl;
             // If the entity is empty (the entity:attr was not on the bucket) continue, otherwise compare
             if (filterAttrs.hasKey(currAttr)) {
 
@@ -450,7 +450,7 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
         if (matching)
             for (valpair::iterator it_inner = it->attrs_right.begin(); it_inner != it->attrs_right.end(); ++it_inner) {
                 currAttr = AttributeTuple(it->name_right, std::get<0>(*it_inner), std::get<1>(*it_inner), it->types_right[std::get<0>(*it_inner)]);
-
+                cout << "Right: " << currAttr.toString() << endl;
                 // If the entity is empty (the entity:attr was not on the bucket) continue, otherwise compare
                 if (filterAttrs.hasKey(currAttr)) {
                     attrs = filterAttrs.getAttributes(currAttr.entity, currAttr.attribute);
@@ -459,11 +459,11 @@ void IndexHandler::filterRelations(std::vector<Relation>& relations, AttributeBu
 
                         // Perform the comparison of the attributes
                         if (currAttr.type.compare(COLTYPE_NAME_INT) == 0)
-                            comparison = AttributeTuple::compare<IntegerColumn>(bucketAttr, currAttr, comparator);
+                            comparison = AttributeTuple::compare<IntegerColumn>(currAttr, bucketAttr, comparator);
                         else if (currAttr.type.compare(COLTYPE_NAME_FLOAT) == 0)
-                            comparison = AttributeTuple::compare<FloatColumn>(bucketAttr, currAttr, comparator);
+                            comparison = AttributeTuple::compare<FloatColumn>(currAttr, bucketAttr, comparator);
                         else if (currAttr.type.compare(COLTYPE_NAME_STR) == 0)
-                            comparison = AttributeTuple::compare<StringColumn>(bucketAttr, currAttr, comparator);
+                            comparison = AttributeTuple::compare<StringColumn>(currAttr, bucketAttr, comparator);
                         else {
                             matching = matching && comparison;
                         }
