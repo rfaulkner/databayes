@@ -150,19 +150,15 @@ bool IndexHandler::removeEntity(Entity& e) { this->removeEntity(e.name); }
 
 /** Remove entity key from redis */
 bool IndexHandler::removeEntity(std::string entity) {
-    std::string codedEntity = this->generateEntityKey(entity);
-    this->redisHandler->connect();
-    if (this->redisHandler->exists(codedEntity)) {
-        this->redisHandler->deleteKey(codedEntity);
-
+    if (e.remove(*(this->redisHandler), this->generateEntityKey(entity)))
         // Delete all relations containing this entity
+        // TODO - use ORM to remove relations
         std::vector<Json::Value> relations_left = this->fetchRelationPrefix(entity, "*");
         std::vector<Json::Value> relations_right = this->fetchRelationPrefix("*", entity);
         for (std::vector<Json::Value>::iterator it = relations_left.begin() ; it != relations_left.end(); ++it)
             this->removeRelation(*it);
         for (std::vector<Json::Value>::iterator it = relations_right.begin() ; it != relations_right.end(); ++it)
             this->removeRelation(*it);
-
         return true;
     }
     return false;
