@@ -268,10 +268,16 @@ public:
     /* ORM methods */
 
     /* Adds a left-hand attribute */
-    void addLeftAttribute(std::string name, std::string value) { /* TODO implement */ }
+    void addLeftAttribute(std::string name, std::string value, std::string type) {
+        attrs_left.push_back(std::make_pair(name, value));
+        types_left.push_back(std::make_pair(name, type));
+    }
 
     /* Adds a right-hand attribute */
-    void addRightAttribute(std::string name, std::string value) { /* TODO implement */ }
+    void addRightAttribute(std::string name, std::string value, , std::string type) {
+        attrs_right.push_back(std::make_pair(name, value));
+        types_right.push_back(std::make_pair(name, type));
+    }
 
     /** Set the causal entity */
     bool setCause(std::string cause) {
