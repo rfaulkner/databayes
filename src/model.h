@@ -90,7 +90,7 @@ public:
     }
 
     void remove(RedisHandler& rds, std::string key) {
-        Index
+        rds.connect();
         this->redisHandler->connect();
         if (rds.exists(key)) {
             rds.deleteKey(key);
