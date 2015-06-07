@@ -766,6 +766,11 @@ void testIndexFilterRelationsLTE() {
     releaseObjects();
 }
 
+/** Test for counting the presence of entities in relations */
+void testCountEntityInRelations() {}
+
+/** Test for counting relations  */
+void testCountRelations() {}
 
 /**
  *  Initialize tests that should (and should not) run
@@ -791,6 +796,8 @@ void initTests() {
     tests.insert(std::make_pair("testIndexFilterRelationsGTE", std::make_pair(false, testIndexFilterRelationsGTE)));
     tests.insert(std::make_pair("testIndexFilterRelationsLTE", std::make_pair(false, testIndexFilterRelationsLTE)));
     tests.insert(std::make_pair("testRelation_toJson", std::make_pair(false, testRelation_toJson)));
+    tests.insert(std::make_pair("testCountEntityInRelations", std::make_pair(true, testCountEntityInRelations)));
+    tests.insert(std::make_pair("testCountRelations", std::make_pair(true, testCountRelations)));
 }
 
 /** MAIN BLOCK -- Execute tests */
