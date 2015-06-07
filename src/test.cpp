@@ -766,11 +766,43 @@ void testIndexFilterRelationsLTE() {
     releaseObjects();
 }
 
-/** Test for counting the presence of entities in relations */
-void testCountEntityInRelations() {}
+/** Test for counting the presence of entities in relations
+        TODO - complete
+*/
+void testCountEntityInRelations() {
+    Bayes b();
+    RedisHandler rds(REDISDBTEST, REDISPORT);
 
-/** Test for counting relations  */
-void testCountRelations() {}
+    // Create entities and relations
+    defpair e1Def, e2Def;
+    valpair r1Vals, r2Vals;
+    e1Def.push_back(std::make_pair(IntegerColumn(), "a"));
+    e2Def.push_back(std::make_pair(FloatColumn(), "b"));
+    makeTestEntity("_x", e1Def);
+    makeTestEntity("_y", e2Def);
+        // define relations
+
+    // Persist objects to
+
+    // Define attribute bucket to filter
+    AttributeBucket ab();
+
+    // Perform count
+    long count = b.countRelations("_x", "_y", ab);
+
+    // Ensure the count is correct
+    assert(count == 1)
+}
+
+/** Test for counting relations
+        TODO - complete
+*/
+void testCountRelations() {
+    Bayes b();
+    RedisHandler rds(REDISDBTEST, REDISPORT);
+
+    // similar to testCountEntityInRelations
+}
 
 /**
  *  Initialize tests that should (and should not) run
