@@ -19,6 +19,7 @@
 #define REDISHOST "127.0.0.1"
 #define REDISPORT 6379
 #define REDISDB "databayes"
+#define REDISDBTEST "databayes_test"
 
 
 using namespace std;
@@ -36,7 +37,7 @@ class RedisHandler {
     
 public:
     RedisHandler() { this->host = REDISHOST; this->port = REDISPORT; }
-    RedisHandler(std::string, int) { this->host = host; this->port = port; }
+    RedisHandler(std::string host, int port) { this->host = host; this->port = port; }
     
     void connect();
 
