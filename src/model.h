@@ -273,7 +273,7 @@ public:
     }
 
     /* Adds a right-hand attribute */
-    void addRightAttribute(std::string name, std::string value, , std::string type) {
+    void addRightAttribute(std::string name, std::string value, std::string type) {
         this->attrs_right.push_back(std::make_pair(name, value));
         this->types_right.insert(std::make_pair(name, type));
     }
