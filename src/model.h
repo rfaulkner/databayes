@@ -89,9 +89,8 @@ public:
         rds.write(key, jsonVal.toStyledString());
     }
 
-    void remove(RedisHandler& rds, std::string key) {
+    bool remove(RedisHandler& rds, std::string key) {
         rds.connect();
-        this->redisHandler->connect();
         if (rds.exists(key)) {
             rds.deleteKey(key);
             return true;
@@ -269,14 +268,14 @@ public:
 
     /* Adds a left-hand attribute */
     void addLeftAttribute(std::string name, std::string value, std::string type) {
-        attrs_left.push_back(std::make_pair(name, value));
-        types_left.push_back(std::make_pair(name, type));
+        this->attrs_left.push_back(std::make_pair(name, value));
+        this->types_left.insert(std::make_pair(name, type));
     }
 
     /* Adds a right-hand attribute */
     void addRightAttribute(std::string name, std::string value, , std::string type) {
-        attrs_right.push_back(std::make_pair(name, value));
-        types_right.push_back(std::make_pair(name, type));
+        this->attrs_right.push_back(std::make_pair(name, value));
+        this->types_right.insert(std::make_pair(name, type));
     }
 
     /** Set the causal entity */
