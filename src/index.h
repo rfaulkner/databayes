@@ -146,15 +146,12 @@ std::string IndexHandler::generateRelationHash(Json::Value val) {
 void IndexHandler::writeEntity(Entity& e) { e.write(*(this->redisHandler), this->generateEntityKey(e.name)); }
 
 /** Remove entity key from redis */
-bool IndexHandler::removeEntity(Entity& e) { this->removeEntity(e.name); }
-
-/** Remove entity key from redis */
-bool IndexHandler::removeEntity(std::string entity) {
-    if (entity.remove(*(this->redisHandler), this->generateEntityKey(entity))) {
+bool IndexHandler::removeEntity(Entity& e) {
+    if (e.remove(*(this->redisHandler), this->generateEntityKey(e.name))) {
         // Delete all relations containing this entity
         // TODO - use ORM to remove relations
-        std::vector<Json::Value> relations_left = this->fetchRelationPrefix(entity, "*");
-        std::vector<Json::Value> relations_right = this->fetchRelationPrefix("*", entity);
+        std::vector<Json::Value> relations_left = this->fetchRelationPrefix(e.name, "*");
+        std::vector<Json::Value> relations_right = this->fetchRelationPrefix("*", e.name);
         for (std::vector<Json::Value>::iterator it = relations_left.begin() ; it != relations_left.end(); ++it)
             this->removeRelation(*it);
         for (std::vector<Json::Value>::iterator it = relations_right.begin() ; it != relations_right.end(); ++it)
@@ -162,6 +159,12 @@ bool IndexHandler::removeEntity(std::string entity) {
         return true;
     }
     return false;
+}
+
+/** Remove entity key from redis */
+bool IndexHandler::removeEntity(std::string entity) {
+    Entity e(entity);
+    this->removeEntity(e);
 }
 
 /** Wraps removeRelation(Json::Value&) */
