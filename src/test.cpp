@@ -838,6 +838,21 @@ void testCountRelations() {
     // similar to testCountEntityInRelations
 }
 
+/** Entity / Relation ORM tests **/
+
+/** Test entity writing */
+void testEntityWrite() {}
+
+/** Test entity removal */
+void testEntityRemove() {}
+
+/** Test relation writing */
+void testRelationWrite() {}
+
+/** Test entity removal */
+void testRelationRemove() {}
+
+
 /**
  *  Initialize tests that should (and should not) run
  */
@@ -864,6 +879,11 @@ void initTests() {
     tests.insert(std::make_pair("testRelation_toJson", std::make_pair(false, testRelation_toJson)));
     tests.insert(std::make_pair("testCountEntityInRelations", std::make_pair(false, testCountEntityInRelations)));
     tests.insert(std::make_pair("testCountRelations", std::make_pair(false, testCountRelations)));
+
+    tests.insert(std::make_pair("testEntityWrite", std::make_pair(false, testEntityWrite)));
+    tests.insert(std::make_pair("testEntityRemove", std::make_pair(false, testEntityRemove)));
+    tests.insert(std::make_pair("testRelationWrite", std::make_pair(false, testRelationWrite)));
+    tests.insert(std::make_pair("testRelationRemove", std::make_pair(false, testRelationRemove)));
 }
 
 /** MAIN BLOCK -- Execute tests */
