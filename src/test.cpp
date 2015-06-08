@@ -811,7 +811,10 @@ void testCountEntityInRelations() {
     e2Def.push_back(std::make_pair(FloatColumn(), "b"));
     makeTestEntity("_x", e1Def);
     makeTestEntity("_y", e2Def);
-        // define relations
+    // makeTestRelation("_x", "_y");
+    // makeTestRelation("_x", "_y");
+
+    // define relations
 
     // Persist objects to
 
@@ -855,12 +858,12 @@ void initTests() {
     tests.insert(std::make_pair("testCountRelations", std::make_pair(false, testCountRelations)));
     tests.insert(std::make_pair("testIndexFilterRelationsEQ", std::make_pair(true, testIndexFilterRelationsEQ)));
     tests.insert(std::make_pair("testIndexFilterRelationsGT", std::make_pair(true, testIndexFilterRelationsGT)));
-    tests.insert(std::make_pair("testIndexFilterRelationsLT", std::make_pair(false, testIndexFilterRelationsLT)));
-    tests.insert(std::make_pair("testIndexFilterRelationsGTE", std::make_pair(false, testIndexFilterRelationsGTE)));
-    tests.insert(std::make_pair("testIndexFilterRelationsLTE", std::make_pair(false, testIndexFilterRelationsLTE)));
+    tests.insert(std::make_pair("testIndexFilterRelationsLT", std::make_pair(true, testIndexFilterRelationsLT)));
+    tests.insert(std::make_pair("testIndexFilterRelationsGTE", std::make_pair(true, testIndexFilterRelationsGTE)));
+    tests.insert(std::make_pair("testIndexFilterRelationsLTE", std::make_pair(true, testIndexFilterRelationsLTE)));
     tests.insert(std::make_pair("testRelation_toJson", std::make_pair(false, testRelation_toJson)));
-    tests.insert(std::make_pair("testCountEntityInRelations", std::make_pair(true, testCountEntityInRelations)));
-    tests.insert(std::make_pair("testCountRelations", std::make_pair(true, testCountRelations)));
+    tests.insert(std::make_pair("testCountEntityInRelations", std::make_pair(false, testCountEntityInRelations)));
+    tests.insert(std::make_pair("testCountRelations", std::make_pair(false, testCountRelations)));
 }
 
 /** MAIN BLOCK -- Execute tests */
