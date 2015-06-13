@@ -39,6 +39,10 @@
 #define ATTR_TUPLE_COMPARE_GTE ">="
 #define ATTR_TUPLE_COMPARE_NE "!="
 
+#define KEY_DELIMETER "+"
+#define KEY_TOTAL_RELATIONS "total_relations"
+
+
 using namespace std;
 
 // Vector type that defines entities
