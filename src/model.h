@@ -186,7 +186,7 @@ public:
     }
 
     /** Build relation from Json */
-    bool fromJSON(Json::Value value) {
+    Relation fromJSON(Json::Value value) {
 
         // Ensure that all of the realtion fields are present
         if (!value.isMember(JSON_ATTR_REL_ENTL) || !value.isMember(JSON_ATTR_REL_ENTR) || !value.isMember(JSON_ATTR_REL_FIELDSL) || !value.isMember(JSON_ATTR_REL_FIELDSR))
@@ -221,7 +221,7 @@ public:
                     attrs_right.push_back(
                         std::make_pair(*it, value[JSON_ATTR_REL_FIELDSR][*it].asCString()));
                 }
-        return true;
+        return *this;
     }
 
     /** Handles forming the json for field vectors in the index */
