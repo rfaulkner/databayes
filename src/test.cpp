@@ -13,6 +13,7 @@
 #include <vector>
 #include <regex>
 #include <assert.h>
+#include <json/json.h>
 
 #include "column_types.h"
 #include "redis.h"
@@ -841,7 +842,28 @@ void testCountRelations() {
 /** Entity / Relation ORM tests **/
 
 /** Test entity writing */
-void testEntityWrite() {}
+void testEntityWrite() {
+    defpair attrs;
+    attrs.push_back(std::make_pair(IntegerColumn(), "a"));
+    attrs.push_back(std::make_pair(FloatColumn(), "b"));
+    RedisHandler rds(REDISDBTEST, REDISPORT);
+    IndexHandler ih;
+    Json::Value value;
+    std::string name = "_x";
+
+    Entity e(name, attrs);
+    e.write(rds, name);
+
+    ih.fetchEntity(name, value);
+
+    // Ensure name matches
+    assert(std::strcmp(value[JSON_ATTR_ENT_ENT].asCString(), name.c_str()) == 0);
+
+    // TODO Ensure fields match .. val[JSON_ATTR_ENT_FIELDS].getMemberNames()
+
+    // Cleanup
+    e.remove(rds, name);
+}
 
 /** Test entity removal */
 void testEntityRemove() {}
@@ -880,7 +902,7 @@ void initTests() {
     tests.insert(std::make_pair("testCountEntityInRelations", std::make_pair(false, testCountEntityInRelations)));
     tests.insert(std::make_pair("testCountRelations", std::make_pair(false, testCountRelations)));
 
-    tests.insert(std::make_pair("testEntityWrite", std::make_pair(false, testEntityWrite)));
+    tests.insert(std::make_pair("testEntityWrite", std::make_pair(true, testEntityWrite)));
     tests.insert(std::make_pair("testEntityRemove", std::make_pair(false, testEntityRemove)));
     tests.insert(std::make_pair("testRelationWrite", std::make_pair(false, testRelationWrite)));
     tests.insert(std::make_pair("testRelationRemove", std::make_pair(false, testRelationRemove)));
