@@ -65,7 +65,9 @@ public:
     std::string name;
     defpair attrs;
 
-    void addAttribute(std::string name, ColumnBase colType) { attrs.push_back(std::make_pair(colType, name)); }
+    void addAttribute(std::string name, ColumnBase colType) {
+        attrs.push_back(std::make_pair(colType, name));
+    }
 
     /** Handles forming the json for field vectors in the index */
     void createJSON(Json::Value& value, defpair& fields) {
@@ -75,6 +77,13 @@ public:
             count++;
         }
         value[JSON_ATTR_FIELDS_COUNT] = count;
+    }
+
+    /** Generate a key for an entity entry in the index */
+    std::string generateKey() {
+        std::string ent("ent");
+        std::string delim(KEY_DELIMETER);
+        return ent + delim + entity;
     }
 
     /** Handles writing the entity JSON representation to redis */
