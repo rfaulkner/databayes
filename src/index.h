@@ -96,9 +96,8 @@ public:
 
 /** Generate a key for an entity entry in the index */
 std::string IndexHandler::generateEntityKey(std::string entity) {
-    std::string ent("ent");
-    std::string delim(KEY_DELIMETER);
-    return ent + delim + entity;
+    Entity e(entity);
+    return e.generate();
 }
 
 /** Generate a key for a relation entry in the index */
