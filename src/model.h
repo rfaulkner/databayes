@@ -348,7 +348,16 @@ public:
 
     void write() { /* TODO implement */ }
 
-    void remove() { /* TODO implement */ }
+    bool remove(RedisHandler& rds) {
+        rds->connect();
+        std::string key = this->generateKey(this->name_left, this->name_right, this->generateHash());
+        if (this->redisHandler->exists(key)) {
+            this->redisHandler->decrementKey(KEY_TOTAL_RELATIONS, this->instance_count);
+            this->redisHandler->deleteKey(key);
+            return true;
+        }
+        return false;
+    }
 };
 
 /**
