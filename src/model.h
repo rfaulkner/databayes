@@ -19,6 +19,7 @@
 #include <string>
 #include <unordered_map>
 #include <json/json.h>
+#include <boost/regex.hpp>
 
 // JSON Attribute Macros
 #define JSON_ATTR_ENT_ENT "entity"
@@ -87,7 +88,7 @@ public:
     std::string generateKey() {
         std::string ent("ent");
         std::string delim(KEY_DELIMETER);
-        return ent + delim + entity;
+        return ent + delim + this->name;
     }
 
     /** Handles writing the entity JSON representation to redis */
@@ -188,9 +189,13 @@ public:
     /** Build relation from Json */
     Relation fromJSON(Json::Value value) {
 
-        // Ensure that all of the realtion fields are present
-        if (!value.isMember(JSON_ATTR_REL_ENTL) || !value.isMember(JSON_ATTR_REL_ENTR) || !value.isMember(JSON_ATTR_REL_FIELDSL) || !value.isMember(JSON_ATTR_REL_FIELDSR))
-            return false;
+        // Ensure that all of the relation fields are present
+        if (!value.isMember(JSON_ATTR_REL_ENTL) ||
+            !value.isMember(JSON_ATTR_REL_ENTR) ||
+            !value.isMember(JSON_ATTR_REL_FIELDSL) ||
+            !value.isMember(JSON_ATTR_REL_FIELDSR))
+            // TODO - perhaps flag an error or add the relevant fields here
+            return *this;
 
         this->name_left = value[JSON_ATTR_REL_ENTL].asCString();
         this->name_right = value[JSON_ATTR_REL_ENTR].asCString();
@@ -341,6 +346,22 @@ public:
         }
 
         return md5(out);
+    }
+
+    /** Orders parameters alphanumerically then combines into one string */
+    std::string orderPairAlphaNumeric(std::string s1, std::string s2) {
+        std::set<std::string> sortedItems;
+        std::set<std::string>::iterator it;
+
+        // Validate that strings are indeed alpha-numeric otherwise return on order supplied
+        boost::regex e("^[a-zA-Z0-9]*$");
+        if (!boost::regex_match(s1.c_str(), e) || !boost::regex_match(s1.c_str(), e)) return s1 + KEY_DELIMETER + s2;
+
+        std::string ret = "";
+        sortedItems.insert(s1);
+        sortedItems.insert(s2);
+        it = sortedItems.begin(); ret = *it + KEY_DELIMETER; it++; ret += *it;
+        return ret;
     }
 
     /** Generate a key for an entity entry in the index */
