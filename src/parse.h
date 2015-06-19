@@ -270,10 +270,10 @@ std::string Parser::parse(const string& s) {
 
     // If the input was not interpreted to any meaningful command
     if (this->state == STATE_START && tokens.size() > 0) {
-        emitCLIError(std::string(ERR_UNKNOWN_CMD);
+        emitCLIError(std::string(ERR_UNKNOWN_CMD));
         return ERR_UNKNOWN_CMD;
     } else if (this->state != STATE_FINISH && tokens.size() > 0) {
-        emitCLIError(std::string(ERR_MALFORMED_CMD);
+        emitCLIError(std::string(ERR_MALFORMED_CMD));
         return ERR_MALFORMED_CMD;
     }
 
@@ -291,7 +291,7 @@ std::string Parser::analyze(const std::string& s) {
     std::transform(sLower.begin(), sLower.end(), sLower.begin(), ::tolower);
 
     if (this->debug)
-        emitCLINote(std::string("Current state: ") + std::string(this->state);
+        emitCLINote(std::string("Current state: ") + std::string(this->state));
 
     if (this->state == STATE_START) {
 
@@ -321,7 +321,7 @@ std::string Parser::analyze(const std::string& s) {
         }
 
         if (this->debug)
-            emitCLINote(std::string("Setting Macro state: ") + std::string(this->macroState);
+            emitCLINote(std::string("Setting Macro state: ") + std::string(this->macroState));
 
     } else if (this->state == STATE_ADD) {
         if (sLower.compare(STR_CMD_REL) == 0)
@@ -417,8 +417,8 @@ std::string Parser::analyze(const std::string& s) {
 
         if (this->debug) {
             emitCLINote(std::string("Finishing statement processing."));
-            emitCLINote(std::string("Macro state: ") + std::string(this->macroState);
-            emitCLINote(std::string("Error state: ") + std::string(this->error);
+            emitCLINote(std::string("Macro state: ") + std::string(this->macroState));
+            emitCLINote(std::string("Error state: ") + std::string(this->error));
         }
 
         // If there's an error cleanup and bail
