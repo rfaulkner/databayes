@@ -291,7 +291,7 @@ std::string Parser::analyze(const std::string& s) {
     std::transform(sLower.begin(), sLower.end(), sLower.begin(), ::tolower);
 
     if (this->debug)
-        emitCLINote(std::string("Current state: ") + std::string(this->state));
+        emitCLINote(std::string("Current state: ") + std::to_string(this->state));
 
     if (this->state == STATE_START) {
 
@@ -321,7 +321,7 @@ std::string Parser::analyze(const std::string& s) {
         }
 
         if (this->debug)
-            emitCLINote(std::string("Setting Macro state: ") + std::string(this->macroState));
+            emitCLINote(std::string("Setting Macro state: ") + std::to_string(this->macroState));
 
     } else if (this->state == STATE_ADD) {
         if (sLower.compare(STR_CMD_REL) == 0)
@@ -417,8 +417,8 @@ std::string Parser::analyze(const std::string& s) {
 
         if (this->debug) {
             emitCLINote(std::string("Finishing statement processing."));
-            emitCLINote(std::string("Macro state: ") + std::string(this->macroState));
-            emitCLINote(std::string("Error state: ") + std::string(this->error));
+            emitCLINote(std::string("Macro state: ") + std::to_string(this->macroState));
+            emitCLINote(std::string("Error state: ") + std::to_string(this->error));
         }
 
         // If there's an error cleanup and bail
@@ -944,7 +944,7 @@ void Parser::processINF() {
     float exp = this->bayes->expectedAttribute(*at, ab);
 
     // Print the expected value
-    emitCLIGeneric(std::string(exp));
+    emitCLIGeneric(std::to_string(exp));
     delete at;
 }
 
@@ -1012,7 +1012,7 @@ void Parser::processSET() {
         }
 
         if (this->indexHandler->writeRelation(*it) && goodSet) {
-            emitCLINote(std::string("SET attribute: ") + this->currAttrEntity + std::string(".") + this->currAttribute + std::string(" to ") << this->currValue);
+            emitCLINote(std::string("SET attribute: ") + this->currAttrEntity + std::string(".") + this->currAttribute + std::string(" to ") + this->currValue);
         } else {
             this->error = true;
             this->errStr = ERR_BAD_SET;
