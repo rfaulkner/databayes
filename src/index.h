@@ -97,7 +97,7 @@ public:
 /** Generate a key for an entity entry in the index */
 std::string IndexHandler::generateEntityKey(std::string entity) {
     Entity e(entity);
-    return e.generate();
+    return e.generateKey();
 }
 
 /** Generate a key for a relation entry in the index */

@@ -329,7 +329,8 @@ public:
 
         // Concat left field types and values
         keys = val[JSON_ATTR_REL_FIELDSL].getMemberNames();
-        for (std::vector<std::string>::iterator it = keys.begin(); it != keys.end(); ++it) {
+        for (std::vector<std::string>::iterator it = keys.begin();
+            it != keys.end(); ++it) {
             if (it->compare(JSON_ATTR_FIELDS_COUNT) != 0) {
                 out += *it;
                 out += std::string(val[JSON_ATTR_REL_FIELDSL][*it].asCString());
@@ -338,7 +339,8 @@ public:
 
         // Concat right field types and values
         keys = val[JSON_ATTR_REL_FIELDSR].getMemberNames();
-        for (std::vector<std::string>::iterator it = keys.begin(); it != keys.end(); ++it) {
+        for (std::vector<std::string>::iterator it = keys.begin();
+            it != keys.end(); ++it) {
             if (it->compare(JSON_ATTR_FIELDS_COUNT) != 0) {
                 out += *it;
                 out += std::string(val[JSON_ATTR_REL_FIELDSR][*it].asCString());
@@ -353,9 +355,12 @@ public:
         std::set<std::string> sortedItems;
         std::set<std::string>::iterator it;
 
-        // Validate that strings are indeed alpha-numeric otherwise return on order supplied
+        // Validate that strings are indeed alpha-numeric otherwise return on
+        // order supplied
         boost::regex e("^[a-zA-Z0-9]*$");
-        if (!boost::regex_match(s1.c_str(), e) || !boost::regex_match(s1.c_str(), e)) return s1 + KEY_DELIMETER + s2;
+        if (!boost::regex_match(s1.c_str(), e) ||
+            !boost::regex_match(s1.c_str(), e))
+            return s1 + KEY_DELIMETER + s2;
 
         std::string ret = "";
         sortedItems.insert(s1);
@@ -368,17 +373,18 @@ public:
     std::string generateKey() {
         std::string rel("rel");
         std::string delim(KEY_DELIMETER);
-        return rel + delim + this->orderPairAlphaNumeric(entityL, entityR) + delim + this->generateHash();
+        return rel + delim + this->orderPairAlphaNumeric(
+            this->name_left, this->name_right) + delim + this->generateHash();
     }
 
     void write() { /* TODO implement */ }
 
     bool remove(RedisHandler& rds) {
-        rds->connect();
-        std::string key = this->generateKey(this->name_left, this->name_right, this->generateHash());
-        if (this->redisHandler->exists(key)) {
-            this->redisHandler->decrementKey(KEY_TOTAL_RELATIONS, this->instance_count);
-            this->redisHandler->deleteKey(key);
+        rds.connect();
+        std::string key = this->generateKey();
+        if (rds.exists(key)) {
+            rds.decrementKey(KEY_TOTAL_RELATIONS, this->instance_count);
+            rds.deleteKey(key);
             return true;
         }
         return false;
