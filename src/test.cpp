@@ -86,14 +86,14 @@ void writeRelations() {
     IndexHandler ih;
     RedisHandler rds(REDISDBTEST, REDISPORT);
     for (std::vector<Relation>::iterator it = openRelations.begin(); it != openRelations.end(); ++it)
-        it->write(rds, it->name);
+        it->write(rds);
 }
 
 void removerelations() {
     IndexHandler ih;
     RedisHandler rds(REDISDBTEST, REDISPORT);
     for (std::vector<Relation>::iterator it = openRelations.begin(); it != openRelations.end(); ++it)
-        it->remove(rds, it->name);
+        it->remove(rds);
 }
 
 
