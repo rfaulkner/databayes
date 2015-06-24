@@ -826,7 +826,7 @@ void testCountEntityInRelations() {
     long count = b.countRelations("_x", "_y", ab);
 
     // Ensure the count is correct
-    assert(count == 1)
+    assert(count == 1);
 }
 
 /** Test for counting relations
