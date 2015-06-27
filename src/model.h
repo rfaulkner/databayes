@@ -377,7 +377,26 @@ public:
             this->name_left, this->name_right) + delim + this->generateHash();
     }
 
-    void write() { /* TODO implement */ }
+    void write(RedisHandler& rds) {
+
+    /* TODO implement */
+
+        std::string key;
+        rds->connect();
+        key = this->generateRelationKey(std::string(jsonVal[JSON_ATTR_REL_ENTL].asCString()), std::string(jsonVal[JSON_ATTR_REL_ENTR].asCString()), generateRelationHash(jsonVal));
+
+        if (this->redisHandler->exists(key)) {
+            if (this->fetchRaw(key, jsonVal)) {
+                jsonVal[JSON_ATTR_REL_COUNT] = jsonVal[JSON_ATTR_REL_COUNT].asInt() + 1;
+            } else
+                return false;
+        } else
+            jsonVal[JSON_ATTR_REL_COUNT] = 1;
+
+        rds->incrementKey(KEY_TOTAL_RELATIONS, 1);
+        rds->write(key, jsonVal.toStyledString());
+        return true;
+    }
 
     bool remove(RedisHandler& rds) {
         rds.connect();
