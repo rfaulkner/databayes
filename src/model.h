@@ -217,27 +217,35 @@ public:
                 }
             }
         members = value[JSON_ATTR_REL_FIELDSR].getMemberNames();
-        for (Json::Value::Members::iterator it = members.begin(); it != members.end(); ++it)
+        for (Json::Value::Members::iterator it = members.begin();
+             it != members.end(); ++it)
             if (std::strcmp(JSON_ATTR_FIELDS_COUNT, it->c_str()) != 0)
                 // Determine whether a type is being added or an element
                 if (it->find(JSON_ATTR_REL_TYPE_PREFIX) == 0) {
-                    types_right.insert(std::make_pair(it->substr(1, it->length()), value[JSON_ATTR_REL_FIELDSR][*it].asCString()));
+                    types_right.insert(std::make_pair(
+                        it->substr(1, it->length()),
+                        value[JSON_ATTR_REL_FIELDSR][*it].asCString()));
                 } else {
                     attrs_right.push_back(
-                        std::make_pair(*it, value[JSON_ATTR_REL_FIELDSR][*it].asCString()));
+                        std::make_pair(*it, value[JSON_ATTR_REL_FIELDSR]
+                            [*it].asCString()));
                 }
         return *this;
     }
 
     /** Handles forming the json for field vectors in the index */
-    void buildFieldJSONValue(Json::Value& value, valpair& fields, std::unordered_map<std::string, std::string>& types) {
+    void buildFieldJSONValue(Json::Value& value, valpair& fields,
+                             std::unordered_map<std::string,
+                             std::string>& types) {
         int count = 0;
         for (valpair::iterator it = fields.begin() ; it != fields.end(); ++it) {
             value[it->first] = it->second;
             if (types.find(it->first) != types.end())
-                value[std::string(JSON_ATTR_REL_TYPE_PREFIX) + it->first] = types[it->first];
+                value[std::string(JSON_ATTR_REL_TYPE_PREFIX) + it->first] =
+                    types[it->first];
             else
-                value[std::string(JSON_ATTR_REL_TYPE_PREFIX) + (*it).first] = COLTYPE_NAME_NULL;
+                value[std::string(JSON_ATTR_REL_TYPE_PREFIX) + (*it).first] =
+                    COLTYPE_NAME_NULL;
 
             count++;
         }
@@ -254,8 +262,10 @@ public:
         jsonVal[JSON_ATTR_REL_ENTL] = this->name_left;
         jsonVal[JSON_ATTR_REL_ENTR] = this->name_right;
 
-        this->buildFieldJSONValue(jsonValFieldsLeft, this->attrs_left, this->types_left);
-        this->buildFieldJSONValue(jsonValFieldsRight, this->attrs_right, this->types_right);
+        this->buildFieldJSONValue(jsonValFieldsLeft, this->attrs_left,
+            this->types_left);
+        this->buildFieldJSONValue(jsonValFieldsRight, this->attrs_right,
+            this->types_right);
 
         jsonVal[JSON_ATTR_REL_FIELDSL] = jsonValFieldsLeft;
         jsonVal[JSON_ATTR_REL_FIELDSR] = jsonValFieldsRight;
@@ -270,11 +280,13 @@ public:
     */
     std::string getValue(std::string entity, std::string attribute) {
         if (this->name_left.compare(entity) == 0) {
-            for (valpair::iterator it = attrs_left.begin(); it != attrs_left.end(); ++it)
+            for (valpair::iterator it = attrs_left.begin();
+                    it != attrs_left.end(); ++it)
                 if (it->first.compare(attribute) == 0)
                     return it->second;
         } else if (this->name_right.compare(entity) == 0) {
-            for (valpair::iterator it = attrs_right.begin(); it != attrs_right.end(); ++it)
+            for (valpair::iterator it = attrs_right.begin();
+                    it != attrs_right.end(); ++it)
                 if (it->first.compare(attribute) == 0 )
                     return it->second;
         }
