@@ -390,21 +390,11 @@ public:
     }
 
     void write(RedisHandler& rds) {
-
         Json::Value jsonVal = this->toJson();
         std::string key;
         rds.connect();
         key = this->generateKey();
-
-        if (rds.exists(key)) {
-            if (this->fetchRaw(key, jsonVal)) {
-                jsonVal[JSON_ATTR_REL_COUNT] =
-                    jsonVal[JSON_ATTR_REL_COUNT].asInt() + 1;
-            } else
-                return false;
-        } else
-            jsonVal[JSON_ATTR_REL_COUNT] = 1;
-
+        jsonVal[JSON_ATTR_REL_COUNT] = jsonVal[JSON_ATTR_REL_COUNT].asInt() + 1;
         rds.incrementKey(KEY_TOTAL_RELATIONS, 1);
         rds.write(key, jsonVal.toStyledString());
         return true;
@@ -436,9 +426,12 @@ public:
 
     AttributeTuple() {}
 
-    AttributeTuple(std::string formattedJson) { this->fromString(formattedJson); }
+    AttributeTuple(std::string formattedJson) {
+        this->fromString(formattedJson);
+    }
 
-    AttributeTuple(std::string entity, std::string attribute, std::string value, std::string type) {
+    AttributeTuple(std::string entity, std::string attribute, std::string value,
+                   std::string type) {
         this->entity = entity;
         this->attribute = attribute;
         this->value = value;
