@@ -829,15 +829,6 @@ void testCountEntityInRelations() {
     assert(count == 1);
 }
 
-/** Test for counting relations
-        TODO - complete
-*/
-void testCountRelations() {
-    Bayes b();
-    RedisHandler rds(REDISDBTEST, REDISPORT);
-
-    // similar to testCountEntityInRelations
-}
 
 /** Entity / Relation ORM tests **/
 
@@ -900,7 +891,6 @@ void initTests() {
     tests.insert(std::make_pair("testIndexFilterRelationsLTE", std::make_pair(true, testIndexFilterRelationsLTE)));
     tests.insert(std::make_pair("testRelation_toJson", std::make_pair(false, testRelation_toJson)));
     tests.insert(std::make_pair("testCountEntityInRelations", std::make_pair(false, testCountEntityInRelations)));
-    tests.insert(std::make_pair("testCountRelations", std::make_pair(false, testCountRelations)));
 
     tests.insert(std::make_pair("testEntityWrite", std::make_pair(true, testEntityWrite)));
     tests.insert(std::make_pair("testEntityRemove", std::make_pair(false, testEntityRemove)));
