@@ -802,7 +802,7 @@ void testIndexFilterRelationsLTE() {
         TODO - complete
 */
 void testCountEntityInRelations() {
-    Bayes b();
+    Bayes b;
     RedisHandler rds(REDISDBTEST, REDISPORT);
 
     // Create entities and relations
