@@ -397,7 +397,6 @@ public:
         jsonVal[JSON_ATTR_REL_COUNT] = jsonVal[JSON_ATTR_REL_COUNT].asInt() + 1;
         rds.incrementKey(KEY_TOTAL_RELATIONS, 1);
         rds.write(key, jsonVal.toStyledString());
-        return true;
     }
 
     bool remove(RedisHandler& rds) {
@@ -464,19 +463,24 @@ public:
             emitCLIError("Could not parse json from formatted string.");
     }
 
-    /** Switching logic for attribute tuples - defaults to true in absence of a defined comparator */
+    /** Switching logic for attribute tuples - defaults to true in absence of a
+        defined comparator */
     template <class Type>
-    static bool compare(AttributeTuple& lhs, AttributeTuple& rhs, std::string comparator) {
+    static bool compare(AttributeTuple& lhs, AttributeTuple& rhs,
+        std::string comparator) {
 
-        // lhs and rhs must have matching types -- floats can be compared to ints
+        // lhs and rhs must have matching types -- float can be compared to int
         if (lhs.type.compare(rhs.type) != 0 &&
-            !((lhs.type.compare(COLTYPE_NAME_INT) == 0 && rhs.type.compare(COLTYPE_NAME_FLOAT) == 0) ||
-             (rhs.type.compare(COLTYPE_NAME_INT) == 0 && lhs.type.compare(COLTYPE_NAME_FLOAT) == 0))
+            !((lhs.type.compare(COLTYPE_NAME_INT) == 0 &&
+                rhs.type.compare(COLTYPE_NAME_FLOAT) == 0) ||
+            (rhs.type.compare(COLTYPE_NAME_INT) == 0 &&
+                lhs.type.compare(COLTYPE_NAME_FLOAT) == 0))
            )
            return false;
 
         // lhs and rhs must both be valid
-        if (!validateType(lhs.type, lhs.value) || !validateType(rhs.type, rhs.value))
+        if (!validateType(lhs.type, lhs.value) ||
+            !validateType(rhs.type, rhs.value))
             return false;
 
         // Convert the types
@@ -496,7 +500,7 @@ public:
         else if (std::strcmp(comparator.c_str(), ATTR_TUPLE_COMPARE_EQ) == 0)
             return lval == rval;
         else {   // Error - unrecognized operator
-            emitCLIError("Unrecognized comparator on Attribute Tuple comarison");
+            emitCLIError("Unrecognized comparator on Attribute Tuple comparison");
             return false;
         }
 
@@ -516,7 +520,12 @@ public:
     AttributeBucket() {}
 
     /** Constructor that converts valpair list to AttributeBucket */
-    AttributeBucket(std::string entity, valpair& vals, std::unordered_map<std::string, std::string>& types) { this->addAttributes(entity, vals, types); }
+    AttributeBucket(std::string entity,
+                    valpair& vals,
+                    std::unordered_map<std::string,
+                    std::string>& types) {
+        this->addAttributes(entity, vals, types);
+    }
 
     /** Insert a new atribute into the bucket */
     void addAttribute(AttributeTuple attr) {
