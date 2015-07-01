@@ -820,10 +820,10 @@ void testCountEntityInRelations() {
     // Persist objects to
 
     // Define attribute bucket to filter
-    AttributeBucket ab();
+    AttributeBucket ab;
 
     // Perform count
-    long count = b.countRelations("_x", "_y", ab);
+    long count = b.countRelations(std::string("_x"), std::string("_y"), ab);
 
     // Ensure the count is correct
     assert(count == 1);
