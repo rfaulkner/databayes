@@ -57,9 +57,11 @@ void makeTestRelation(std::string e1,
 /** Free the allocated entities and relations */
 void releaseObjects() {
     IndexHandler ih;
-    for (std::vector<Entity>::iterator it = openEntities.begin(); it != openEntities.end(); ++it)
+    for (std::vector<Entity>::iterator it = openEntities.begin();
+            it != openEntities.end(); ++it)
         ih.removeEntity(*it);
-    for (std::vector<Relation>::iterator it = openRelations.begin(); it != openRelations.end(); ++it)
+    for (std::vector<Relation>::iterator it = openRelations.begin();
+            it != openRelations.end(); ++it)
         ih.removeRelation(*it);
     openEntities.clear();
     openRelations.clear();
@@ -71,28 +73,32 @@ void releaseObjects() {
 void writeEntities() {
     IndexHandler ih;
     RedisHandler rds(REDISDBTEST, REDISPORT);
-    for (std::vector<Entity>::iterator it = openEntities.begin(); it != openEntities.end(); ++it)
+    for (std::vector<Entity>::iterator it = openEntities.begin();
+            it != openEntities.end(); ++it)
         it->write(rds, it->name);
 }
 
 void removeEntities() {
     IndexHandler ih;
     RedisHandler rds(REDISDBTEST, REDISPORT);
-    for (std::vector<Entity>::iterator it = openEntities.begin(); it != openEntities.end(); ++it)
+    for (std::vector<Entity>::iterator it = openEntities.begin();
+            it != openEntities.end(); ++it)
         it->remove(rds, it->name);
 }
 
 void writeRelations() {
     IndexHandler ih;
     RedisHandler rds(REDISDBTEST, REDISPORT);
-    for (std::vector<Relation>::iterator it = openRelations.begin(); it != openRelations.end(); ++it)
+    for (std::vector<Relation>::iterator it = openRelations.begin();
+            it != openRelations.end(); ++it)
         it->write(rds);
 }
 
 void removerelations() {
     IndexHandler ih;
     RedisHandler rds(REDISDBTEST, REDISPORT);
-    for (std::vector<Relation>::iterator it = openRelations.begin(); it != openRelations.end(); ++it)
+    for (std::vector<Relation>::iterator it = openRelations.begin();
+            it != openRelations.end(); ++it)
         it->remove(rds);
 }
 
@@ -105,7 +111,8 @@ void setRelationsList1() {
 
     // Initialize fields and types
     std::vector<std::pair<ColumnBase, std::string>> fields_ent_1, fields_ent_2;
-    std::vector<std::pair<std::string, std::string>> fields_rel_1, fields_rel_2, fields_rel_3;
+    std::vector<std::pair<std::string, std::string>> fields_rel_1,
+        fields_rel_2, fields_rel_3;
     std::unordered_map<std::string, std::string> types_rel_1, types_rel_2;
 
     fields_ent_1.push_back(std::make_pair(IntegerColumn(), "a"));
@@ -123,8 +130,10 @@ void setRelationsList1() {
     makeTestEntity("_y", fields_ent_2);
 
     // Add relation set
-    makeTestRelation("_x", "_y", fields_rel_1, fields_rel_2, types_rel_1, types_rel_2);
-    makeTestRelation("_x", "_y", fields_rel_1, fields_rel_3, types_rel_1, types_rel_2);
+    makeTestRelation("_x", "_y", fields_rel_1, fields_rel_2,
+        types_rel_1, types_rel_2);
+    makeTestRelation("_x", "_y", fields_rel_1, fields_rel_3,
+        types_rel_1, types_rel_2);
 }
 
 /* Builds a vector of relations */
@@ -132,7 +141,8 @@ void setRelationsList2() {
 
     // Initialize fields and types
     std::vector<std::pair<ColumnBase, std::string>> fields_ent_1, fields_ent_2;
-    std::vector<std::pair<std::string, std::string>> fields_rel_1, fields_rel_2, fields_rel_3, fields_rel_4;
+    std::vector<std::pair<std::string, std::string>> fields_rel_1,
+        fields_rel_2, fields_rel_3, fields_rel_4;
     std::unordered_map<std::string, std::string> types_rel_1, types_rel_2;
 
     fields_ent_1.push_back(std::make_pair(IntegerColumn(), "a"));
@@ -151,8 +161,10 @@ void setRelationsList2() {
     makeTestEntity("_y", fields_ent_2);
 
     // Add relation set
-    makeTestRelation("_x", "_y", fields_rel_1, fields_rel_2, types_rel_1, types_rel_2);
-    makeTestRelation("_x", "_y", fields_rel_3, fields_rel_4, types_rel_1, types_rel_2);
+    makeTestRelation("_x", "_y", fields_rel_1, fields_rel_2,
+        types_rel_1, types_rel_2);
+    makeTestRelation("_x", "_y", fields_rel_3, fields_rel_4,
+        types_rel_1, types_rel_2);
 }
 
 /* -- TEST FUNCTIONS -- */
@@ -180,7 +192,8 @@ void testRedisKeys() {
     r.connect();
     vec = r.keys("*");
     cout << "KEY LIST FOR *" << endl;
-    for (std::vector<std::string>::iterator it = vec.begin() ; it != vec.end(); ++it) {
+    for (std::vector<std::string>::iterator it = vec.begin();
+            it != vec.end(); ++it) {
         cout << *it << endl;
     }
     cout << endl;
@@ -218,7 +231,8 @@ void testRegexForTypes() {
 /** Test to ensure that md5 hashing works */
 void testOrderPairAlphaNumeric() {
     IndexHandler ih;
-    assert(std::strcmp(ih.orderPairAlphaNumeric("b", "a").c_str(), "a_b") == 0);
+    assert(
+        std::strcmp(ih.orderPairAlphaNumeric("b", "a").c_str(), "a_b") == 0);
     cout << "Passed orderPairAlphaNumeric tests." << endl;
 }
 
@@ -231,7 +245,8 @@ void testJSONEntityEncoding() {
     Json::Value json;
     std::vector<std::pair<ColumnBase, std::string>> fields_ent;
 
-    fields_ent.push_back(std::make_pair(IntegerColumn(), "a"));   // Create fields
+    // Create fields
+    fields_ent.push_back(std::make_pair(IntegerColumn(), "a"));
     Entity e("test", fields_ent);
     ih.writeEntity(e);     // Create the entity
     ih.fetchEntity("test", json);           // Fetch the entity representation
@@ -272,7 +287,8 @@ void testJSONRelationEncoding() {
     ih.writeEntity(e2);
 
     // Create relation in redis
-    Relation r("test_1", "test_2", fields_rel_1, fields_rel_2, types_rel_1, types_rel_2);
+    Relation r("test_1", "test_2", fields_rel_1, fields_rel_2,
+        types_rel_1, types_rel_2);
     ih.writeRelation(r);
 
     // Fetch the entity representation
@@ -295,13 +311,16 @@ void testJSONRelationEncoding() {
 
 
 /**
- *  Tests that parseEntityAssignField correctly flags invalid assignments to integer fields
+ *  Tests that parseEntityAssignField correctly flags invalid assignments
+ *  to integer fields
  */
 void testFieldAssignTypeMismatchInteger() {
     IndexHandler ih;
     Json::Value json;
     std::vector<std::pair<ColumnBase, std::string>> fields_ent;
-    fields_ent.push_back(std::make_pair(IntegerColumn(), "a"));   // Create fields
+
+    // Create fields
+    fields_ent.push_back(std::make_pair(IntegerColumn(), "a"));
     Entity e("test", fields_ent);
 
     ih.writeEntity(e);     // Create the entity
@@ -315,13 +334,16 @@ void testFieldAssignTypeMismatchInteger() {
 }
 
 /**
- *  Tests that parseEntityAssignField correctly flags invalid assignments to float fields
+ *  Tests that parseEntityAssignField correctly flags invalid assignments
+ *  to float fields
  */
 void testFieldAssignTypeMismatchFloat() {
     IndexHandler ih;
     Json::Value json;
     std::vector<std::pair<ColumnBase, std::string>> fields_ent;
-    fields_ent.push_back(std::make_pair(FloatColumn(), "a"));   // Create fields
+
+    // Create fields
+    fields_ent.push_back(std::make_pair(FloatColumn(), "a"));
     Entity e("test", fields_ent);     // Create the entity
 
     ih.writeEntity(e);     // Create the entity
@@ -334,13 +356,16 @@ void testFieldAssignTypeMismatchFloat() {
 }
 
 /**
- *  Tests that parseEntityAssignField correctly flags invalid assignments to string fields
+ *  Tests that parseEntityAssignField correctly flags invalid assignments
+ *   to string fields
  */
 void testFieldAssignTypeMismatchString() {
     IndexHandler ih;
     Json::Value json;
     std::vector<std::pair<ColumnBase, std::string>> fields_ent;
-    fields_ent.push_back(std::make_pair(StringColumn(), "a"));   // Create fields
+
+    // Create fields
+    fields_ent.push_back(std::make_pair(StringColumn(), "a"));
     Entity e("test", fields_ent);
     ih.writeEntity(e);     // Create the entity
     assert(
@@ -352,7 +377,8 @@ void testFieldAssignTypeMismatchString() {
 }
 
 /**
- *  Tests Bayes::countRelations - ensure relation counting is functioning correctly
+ *  Tests Bayes::countRelations - ensure relation counting is functioning
+ *  correctly
  */
 void testCountRelations() {
     Bayes bayes;
@@ -363,7 +389,8 @@ void testCountRelations() {
     std::unordered_map<std::string, std::string> types;
 
     // declare three entities
-    Entity e1("_w", fields_ent), e2("_x", fields_ent), e3("_y", fields_ent), e4("_z", fields_ent);
+    Entity e1("_w", fields_ent), e2("_x", fields_ent),
+        e3("_y", fields_ent), e4("_z", fields_ent);
 
     // construct a number of relations
     Relation r1("_x", "_y", fields_rel, fields_rel, types, types);
@@ -403,14 +430,16 @@ void testCountRelations() {
 }
 
 /**
- *  Tests that existsEntityField correctly flags when entity does not contain a field
+ *  Tests that existsEntityField correctly flags when entity does not
+ *   contain a field
  */
 void testEntityDoesNotContainField() {
     // TODO - implement
 }
 
 /**
- *  Tests Bayes::computeMarginal function - ensure the marginal likelihood is correct
+ *  Tests Bayes::computeMarginal function - ensure the marginal likelihood
+ *  is correct
  */
 void testComputeMarginal() {
 
@@ -424,7 +453,8 @@ void testComputeMarginal() {
     ih.setRelationCountTotal(0);
 
     // declare three entities
-    Entity e1("_w", fields_ent), e2("_x", fields_ent), e3("_y", fields_ent), e4("_z", fields_ent);
+    Entity e1("_w", fields_ent), e2("_x", fields_ent),
+        e3("_y", fields_ent), e4("_z", fields_ent);
 
     // construct a number of relations
     Relation r1("_x", "_y", fields_rel, fields_rel, types, types);
@@ -457,7 +487,8 @@ void testComputeMarginal() {
 
     ih.setRelationCountTotal(ih.computeRelationsCount("*", "*"));
 
-    // Ensure marginal likelihood reflects the number of relations that contain each entity
+    // Ensure marginal likelihood reflects the number of relations that
+    // contain each entity
     AttributeBucket attrs;
 
     assert(bayes.computeMarginal(e1.name, attrs) == (float)0.2);
@@ -520,7 +551,8 @@ void testRelation_toJson() {
     typesR.insert(std::make_pair("y", COLTYPE_NAME_INT));
     Relation rel("x", "y", left, right, typesL, typesR);
     Json::Value json = rel.toJson();
-    assert(std::atoi(json[JSON_ATTR_REL_FIELDSL]["x"].asCString()) == 1 && std::atoi(json[JSON_ATTR_REL_FIELDSR]["y"].asCString()) == 2);
+    assert(std::atoi(json[JSON_ATTR_REL_FIELDSL]["x"].asCString()) == 1 &&
+        std::atoi(json[JSON_ATTR_REL_FIELDSR]["y"].asCString()) == 2);
 }
 
 /**
@@ -870,30 +902,52 @@ void testRelationWrite() {}
  */
 void initTests() {
 
-    tests.insert(std::make_pair("testRedisSet", std::make_pair(false, testRedisSet)));
-    tests.insert(std::make_pair("testRedisGet", std::make_pair(false, testRedisGet)));
-    tests.insert(std::make_pair("testRedisKeys", std::make_pair(false, testRedisKeys)));
-    tests.insert(std::make_pair("testMd5Hashing", std::make_pair(false, testMd5Hashing)));
-    tests.insert(std::make_pair("testRedisIO", std::make_pair(false, testRedisIO)));
-    tests.insert(std::make_pair("testRegexForTypes", std::make_pair(false, testRegexForTypes)));
-    tests.insert(std::make_pair("testOrderPairAlphaNumeric", std::make_pair(false, testOrderPairAlphaNumeric)));
-    tests.insert(std::make_pair("testJSONEntityEncoding", std::make_pair(false, testJSONEntityEncoding)));
-    tests.insert(std::make_pair("testJSONRelationEncoding", std::make_pair(false, testJSONRelationEncoding)));
-    tests.insert(std::make_pair("testFieldAssignTypeMismatchInteger", std::make_pair(false, testFieldAssignTypeMismatchInteger)));
-    tests.insert(std::make_pair("testFieldAssignTypeMismatchFloat", std::make_pair(false, testFieldAssignTypeMismatchFloat)));
-    tests.insert(std::make_pair("testFieldAssignTypeMismatchString", std::make_pair(false, testFieldAssignTypeMismatchString)));
-    tests.insert(std::make_pair("testCountRelations", std::make_pair(false, testCountRelations)));
-    tests.insert(std::make_pair("testIndexFilterRelationsEQ", std::make_pair(true, testIndexFilterRelationsEQ)));
-    tests.insert(std::make_pair("testIndexFilterRelationsGT", std::make_pair(true, testIndexFilterRelationsGT)));
-    tests.insert(std::make_pair("testIndexFilterRelationsLT", std::make_pair(true, testIndexFilterRelationsLT)));
-    tests.insert(std::make_pair("testIndexFilterRelationsGTE", std::make_pair(true, testIndexFilterRelationsGTE)));
-    tests.insert(std::make_pair("testIndexFilterRelationsLTE", std::make_pair(true, testIndexFilterRelationsLTE)));
-    tests.insert(std::make_pair("testRelation_toJson", std::make_pair(false, testRelation_toJson)));
-    tests.insert(std::make_pair("testCountEntityInRelations", std::make_pair(false, testCountEntityInRelations)));
+    tests.insert(std::make_pair("testRedisSet",
+        std::make_pair(false, testRedisSet)));
+    tests.insert(std::make_pair("testRedisGet",
+        std::make_pair(false, testRedisGet)));
+    tests.insert(std::make_pair("testRedisKeys",
+        std::make_pair(false, testRedisKeys)));
+    tests.insert(std::make_pair("testMd5Hashing",
+        std::make_pair(false, testMd5Hashing)));
+    tests.insert(std::make_pair("testRedisIO",
+        std::make_pair(false, testRedisIO)));
+    tests.insert(std::make_pair("testRegexForTypes",
+        std::make_pair(false, testRegexForTypes)));
+    tests.insert(std::make_pair("testOrderPairAlphaNumeric",
+        std::make_pair(false, testOrderPairAlphaNumeric)));
+    tests.insert(std::make_pair("testJSONEntityEncoding",
+        std::make_pair(false, testJSONEntityEncoding)));
+    tests.insert(std::make_pair("testJSONRelationEncoding",
+        std::make_pair(false, testJSONRelationEncoding)));
+    tests.insert(std::make_pair("testFieldAssignTypeMismatchInteger",
+        std::make_pair(false, testFieldAssignTypeMismatchInteger)));
+    tests.insert(std::make_pair("testFieldAssignTypeMismatchFloat",
+        std::make_pair(false, testFieldAssignTypeMismatchFloat)));
+    tests.insert(std::make_pair("testFieldAssignTypeMismatchString",
+        std::make_pair(false, testFieldAssignTypeMismatchString)));
+    tests.insert(std::make_pair("testCountRelations",
+        std::make_pair(false, testCountRelations)));
+    tests.insert(std::make_pair("testIndexFilterRelationsEQ",
+        std::make_pair(true, testIndexFilterRelationsEQ)));
+    tests.insert(std::make_pair("testIndexFilterRelationsGT",
+        std::make_pair(true, testIndexFilterRelationsGT)));
+    tests.insert(std::make_pair("testIndexFilterRelationsLT",
+        std::make_pair(true, testIndexFilterRelationsLT)));
+    tests.insert(std::make_pair("testIndexFilterRelationsGTE",
+        std::make_pair(true, testIndexFilterRelationsGTE)));
+    tests.insert(std::make_pair("testIndexFilterRelationsLTE",
+        std::make_pair(true, testIndexFilterRelationsLTE)));
+    tests.insert(std::make_pair("testRelation_toJson",
+        std::make_pair(false, testRelation_toJson)));
+    tests.insert(std::make_pair("testCountEntityInRelations",
+        std::make_pair(false, testCountEntityInRelations)));
 
     // Tests for test writing and ORM methods
-    tests.insert(std::make_pair("testEntityWrite", std::make_pair(true, testEntityWrite)));
-    tests.insert(std::make_pair("testRelationWrite", std::make_pair(false, testRelationWrite)));
+    tests.insert(std::make_pair("testEntityWrite",
+        std::make_pair(true, testEntityWrite)));
+    tests.insert(std::make_pair("testRelationWrite",
+        std::make_pair(false, testRelationWrite)));
 }
 
 /** MAIN BLOCK -- Execute tests */
@@ -902,7 +956,9 @@ int main() {
     initTests();
     cout << endl << "-- TESTS BEGIN --" << endl << endl;
 
-    for (std::unordered_map<std::string, std::pair<bool, FnPtr>>::iterator it = tests.begin(); it != tests.end(); ++it) {
+    for (std::unordered_map<std::string,
+            std::pair<bool, FnPtr>>::iterator it = tests.begin();
+            it != tests.end(); ++it) {
         if (it->second.first) {
             cout << "----- TESTING: " << it->first << endl << endl;
             it->second.second();
