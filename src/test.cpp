@@ -833,7 +833,32 @@ void testCountEntityInRelations() {
 /** Entity / Relation ORM tests **/
 
 /** Test entity writing/remove */
-void testEntityWrite() {}
+void testEntityWrite() {
+    std::string name = "_x";
+    std::string field_name = "a";
+    std::string field_value = "1";
+    defpair e1Def;
+
+    // setup test entity
+    e1Def.push_back(std::make_pair(IntegerColumn(), field_value));
+    makeTestEntity(name, e1Def);
+    writeEntities();
+
+    // Fetch the entity written
+    Json::Value value
+    ih.fetchEntity(name, value);
+
+    // Ensure name matches
+    assert(std::strcmp(value[JSON_ATTR_ENT_ENT].asCString(),
+        name.c_str()) == 0);
+    assert(std::strcmp(value[JSON_ATTR_ENT_FIELDS][field_name].asCString(),
+        field_value.c_str()) == 0);
+
+    // Cleanup
+    removeEntities();
+
+    // TODO (rfaulk) test that removal succeeded
+}
 
 
 /** Test relation writing / remove */
