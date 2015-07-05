@@ -832,38 +832,12 @@ void testCountEntityInRelations() {
 
 /** Entity / Relation ORM tests **/
 
-/** Test entity writing */
-void testEntityWrite() {
-    defpair attrs;
-    attrs.push_back(std::make_pair(IntegerColumn(), "a"));
-    attrs.push_back(std::make_pair(FloatColumn(), "b"));
-    RedisHandler rds(REDISDBTEST, REDISPORT);
-    IndexHandler ih;
-    Json::Value value;
-    std::string name = "_x";
+/** Test entity writing/remove */
+void testEntityWrite() {}
 
-    Entity e(name, attrs);
-    e.write(rds, name);
 
-    ih.fetchEntity(name, value);
-
-    // Ensure name matches
-    assert(std::strcmp(value[JSON_ATTR_ENT_ENT].asCString(), name.c_str()) == 0);
-
-    // TODO Ensure fields match .. val[JSON_ATTR_ENT_FIELDS].getMemberNames()
-
-    // Cleanup
-    e.remove(rds, name);
-}
-
-/** Test entity removal */
-void testEntityRemove() {}
-
-/** Test relation writing */
+/** Test relation writing / remove */
 void testRelationWrite() {}
-
-/** Test entity removal */
-void testRelationRemove() {}
 
 
 /**
@@ -892,10 +866,9 @@ void initTests() {
     tests.insert(std::make_pair("testRelation_toJson", std::make_pair(false, testRelation_toJson)));
     tests.insert(std::make_pair("testCountEntityInRelations", std::make_pair(false, testCountEntityInRelations)));
 
+    // Tests for test writing and ORM methods
     tests.insert(std::make_pair("testEntityWrite", std::make_pair(true, testEntityWrite)));
-    tests.insert(std::make_pair("testEntityRemove", std::make_pair(false, testEntityRemove)));
     tests.insert(std::make_pair("testRelationWrite", std::make_pair(false, testRelationWrite)));
-    tests.insert(std::make_pair("testRelationRemove", std::make_pair(false, testRelationRemove)));
 }
 
 /** MAIN BLOCK -- Execute tests */
