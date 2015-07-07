@@ -894,7 +894,43 @@ void testEntityWrite() {
 
 
 /** Test relation writing / remove */
-void testRelationWrite() {}
+void testRelationWrite() {
+    std::string left_name = "_x";
+    std::string right_name = "_y";
+
+    std::string field_left_name = "a";
+    std::string field_right_name = "b";
+
+    std::string field_left_val = "1";
+    std::string field_right_val = "2";
+
+    std::unordered_map<std::string, std::string> left_types, right_types;
+    defpair e1Def, e2Def;
+    valpair e1Val, e2Val;
+
+    // setup test entity
+    e1Def.push_back(std::make_pair(IntegerColumn(), field_left_name));
+    e2Def.push_back(std::make_pair(IntegerColumn(), field_right_name));
+    makeTestEntity(left_name, e1Def);
+    makeTestEntity(right_name, e2Def);
+    writeEntities();
+
+    e1Def.push_back(std::make_pair(IntegerColumn(), field_left_val));
+    e2Def.push_back(std::make_pair(IntegerColumn(), field_right_val));
+    left_types.insert(std::make_pair("a", COLTYPE_NAME_INT));
+    right_types.insert(std::make_pair("b", COLTYPE_NAME_INT));
+    makeTestRelation(left_name, right_name, e1Def, e2Def, left_types,
+        right_types);
+    writeRelations();
+
+    // TODO - Fetch the relation written
+
+    // Cleanup
+    removeEntities();
+    removeRelations();
+
+    // TODO (rfaulk) test that removal succeeded
+}
 
 
 /**
