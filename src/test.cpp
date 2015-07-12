@@ -94,7 +94,7 @@ void writeRelations() {
         it->write(rds);
 }
 
-void removeelations() {
+void removeRelations() {
     IndexHandler ih;
     RedisHandler rds(REDISDBTEST, REDISPORT);
     for (std::vector<Relation>::iterator it = openRelations.begin();
