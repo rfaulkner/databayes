@@ -94,7 +94,7 @@ void writeRelations() {
         it->write(rds);
 }
 
-void removerelations() {
+void removeelations() {
     IndexHandler ih;
     RedisHandler rds(REDISDBTEST, REDISPORT);
     for (std::vector<Relation>::iterator it = openRelations.begin();
@@ -866,6 +866,7 @@ void testCountEntityInRelations() {
 
 /** Test entity writing/remove */
 void testEntityWrite() {
+    IndexHandler ih;
     std::string name = "_x";
     std::string field_name = "a";
     std::string field_value = "1";
@@ -877,7 +878,7 @@ void testEntityWrite() {
     writeEntities();
 
     // Fetch the entity written
-    Json::Value value
+    Json::Value value;
     ih.fetchEntity(name, value);
 
     // Ensure name matches
