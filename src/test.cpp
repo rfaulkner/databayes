@@ -825,6 +825,7 @@ void testIndexFilterRelationsLTE() {
     rel_out = openRelations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_LTE);
     // TODO - add value asserts here
+    // cout << " " << end;
     assert(rel_out.size() == 2);
 
     releaseObjects();
@@ -920,7 +921,7 @@ void testRelationWrite() {
     e2Def.push_back(std::make_pair(IntegerColumn(), field_right_val));
     left_types.insert(std::make_pair("a", COLTYPE_NAME_INT));
     right_types.insert(std::make_pair("b", COLTYPE_NAME_INT));
-    makeTestRelation(left_name, right_name, e1Def, e2Def, left_types,
+    makeTestRelation(left_name, right_name, e1Val, e2Val, left_types,
         right_types);
     writeRelations();
 
