@@ -824,7 +824,6 @@ void testIndexFilterRelationsLTE() {
     ab.addAttribute(at);
     rel_out = openRelations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_LTE);
-    // TODO - add value asserts here
     assert(rel_out.size() == 2);
 
     releaseObjects();
@@ -982,7 +981,7 @@ void initTests() {
 
     // Tests for test writing and ORM methods
     tests.insert(std::make_pair("testEntityWrite",
-        std::make_pair(true, testEntityWrite)));
+        std::make_pair(false, testEntityWrite)));
     tests.insert(std::make_pair("testRelationWrite",
         std::make_pair(false, testRelationWrite)));
 }
