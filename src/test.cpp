@@ -820,12 +820,11 @@ void testIndexFilterRelationsLTE() {
 
     // Second filter test - Both relations less than or equal
     ab = AttributeBucket();
-    at = AttributeTuple("_x", "a", "10", COLTYPE_NAME_INT);
+    at = AttributeTuple("_x", "a", "11", COLTYPE_NAME_INT);
     ab.addAttribute(at);
     rel_out = openRelations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_LTE);
     // TODO - add value asserts here
-    // cout << " " << end;
     assert(rel_out.size() == 2);
 
     releaseObjects();
