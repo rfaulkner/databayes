@@ -879,11 +879,11 @@ void testEntityWrite() {
     Json::Value value;
     ih.fetchEntity(name, value);
 
-    // Ensure name matches
+    // Ensure name matches and attribute exists
     assert(std::strcmp(value[JSON_ATTR_ENT_ENT].asCString(),
         name.c_str()) == 0);
-    assert(std::strcmp(value[JSON_ATTR_ENT_FIELDS][field_name].asCString(),
-        field_name.c_str()) == 0);
+    assert(value[JSON_ATTR_ENT_FIELDS].isMember(field_name));
+    // TODO (rfaulk) test that type is correct
 
     // Cleanup
     removeEntities();
