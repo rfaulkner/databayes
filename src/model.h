@@ -67,8 +67,21 @@ public:
         this->attrs = attrs;
     }
 
+    // Entity(Json::Value val) { this->fromJSON(val); }
+
     std::string name;
     defpair attrs;
+
+    /** Create a copy of the Entity in Json */
+    Json::Value toJson() {
+        Json::Value jsonVal;
+        Json::Value fields;
+        jsonVal[JSON_ATTR_ENT_ENT] = this->name;
+        jsonVal[JSON_ATTR_REL_ENTR] = this->name_right;
+        this->createJSON(fields, this->fields);
+        jsonVal[JSON_ATTR_ENT_FIELDS] = fields;
+        return jsonVal;
+    }
 
     void addAttribute(std::string name, ColumnBase colType) {
         attrs.push_back(std::make_pair(colType, name));
