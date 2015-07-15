@@ -868,11 +868,10 @@ void testEntityWrite() {
     IndexHandler ih;
     std::string name = "_x";
     std::string field_name = "a";
-    std::string field_value = "1";
     defpair e1Def;
 
     // setup test entity
-    e1Def.push_back(std::make_pair(IntegerColumn(), field_value));
+    e1Def.push_back(std::make_pair(IntegerColumn(), field_name));
     makeTestEntity(name, e1Def);
     writeEntities();
 
@@ -884,7 +883,7 @@ void testEntityWrite() {
     assert(std::strcmp(value[JSON_ATTR_ENT_ENT].asCString(),
         name.c_str()) == 0);
     assert(std::strcmp(value[JSON_ATTR_ENT_FIELDS][field_name].asCString(),
-        field_value.c_str()) == 0);
+        field_name.c_str()) == 0);
 
     // Cleanup
     removeEntities();
@@ -981,7 +980,7 @@ void initTests() {
 
     // Tests for test writing and ORM methods
     tests.insert(std::make_pair("testEntityWrite",
-        std::make_pair(false, testEntityWrite)));
+        std::make_pair(true, testEntityWrite)));
     tests.insert(std::make_pair("testRelationWrite",
         std::make_pair(false, testRelationWrite)));
 }
