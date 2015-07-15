@@ -77,8 +77,7 @@ public:
         Json::Value jsonVal;
         Json::Value fields;
         jsonVal[JSON_ATTR_ENT_ENT] = this->name;
-        jsonVal[JSON_ATTR_REL_ENTR] = this->name_right;
-        this->createJSON(fields, this->fields);
+        this->createJSON(fields, this->attrs);
         jsonVal[JSON_ATTR_ENT_FIELDS] = fields;
         return jsonVal;
     }
