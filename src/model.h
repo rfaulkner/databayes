@@ -112,7 +112,7 @@ public:
         jsonVal[JSON_ATTR_ENT_FIELDS] = jsonValFields;
 
         rds.connect();
-        rds.write(key, jsonVal.toStyledString());
+        rds.write(this->generateKey(), jsonVal.toStyledString());
     }
 
     bool remove(RedisHandler& rds, std::string key) {
