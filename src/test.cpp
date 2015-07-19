@@ -933,6 +933,8 @@ void testRelationWrite() {
         assert(value[JSON_ATTR_REL_FIELDSL].isMember(field_left_name));
         assert(value[JSON_ATTR_REL_FIELDSR].isMember(field_right_name));
         assert(value[JSON_ATTR_FIELDS_COUNT].asInt() == 1);
+        // TODO - check types
+        // TODO - check values
     }
 
     // Cleanup
