@@ -863,7 +863,7 @@ void testCountEntityInRelations() {
 
 /** Entity / Relation ORM tests **/
 
-/** Test entity writing/remove */
+/** Test entity writing */
 void testEntityWrite() {
     IndexHandler ih;
     std::string name = "_x";
@@ -887,12 +887,10 @@ void testEntityWrite() {
 
     // Cleanup
     removeEntities();
-
-    // TODO (rfaulk) test that removal succeeded
 }
 
 
-/** Test relation writing / remove */
+/** Test relation writing */
 void testRelationWrite() {
     std::string left_name = "_x";
     std::string right_name = "_y";
@@ -942,6 +940,9 @@ void testRelationWrite() {
     removeRelations();
 }
 
+void testEntityRemoval() { }
+
+void testRelationRemoval() { }
 
 /**
  *  Initialize tests that should (and should not) run
