@@ -922,13 +922,24 @@ void testRelationWrite() {
         right_types);
     writeRelations();
 
-    // TODO - Fetch the relation written
+    // Fetch the relation written
+    IndexHandler ih;
+    Json::Value json;
+    for (std::vector<Relation>::iterator it = openEntities.begin();
+            it != openRelations.end(); ++it) {
+        ih.fetchRaw(it->generateKey(), json)
+        assert(std::strcmp(json[JSON_ATTR_REL_ENTL].asCString(),
+            it->left_name) == 0);
+        assert(std::strcmp(json[JSON_ATTR_REL_ENTR].asCString(),
+            it->right_name) == 0);
+        assert(value[JSON_ATTR_REL_FIELDSL].isMember(field_left_name));
+        assert(value[JSON_ATTR_REL_FIELDSR].isMember(field_right_name));
+        assert(value[JSON_ATTR_FIELDS_COUNT].asInt() == 1);
+    }
 
     // Cleanup
     removeEntities();
     removeRelations();
-
-    // TODO (rfaulk) test that removal succeeded
 }
 
 
