@@ -927,9 +927,9 @@ void testRelationWrite() {
             it != openRelations.end(); ++it) {
         ih.fetchRaw(it->generateKey(), json)
         assert(std::strcmp(json[JSON_ATTR_REL_ENTL].asCString(),
-            it->left_name) == 0);
+            it->name_left) == 0);
         assert(std::strcmp(json[JSON_ATTR_REL_ENTR].asCString(),
-            it->right_name) == 0);
+            it->name_right) == 0);
         assert(value[JSON_ATTR_REL_FIELDSL].isMember(field_left_name));
         assert(value[JSON_ATTR_REL_FIELDSR].isMember(field_right_name));
         assert(value[JSON_ATTR_FIELDS_COUNT].asInt() == 1);
