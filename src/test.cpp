@@ -503,18 +503,6 @@ void testComputeMarginal() {
  */
 void testEntityRemoval() {
 
-    IndexHandler ih;
-    std::vector<std::pair<ColumnBase, std::string>> fields_ent;
-
-    // declare three entities
-    Entity e("_w", fields_ent);
-
-    if (ih.existsEntity(e))
-        ih.removeEntity(e);
-    ih.writeEntity(e);
-    ih.removeEntity(e);
-
-    assert(ih.existsEntity(e));
 }
 
 /**
@@ -923,13 +911,13 @@ void testRelationWrite() {
     // Fetch the relation written
     IndexHandler ih;
     Json::Value json;
-    for (std::vector<Relation>::iterator it = openEntities.begin();
+    for (std::vector<Relation>::iterator it = openRelations.begin();
             it != openRelations.end(); ++it) {
         ih.fetchRaw(it->generateKey(), json)
         assert(std::strcmp(json[JSON_ATTR_REL_ENTL].asCString(),
-            it->name_left) == 0);
+            it->name_left.c_str()) == 0);
         assert(std::strcmp(json[JSON_ATTR_REL_ENTR].asCString(),
-            it->name_right) == 0);
+            it->name_right.c_str()) == 0);
         assert(value[JSON_ATTR_REL_FIELDSL].isMember(field_left_name));
         assert(value[JSON_ATTR_REL_FIELDSR].isMember(field_right_name));
         assert(value[JSON_ATTR_FIELDS_COUNT].asInt() == 1);
