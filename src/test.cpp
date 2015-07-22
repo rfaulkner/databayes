@@ -848,6 +848,7 @@ void testEntityWrite() {
 
     // Cleanup
     removeEntities();
+    releaseObjects();
 }
 
 
@@ -898,6 +899,10 @@ void testRelationWrite() {
             == 1);
         assert(json[JSON_ATTR_REL_FIELDSR][JSON_ATTR_FIELDS_COUNT].asInt()
             == 1);
+        assert(json[JSON_ATTR_REL_FIELDSL][JSON_ATTR_FIELDS_COUNT].asInt()
+            == 1);
+        assert(json[JSON_ATTR_REL_FIELDSL][JSON_ATTR_FIELDS_COUNT].asInt()
+            == 1);
         // TODO - check types
         // TODO - check values
     }
@@ -905,6 +910,7 @@ void testRelationWrite() {
     // Cleanup
     removeEntities();
     removeRelations();
+    releaseObjects();
 }
 
 /**
