@@ -873,8 +873,8 @@ void testRelationWrite() {
     makeTestEntity(right_name, e2Def);
     writeEntities();
 
-    e1Def.push_back(std::make_pair(IntegerColumn(), field_left_val));
-    e2Def.push_back(std::make_pair(IntegerColumn(), field_right_val));
+    e1Val.push_back(std::make_pair(field_left_name, field_left_val));
+    e2Val.push_back(std::make_pair(field_right_name, field_right_val));
     left_types.insert(std::make_pair("a", COLTYPE_NAME_INT));
     right_types.insert(std::make_pair("b", COLTYPE_NAME_INT));
     makeTestRelation(left_name, right_name, e1Val, e2Val, left_types,
@@ -884,16 +884,18 @@ void testRelationWrite() {
     // Fetch the relation written
     IndexHandler ih;
     Json::Value json;
+    std::string key;
     for (std::vector<Relation>::iterator it = openRelations.begin();
             it != openRelations.end(); ++it) {
-        ih.fetchRaw(it->generateKey(), json)
+        cout << it->stringify() << endl;
+        ih.fetchRaw(it->generateKey(), json);
         assert(std::strcmp(json[JSON_ATTR_REL_ENTL].asCString(),
             it->name_left.c_str()) == 0);
         assert(std::strcmp(json[JSON_ATTR_REL_ENTR].asCString(),
             it->name_right.c_str()) == 0);
-        assert(value[JSON_ATTR_REL_FIELDSL].isMember(field_left_name));
-        assert(value[JSON_ATTR_REL_FIELDSR].isMember(field_right_name));
-        assert(value[JSON_ATTR_FIELDS_COUNT].asInt() == 1);
+        assert(json[JSON_ATTR_REL_FIELDSL].isMember(field_left_name));
+        assert(json[JSON_ATTR_REL_FIELDSR].isMember(field_right_name));
+        assert(json[JSON_ATTR_FIELDS_COUNT].asInt() == 1);
         // TODO - check types
         // TODO - check values
     }
@@ -974,7 +976,7 @@ void initTests() {
     tests.insert(std::make_pair("testEntityWrite",
         std::make_pair(true, testEntityWrite)));
     tests.insert(std::make_pair("testRelationWrite",
-        std::make_pair(false, testRelationWrite)));
+        std::make_pair(true, testRelationWrite)));
     tests.insert(std::make_pair("testEntityRemoval",
         std::make_pair(false, testEntityRemoval)));
     tests.insert(std::make_pair("testRelationRemoval",
