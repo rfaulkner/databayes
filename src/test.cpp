@@ -887,7 +887,6 @@ void testRelationWrite() {
     std::string key;
     for (std::vector<Relation>::iterator it = openRelations.begin();
             it != openRelations.end(); ++it) {
-        cout << it->stringify() << endl;
         ih.fetchRaw(it->generateKey(), json);
         assert(std::strcmp(json[JSON_ATTR_REL_ENTL].asCString(),
             it->name_left.c_str()) == 0);
@@ -895,7 +894,10 @@ void testRelationWrite() {
             it->name_right.c_str()) == 0);
         assert(json[JSON_ATTR_REL_FIELDSL].isMember(field_left_name));
         assert(json[JSON_ATTR_REL_FIELDSR].isMember(field_right_name));
-        assert(json[JSON_ATTR_FIELDS_COUNT].asInt() == 1);
+        assert(json[JSON_ATTR_REL_FIELDSL][JSON_ATTR_FIELDS_COUNT].asInt()
+            == 1);
+        assert(json[JSON_ATTR_REL_FIELDSR][JSON_ATTR_FIELDS_COUNT].asInt()
+            == 1);
         // TODO - check types
         // TODO - check values
     }
