@@ -82,6 +82,15 @@ public:
         return jsonVal;
     }
 
+    /** Render the relation state as a string */
+    std::string stringify() {
+        std::string s;
+        s +=  this->name + std::string("; ");
+        for (defpair::iterator it = attrs.begin() ; it != attrs.end(); ++it)
+            s += it->first.getType() + std::string(":") + it->second;
+        return s;
+    }
+
     void addAttribute(std::string name, ColumnBase colType) {
         attrs.push_back(std::make_pair(colType, name));
     }
