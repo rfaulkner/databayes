@@ -899,12 +899,12 @@ void testRelationWrite() {
             == 1);
         assert(json[JSON_ATTR_REL_FIELDSR][JSON_ATTR_FIELDS_COUNT].asInt()
             == 1);
-        assert(json[JSON_ATTR_REL_FIELDSL][JSON_ATTR_FIELDS_COUNT].asInt()
-            == 1);
-        assert(json[JSON_ATTR_REL_FIELDSL][JSON_ATTR_FIELDS_COUNT].asInt()
-            == 1);
-        // TODO - check types
-        // TODO - check values
+        assert(std::strcmp(json[JSON_ATTR_REL_FIELDSL][
+            std::string(JSON_ATTR_REL_TYPE_PREFIX) + field_left_name].
+            asCString(), COLTYPE_NAME_INT) == 0);
+        assert(std::strcmp(json[JSON_ATTR_REL_FIELDSR][
+            std::string(JSON_ATTR_REL_TYPE_PREFIX) + field_right_name].
+            asCString(), COLTYPE_NAME_INT) == 0);
     }
 
     // Cleanup
