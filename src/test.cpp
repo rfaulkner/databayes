@@ -935,16 +935,33 @@ void testEntityCascadeRemoval() {
 }
 
 /**
+ *  Tests ...
+ */
+void testADDREL() {
+    // TODO - implement
+}
+
+/**
+ *  Tests ...
+ */
+void testDEF() {
+    // TODO - implement
+}
+
+/**
  *  Initialize tests that should (and should not) run
  */
 void initTests() {
 
+    // Redis Tests
     tests.insert(std::make_pair("testRedisSet",
         std::make_pair(false, testRedisSet)));
     tests.insert(std::make_pair("testRedisGet",
         std::make_pair(false, testRedisGet)));
     tests.insert(std::make_pair("testRedisKeys",
         std::make_pair(false, testRedisKeys)));
+
+
     tests.insert(std::make_pair("testMd5Hashing",
         std::make_pair(false, testMd5Hashing)));
     tests.insert(std::make_pair("testRedisIO",
@@ -995,6 +1012,12 @@ void initTests() {
         std::make_pair(false, testRelationRemoval)));
     tests.insert(std::make_pair("testEntityCascadeRemoval",
         std::make_pair(false, testEntityCascadeRemoval)));
+
+    // Test CLI Commands
+    tests.insert(std::make_pair("testADDREL",
+        std::make_pair(false, testADDREL)));
+    tests.insert(std::make_pair("testGEN",
+        std::make_pair(false, testADDREL)));
 }
 
 /** MAIN BLOCK -- Execute tests */
