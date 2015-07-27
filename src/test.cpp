@@ -965,6 +965,8 @@ void initTests() {
         std::make_pair(false, testFieldAssignTypeMismatchString)));
     tests.insert(std::make_pair("testCountRelations",
         std::make_pair(false, testCountRelations)));
+
+    // Tests for filtering
     tests.insert(std::make_pair("testIndexFilterRelationsEQ",
         std::make_pair(true, testIndexFilterRelationsEQ)));
     tests.insert(std::make_pair("testIndexFilterRelationsGT",
@@ -976,6 +978,8 @@ void initTests() {
     tests.insert(std::make_pair("testIndexFilterRelationsLTE",
         std::make_pair(true, testIndexFilterRelationsLTE)));
     tests.insert(std::make_pair("testRelation_toJson",
+
+
         std::make_pair(true, testRelation_toJson)));
     tests.insert(std::make_pair("testCountEntityInRelations",
         std::make_pair(false, testCountEntityInRelations)));
