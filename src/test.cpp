@@ -911,21 +911,10 @@ void testRelationWrite() {
     removeEntities();
     removeRelations();
     releaseObjects();
+
+    // Test Removal
 }
 
-/**
- *  Tests that removal of entities functions properly
- */
-void testEntityRemoval() {
-
-}
-
-/**
- *  Tests that removal of relations functions properly
- */
-void testRelationRemoval() {
-    // TODO - implement
-}
 
 /**
  *  Tests that removal of relations cascading on entities functions properly
@@ -1006,10 +995,6 @@ void initTests() {
         std::make_pair(true, testEntityWrite)));
     tests.insert(std::make_pair("testRelationWrite",
         std::make_pair(true, testRelationWrite)));
-    tests.insert(std::make_pair("testEntityRemoval",
-        std::make_pair(false, testEntityRemoval)));
-    tests.insert(std::make_pair("testRelationRemoval",
-        std::make_pair(false, testRelationRemoval)));
     tests.insert(std::make_pair("testEntityCascadeRemoval",
         std::make_pair(false, testEntityCascadeRemoval)));
 
