@@ -113,7 +113,7 @@ public:
     }
 
     /** Handles writing the entity JSON representation to redis */
-    void write(RedisHandler& rds, std::string key) {
+    void write(RedisHandler& rds) {
         Json::Value jsonVal;
         Json::Value jsonValFields;
         jsonVal[JSON_ATTR_ENT_ENT] = this->name;
