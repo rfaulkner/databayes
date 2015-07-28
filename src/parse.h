@@ -415,6 +415,8 @@ std::string Parser::analyze(const std::string& s) {
     // Post processing if command complete
     if (this->state == STATE_FINISH) {
 
+        RedisHandler redis = RedisHandler(REDISHOST, REDISPORT);
+
         if (this->debug) {
             emitCLINote(std::string("Finishing statement processing."));
             emitCLINote(std::string("Macro state: ") + std::to_string(this->macroState));
@@ -426,7 +428,8 @@ std::string Parser::analyze(const std::string& s) {
 
         if (this->macroState == STATE_DEF && !this->error) { // Add this entity to the index
             Entity e(this->currEntity, *(this->currFields));
-            this->indexHandler->writeEntity(e);
+            e.write(redis);
+            // this->indexHandler->writeEntity(e);
             this->rspStr = "Entity successfully added";
 
             if (this->debug)

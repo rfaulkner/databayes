@@ -142,7 +142,7 @@ std::string IndexHandler::generateRelationHash(Json::Value val) {
  *
  *  e.g. {"entity": <string:entname>, "fields": <string_array:[<f1,f2,...>]>}
  */
-void IndexHandler::writeEntity(Entity& e) { e.write(*(this->redisHandler), this->generateEntityKey(e.name)); }
+void IndexHandler::writeEntity(Entity& e) { e.write(*(this->redisHandler)); }
 
 /** Remove entity key from redis */
 bool IndexHandler::removeEntity(Entity& e) {
