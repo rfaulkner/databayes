@@ -124,7 +124,8 @@ public:
         rds.write(this->generateKey(), jsonVal.toStyledString());
     }
 
-    bool remove(RedisHandler& rds, std::string key) {
+    bool remove(RedisHandler& rds) {
+        std::string key = this->generateKey();
         rds.connect();
         if (rds.exists(key)) {
             rds.deleteKey(key);

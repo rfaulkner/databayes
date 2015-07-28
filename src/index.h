@@ -146,7 +146,7 @@ void IndexHandler::writeEntity(Entity& e) { e.write(*(this->redisHandler)); }
 
 /** Remove entity key from redis */
 bool IndexHandler::removeEntity(Entity& e) {
-    if (e.remove(*(this->redisHandler), this->generateEntityKey(e.name))) {
+    if (e.remove(*(this->redisHandler))) {
         // Delete all relations containing this entity
         // TODO - use ORM to remove relations
         std::vector<Json::Value> relations_left = this->fetchRelationPrefix(e.name, "*");
