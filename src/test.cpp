@@ -176,7 +176,7 @@ void testRedisSetGetRemove() {
     r.write("foo", "bar");
     assert(r.read("foo").compare("bar") == 0);
     r.deleteKey("foo");
-    assert(r.exists("foo") == false);
+    assert(!r.exists("foo"));
 }
 
 
@@ -198,22 +198,8 @@ void testRedisKeys() {
         );
         r.deleteKey(*it);
     }
-
 }
 
-/** Test to ensure that redis keys are correctly returned */
-void testRedisIO() {
-    RedisHandler r;
-    std::vector<string>* vec;
-    std::string outTrue, outFalse = "";
-
-    r.connect();
-    r.write("test_key", "test value");
-    outTrue = r.read("test_key");
-    assert(std::strcmp(outTrue.c_str(), "test value") == 0);
-    r.deleteKey("test_key");
-    assert(!r.exists("test_key"));
-}
 
 /** Test to ensure that md5 hashing works */
 void testMd5Hashing() {
@@ -962,8 +948,6 @@ void initTests() {
 
     tests.insert(std::make_pair("testMd5Hashing",
         std::make_pair(false, testMd5Hashing)));
-    tests.insert(std::make_pair("testRedisIO",
-        std::make_pair(false, testRedisIO)));
     tests.insert(std::make_pair("testRegexForTypes",
         std::make_pair(false, testRegexForTypes)));
     tests.insert(std::make_pair("testOrderPairAlphaNumeric",
