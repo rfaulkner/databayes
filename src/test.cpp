@@ -849,6 +849,11 @@ void testEntityWrite() {
     // Cleanup
     removeEntities();
     releaseObjects();
+
+    // test removal
+    Json::Value json;
+    ih.fetchRaw("*", json);
+    assert(json.empty());
 }
 
 
@@ -913,8 +918,9 @@ void testRelationWrite() {
     releaseObjects();
 
     // Test Removal
-    Json::Value json;
     ih.fetchRaw("*", json);
+    assert(json.empty());
+
 }
 
 
