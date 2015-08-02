@@ -186,13 +186,20 @@ void testRedisKeys() {
     std::vector<std::string> vec;
 
     r.connect();
+    r.write("foo1", "bar");
+    r.write("foo2", "bar");
+    r.write("foo3", "bar");
     vec = r.keys("*");
     cout << "KEY LIST FOR *" << endl;
     for (std::vector<std::string>::iterator it = vec.begin();
             it != vec.end(); ++it) {
-        cout << *it << endl;
+        assert(it->compare("foo1") == 0 ||
+            it->compare("foo2") == 0 ||
+            it->compare("foo3") == 0
+        )
+        r.deleteKey(*it);
     }
-    cout << endl;
+
 }
 
 /** Test to ensure that redis keys are correctly returned */
