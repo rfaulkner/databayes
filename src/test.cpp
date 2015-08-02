@@ -196,7 +196,7 @@ void testRedisKeys() {
         assert(it->compare("foo1") == 0 ||
             it->compare("foo2") == 0 ||
             it->compare("foo3") == 0
-        )
+        );
         r.deleteKey(*it);
     }
 
