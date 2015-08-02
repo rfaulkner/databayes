@@ -75,7 +75,7 @@ void writeEntities() {
     RedisHandler rds(REDISDBTEST, REDISPORT);
     for (std::vector<Entity>::iterator it = openEntities.begin();
             it != openEntities.end(); ++it)
-        it->write(rds, it->name);
+        it->write(rds);
 }
 
 void removeEntities() {
@@ -83,7 +83,7 @@ void removeEntities() {
     RedisHandler rds(REDISDBTEST, REDISPORT);
     for (std::vector<Entity>::iterator it = openEntities.begin();
             it != openEntities.end(); ++it)
-        it->remove(rds, it->name);
+        it->remove(rds);
 }
 
 void writeRelations() {
@@ -913,6 +913,8 @@ void testRelationWrite() {
     releaseObjects();
 
     // Test Removal
+    Json::Value json;
+    ih.fetchRaw("*", json);
 }
 
 
