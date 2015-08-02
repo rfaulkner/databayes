@@ -170,19 +170,15 @@ void setRelationsList2() {
 /* -- TEST FUNCTIONS -- */
 
 /** Test to ensure that redis keys are correctly returned */
-void testRedisSet() {
+void testRedisSetGetRemove() {
     RedisHandler r;
     r.connect();
     r.write("foo", "bar");
+    assert(r.read("foo").compare("bar") == 0);
+    r.deleteKey("foo");
+    assert(r.exists("foo") == false);
 }
 
-/** Test to ensure that redis keys are correctly returned */
-void testRedisGet() {
-    RedisHandler r;
-    r.connect();
-    cout << endl << "VALUE FOR KEY foo" << endl;
-    cout << r.read("foo") << endl << endl;
-}
 
 /** Test to ensure that redis keys are correctly returned */
 void testRedisKeys() {
@@ -952,10 +948,8 @@ void testDEF() {
 void initTests() {
 
     // Redis Tests
-    tests.insert(std::make_pair("testRedisSet",
-        std::make_pair(false, testRedisSet)));
-    tests.insert(std::make_pair("testRedisGet",
-        std::make_pair(false, testRedisGet)));
+    tests.insert(std::make_pair("testRedisSetGetRemove",
+        std::make_pair(false, testRedisSetGetRemove)));
     tests.insert(std::make_pair("testRedisKeys",
         std::make_pair(false, testRedisKeys)));
 
