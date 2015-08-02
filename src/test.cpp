@@ -219,9 +219,10 @@ void testRegexForTypes() {
 /** Test to ensure that md5 hashing works */
 void testOrderPairAlphaNumeric() {
     IndexHandler ih;
+    cout << ih.orderPairAlphaNumeric("b", "a") << endl;
     assert(
-        std::strcmp(ih.orderPairAlphaNumeric("b", "a").c_str(), "a_b") == 0);
-    cout << "Passed orderPairAlphaNumeric tests." << endl;
+        std::strcmp(ih.orderPairAlphaNumeric("b", "a").c_str(),
+            ("a" + std::string(KEY_DELIMETER) + "b").c_str()) == 0);
 }
 
 /**
@@ -947,11 +948,12 @@ void initTests() {
 
 
     tests.insert(std::make_pair("testMd5Hashing",
-        std::make_pair(false, testMd5Hashing)));
+        std::make_pair(true, testMd5Hashing)));
     tests.insert(std::make_pair("testRegexForTypes",
-        std::make_pair(false, testRegexForTypes)));
+        std::make_pair(true, testRegexForTypes)));
     tests.insert(std::make_pair("testOrderPairAlphaNumeric",
-        std::make_pair(false, testOrderPairAlphaNumeric)));
+        std::make_pair(true, testOrderPairAlphaNumeric)));
+
     tests.insert(std::make_pair("testJSONEntityEncoding",
         std::make_pair(false, testJSONEntityEncoding)));
     tests.insert(std::make_pair("testJSONRelationEncoding",
