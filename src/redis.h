@@ -34,11 +34,11 @@ class RedisHandler {
     int port;
 
     redisContext *context;
-    
+
 public:
     RedisHandler() { this->host = REDISHOST; this->port = REDISPORT; }
     RedisHandler(std::string host, int port) { this->host = host; this->port = port; }
-    
+
     void connect();
 
     void write(std::string, std::string);
