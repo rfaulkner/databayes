@@ -171,7 +171,7 @@ void setRelationsList2() {
 
 /** Test to ensure that redis keys are correctly returned */
 void testRedisSetGetRemove() {
-    RedisHandler r;
+    RedisHandler r(REDISDBTEST, REDISPORT);
     r.connect();
     r.write("foo", "bar");
     assert(r.read("foo").compare("bar") == 0);
@@ -182,15 +182,14 @@ void testRedisSetGetRemove() {
 
 /** Test to ensure that redis keys are correctly returned */
 void testRedisKeys() {
-    RedisHandler r;
+    RedisHandler r(REDISDBTEST, REDISPORT);
     std::vector<std::string> vec;
 
     r.connect();
     r.write("foo1", "bar");
     r.write("foo2", "bar");
     r.write("foo3", "bar");
-    vec = r.keys("*");
-    cout << "KEY LIST FOR *" << endl;
+    vec = r.keys("foo*");
     for (std::vector<std::string>::iterator it = vec.begin();
             it != vec.end(); ++it) {
         assert(it->compare("foo1") == 0 ||
@@ -956,9 +955,9 @@ void initTests() {
 
     // Redis Tests
     tests.insert(std::make_pair("testRedisSetGetRemove",
-        std::make_pair(false, testRedisSetGetRemove)));
+        std::make_pair(true, testRedisSetGetRemove)));
     tests.insert(std::make_pair("testRedisKeys",
-        std::make_pair(false, testRedisKeys)));
+        std::make_pair(true, testRedisKeys)));
 
 
     tests.insert(std::make_pair("testMd5Hashing",
