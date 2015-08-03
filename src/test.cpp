@@ -20,7 +20,7 @@
 #include "md5.h"
 #include "index.h"
 #include "bayes.h"
-#include "model.h"
+#include "models.h"
 
 #define REDISHOST "127.0.0.1"
 #define REDISPORT 6379
@@ -945,7 +945,6 @@ void initTests() {
         std::make_pair(true, testRedisSetGetRemove)));
     tests.insert(std::make_pair("testRedisKeys",
         std::make_pair(true, testRedisKeys)));
-
 
     tests.insert(std::make_pair("testMd5Hashing",
         std::make_pair(true, testMd5Hashing)));

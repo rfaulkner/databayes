@@ -23,7 +23,7 @@
 
 #include "redis.h"
 #include "md5.h"
-#include "model.h"
+#include "models/models.h"
 
 #define IDX_SIZE 100000
 

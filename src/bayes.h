@@ -17,7 +17,7 @@
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>       /* time */
 #include "index.h"
-#include "model.h"
+#include "models/models.h"
 #include <json/json.h>
 
 
