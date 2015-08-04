@@ -114,8 +114,11 @@ void setRelationsList1() {
     valpair fields_rel_1, fields_rel_2, fields_rel_3;
     std::unordered_map<std::string, std::string> types_rel_1, types_rel_2;
 
-    fields_ent_1.push_back(std::make_pair(IntegerColumn(), "a"));
-    fields_ent_2.push_back(std::make_pair(StringColumn(), "b"));
+    ColumnBase* intCol = new IntegerColumn();
+    ColumnBase* strCol = new StringColumn();
+
+    fields_ent_1.push_back(std::make_pair(intCol, "a"));
+    fields_ent_2.push_back(std::make_pair(strCol, "b"));
 
     fields_rel_1.push_back(std::make_pair("a", "1"));
     fields_rel_2.push_back(std::make_pair("b", "hello"));
@@ -133,6 +136,9 @@ void setRelationsList1() {
         types_rel_1, types_rel_2);
     makeTestRelation("_x", "_y", fields_rel_1, fields_rel_3,
         types_rel_1, types_rel_2);
+
+    delete intCol;
+    delete strCol;
 }
 
 /* Builds a vector of relations */
@@ -143,8 +149,11 @@ void setRelationsList2() {
     valpair fields_rel_1, fields_rel_2, fields_rel_3, fields_rel_4;
     std::unordered_map<std::string, std::string> types_rel_1, types_rel_2;
 
-    fields_ent_1.push_back(std::make_pair(IntegerColumn(), "a"));
-    fields_ent_2.push_back(std::make_pair(FloatColumn(), "b"));
+    ColumnBase* intCol = new IntegerColumn();
+    ColumnBase* floatCol = new StringColumn();
+
+    fields_ent_1.push_back(std::make_pair(intCol, "a"));
+    fields_ent_2.push_back(std::make_pair(floatCol, "b"));
 
     fields_rel_1.push_back(std::make_pair("a", "1"));
     fields_rel_2.push_back(std::make_pair("b", "2.0"));
@@ -163,6 +172,9 @@ void setRelationsList2() {
         types_rel_1, types_rel_2);
     makeTestRelation("_x", "_y", fields_rel_3, fields_rel_4,
         types_rel_1, types_rel_2);
+
+    delete intCol;
+    delete floatCol;
 }
 
 /* -- TEST FUNCTIONS -- */
@@ -333,10 +345,11 @@ void testFieldAssignTypeMismatchInteger() {
 void testFieldAssignTypeMismatchFloat() {
     IndexHandler ih;
     Json::Value json;
-    std::vector<std::pair<ColumnBase, std::string>> fields_ent;
+    defpair fields_ent;
 
     // Create fields
-    fields_ent.push_back(std::make_pair(FloatColumn(), "a"));
+    ColumnBase* col = new FloatColumn();
+    fields_ent.push_back(std::make_pair(col, "a"));
     Entity e("test", fields_ent);     // Create the entity
 
     ih.writeEntity(e);     // Create the entity
@@ -355,10 +368,11 @@ void testFieldAssignTypeMismatchFloat() {
 void testFieldAssignTypeMismatchString() {
     IndexHandler ih;
     Json::Value json;
-    std::vector<std::pair<ColumnBase, std::string>> fields_ent;
+    defpair fields_ent;
 
     // Create fields
-    fields_ent.push_back(std::make_pair(StringColumn(), "a"));
+    ColumnBase* col = new StringColumn();
+    fields_ent.push_back(std::make_pair(col, "a"));
     Entity e("test", fields_ent);
     ih.writeEntity(e);     // Create the entity
     assert(
@@ -367,6 +381,7 @@ void testFieldAssignTypeMismatchString() {
         ih.validateEntityFieldType("test", "a", "string")
     );
     ih.removeEntity("test");
+    delete col;
 }
 
 /**
@@ -377,8 +392,8 @@ void testCountRelations() {
     Bayes bayes;
     IndexHandler ih;
     std::vector<Json::Value> ret;
-    std::vector<std::pair<ColumnBase, std::string>> fields_ent;
-    std::vector<std::pair<std::string, std::string>> fields_rel;
+    defpair fields_ent;
+    valpair fields_rel;
     std::unordered_map<std::string, std::string> types;
 
     // declare three entities
@@ -439,8 +454,8 @@ void testComputeMarginal() {
     Bayes bayes;
     IndexHandler ih;
     std::vector<Json::Value> ret;
-    std::vector<std::pair<ColumnBase, std::string>> fields_ent;
-    std::vector<std::pair<std::string, std::string>> fields_rel;
+    defpair fields_ent;
+    valpair fields_rel;
     std::unordered_map<std::string, std::string> types;
 
     ih.setRelationCountTotal(0);
@@ -527,8 +542,8 @@ void testSamplePairwise() {
     Bayes bayes;
     IndexHandler ih;
     std::vector<Json::Value> ret;
-    std::vector<std::pair<ColumnBase, std::string>> fields_ent;
-    std::vector<std::pair<std::string, std::string>> fields_rel;
+    defpair fields_ent;
+    valpair fields_rel;
     std::unordered_map<std::string, std::string> types;
 
     ih.setRelationCountTotal(0);
