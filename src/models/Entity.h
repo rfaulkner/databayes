@@ -47,19 +47,19 @@ public:
         std::string s;
         s +=  this->name + std::string("; ");
         for (defpair::iterator it = attrs.begin() ; it != attrs.end(); ++it)
-            s += it->first.getType() + std::string(":") + it->second;
+            s += it->first->getType() + std::string(":") + it->second;
         return s;
     }
 
     void addAttribute(std::string name, ColumnBase colType) {
-        attrs.push_back(std::make_pair(colType, name));
+        attrs.push_back(std::make_pair(&colType, name));
     }
 
     /** Handles forming the json for field vectors in the index */
     void createJSON(Json::Value& value, defpair& fields) {
         int count = 0;
         for (defpair::iterator it = fields.begin() ; it != fields.end(); ++it) {
-            value[(*it).second] = (*it).first.getType();
+            value[it->second] = it->first->getType();
             count++;
         }
         value[JSON_ATTR_FIELDS_COUNT] = count;

@@ -47,7 +47,7 @@
 using namespace std;
 
 // Vector type that defines entities
-typedef std::vector<std::pair<ColumnBase, std::string>> defpair;
+typedef std::vector<std::pair<ColumnBase*, std::string>> defpair;
 
 // Vector type that defines a set of assignment pairs
 typedef std::vector<std::pair<std::string, std::string>> valpair;

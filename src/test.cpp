@@ -789,8 +789,8 @@ void testCountEntityInRelations() {
     // Create entities and relations
     defpair e1Def, e2Def;
     valpair r1Vals, r2Vals;
-    e1Def.push_back(std::make_pair(IntegerColumn(), "a"));
-    e2Def.push_back(std::make_pair(FloatColumn(), "b"));
+    e1Def.push_back(std::make_pair(new IntegerColumn(), "a"));
+    e2Def.push_back(std::make_pair(new FloatColumn(), "b"));
     makeTestEntity("_x", e1Def);
     makeTestEntity("_y", e2Def);
     // makeTestRelation("_x", "_y");
@@ -805,6 +805,11 @@ void testCountEntityInRelations() {
 
     // Perform count
     long count = b.countRelations(std::string("_x"), std::string("_y"), ab);
+
+    for (defpair::iterator it = e1Def.begin() ; it != e1Def.end(); ++it)
+        delete it->first;
+    for (defpair::iterator it = e2Def.begin() ; it != e2Def.end(); ++it)
+        delete it->first;
 
     // Ensure the count is correct
     assert(count == 1);
@@ -821,7 +826,7 @@ void testEntityWrite() {
     defpair e1Def;
 
     // setup test entity
-    e1Def.push_back(std::make_pair(IntegerColumn(), field_name));
+    e1Def.push_back(std::make_pair(new IntegerColumn(), field_name));
     makeTestEntity(name, e1Def);
     writeEntities();
 
@@ -838,6 +843,9 @@ void testEntityWrite() {
     // Cleanup
     removeEntities();
     releaseObjects();
+
+    for (defpair::iterator it = e1Def.begin() ; it != e1Def.end(); ++it)
+        delete it->first;
 
     // test removal
     Json::Value json;
@@ -862,8 +870,8 @@ void testRelationWrite() {
     valpair e1Val, e2Val;
 
     // setup test entity
-    e1Def.push_back(std::make_pair(IntegerColumn(), field_left_name));
-    e2Def.push_back(std::make_pair(IntegerColumn(), field_right_name));
+    e1Def.push_back(std::make_pair(new IntegerColumn(), field_left_name));
+    e2Def.push_back(std::make_pair(new IntegerColumn(), field_right_name));
     makeTestEntity(left_name, e1Def);
     makeTestEntity(right_name, e2Def);
     writeEntities();
@@ -901,6 +909,11 @@ void testRelationWrite() {
             asCString(), COLTYPE_NAME_INT) == 0);
     }
 
+    for (defpair::iterator it = e1Def.begin() ; it != e1Def.end(); ++it)
+        delete it->first;
+    for (defpair::iterator it = e2Def.begin() ; it != e2Def.end(); ++it)
+        delete it->first;
+
     // Cleanup
     removeEntities();
     removeRelations();
@@ -908,7 +921,7 @@ void testRelationWrite() {
 
     // Test Removal
     ih.fetchRaw("*", json);
-    // TODO - detemrine why this relation isn't removed
+    // TODO - determine why this relation isn't removed
     // assert(json.empty());
 
 }

@@ -358,7 +358,7 @@ std::string Parser::analyze(const std::string& s) {
 
     } else if (this->state == STATE_DEF) {  // DEFINING new entities
 
-        this->currFields = new vector<std::pair<ColumnBase, std::string>>;
+        this->currFields = new vector<std::pair<ColumnBase*, std::string>>;
         this->state == STATE_DEF_PROC;
         this->parseEntitySymbol(sLower);
 
@@ -517,11 +517,25 @@ std::string Parser::analyze(const std::string& s) {
 void Parser::cleanup() {
     if (this->debug)
         emitCLINote("DEBUG -- cleanup. freeing out statement allocation.");
-    if (this->currFields != NULL) { delete this->currFields; this->currFields = NULL; }
-    if (this->currValues != NULL) { delete this->currValues; this->currValues = NULL; }
-    if (this->bufferValues != NULL) { delete this->bufferValues; this->bufferValues = NULL; }
-    if (this->currTypes != NULL) { delete this->currTypes; this->currTypes = NULL; }
-    if (this->bufferTypes != NULL) { delete this->bufferTypes; this->bufferTypes = NULL; }
+    if (this->currFields != NULL) {
+        for (defpair::iterator it = this->currFields->begin();
+                it != this->currFields->end(); ++it)
+            delete it->first;
+        delete this->currFields;
+        this->currFields = NULL;
+    }
+    if (this->currValues != NULL) {
+        delete this->currValues; this->currValues = NULL;
+    }
+    if (this->bufferValues != NULL) {
+        delete this->bufferValues; this->bufferValues = NULL;
+    }
+    if (this->currTypes != NULL) {
+        delete this->currTypes; this->currTypes = NULL;
+    }
+    if (this->bufferTypes != NULL) {
+        delete this->bufferTypes; this->bufferTypes = NULL;
+    }
 }
 
 /**
@@ -729,11 +743,11 @@ void Parser::parseEntityDefinitionField(const std::string field) {
     // Assign the appropriate column
     // TODO - fold this into column_types lib
     if (fieldType.compare(COLTYPE_NAME_INT) == 0)
-        this->currFields->push_back(std::make_pair(IntegerColumn(), fieldItems[0]));
+        this->currFields->push_back(std::make_pair(new IntegerColumn(), fieldItems[0]));
     else if (fieldType.compare(COLTYPE_NAME_FLOAT) == 0)
-        this->currFields->push_back(std::make_pair(FloatColumn(), fieldItems[0]));
+        this->currFields->push_back(std::make_pair(new FloatColumn(), fieldItems[0]));
     else if (fieldType.compare(COLTYPE_NAME_STR) == 0)
-        this->currFields->push_back(std::make_pair(StringColumn(), fieldItems[0]));
+        this->currFields->push_back(std::make_pair(new StringColumn(), fieldItems[0]));
     else {
         this->error = true;
         this->errStr = ERR_INVALID_FIELD_TYPE;
