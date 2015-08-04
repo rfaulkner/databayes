@@ -20,7 +20,7 @@
 #include "md5.h"
 #include "index.h"
 #include "bayes.h"
-#include "models.h"
+#include "models/models.h"
 
 #define REDISHOST "127.0.0.1"
 #define REDISPORT 6379
@@ -203,7 +203,7 @@ void testRedisKeys() {
 
 /** Test to ensure that md5 hashing works */
 void testMd5Hashing() {
-    cout << endl << "md5 of 'mykey': " << md5("mykey") << endl;
+    assert(std::string("mykey").compare(md5("mykey")) != 0)
 }
 
 /** Test to ensure that md5 hashing works */
@@ -212,14 +212,12 @@ void testRegexForTypes() {
     FloatColumn fc;
     assert(ic.validate("1981"));
     assert(fc.validate("5.2"));
-    cout << "Passed regex tests." << endl;
 }
 
 
 /** Test to ensure that md5 hashing works */
 void testOrderPairAlphaNumeric() {
     IndexHandler ih;
-    cout << ih.orderPairAlphaNumeric("b", "a") << endl;
     assert(
         std::strcmp(ih.orderPairAlphaNumeric("b", "a").c_str(),
             ("a" + std::string(KEY_DELIMETER) + "b").c_str()) == 0);
