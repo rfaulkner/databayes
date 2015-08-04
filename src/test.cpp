@@ -201,7 +201,7 @@ void testRedisKeys() {
 
 /** Test to ensure that md5 hashing works */
 void testMd5Hashing() {
-    assert(std::string("mykey").compare(md5("mykey")) != 0)
+    assert(std::string("mykey").compare(md5("mykey")) != 0);
 }
 
 /** Test to ensure that md5 hashing works */
@@ -228,14 +228,14 @@ void testJSONEntityEncoding() {
 
     IndexHandler ih;
     Json::Value json;
-    std::vector<std::pair<ColumnBase, std::string>> fields_ent;
+    defpair fields_ent;
+    ColumnBase* col =  new IntegerColumn();
 
     // Create fields
-    fields_ent.push_back(std::make_pair(IntegerColumn(), "a"));
+    fields_ent.push_back(std::make_pair(col, "a"));
     Entity e("test", fields_ent);
     ih.writeEntity(e);     // Create the entity
     ih.fetchEntity("test", json);           // Fetch the entity representation
-    cout << "TEST ENTITY:" << endl << endl << json.toStyledString() << endl;
 
     // Assert that entity as read matches definition
     assert(std::strcmp(json["entity"].asCString(), "test") == 0 &&
@@ -243,6 +243,7 @@ void testJSONEntityEncoding() {
             json["fields"]["_itemcount"].asInt() == 1
     );
     ih.removeEntity("test");                // Remove the entity
+    delete col;
 }
 
 
