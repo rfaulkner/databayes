@@ -39,8 +39,6 @@ class IndexHandler {
 
     RedisHandler* redisHandler;
 
-    void buildFieldJSONDefinition(Json::Value&, defpair&);
-
 public:
     /**
      * Constructor and Destructor for index handler
