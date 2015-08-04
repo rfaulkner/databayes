@@ -110,9 +110,8 @@ void removeRelations() {
 void setRelationsList1() {
 
     // Initialize fields and types
-    std::vector<std::pair<ColumnBase, std::string>> fields_ent_1, fields_ent_2;
-    std::vector<std::pair<std::string, std::string>> fields_rel_1,
-        fields_rel_2, fields_rel_3;
+    defpair fields_ent_1, fields_ent_2;
+    valpair fields_rel_1, fields_rel_2, fields_rel_3;
     std::unordered_map<std::string, std::string> types_rel_1, types_rel_2;
 
     fields_ent_1.push_back(std::make_pair(IntegerColumn(), "a"));
@@ -140,9 +139,8 @@ void setRelationsList1() {
 void setRelationsList2() {
 
     // Initialize fields and types
-    std::vector<std::pair<ColumnBase, std::string>> fields_ent_1, fields_ent_2;
-    std::vector<std::pair<std::string, std::string>> fields_rel_1,
-        fields_rel_2, fields_rel_3, fields_rel_4;
+    defpair fields_ent_1, fields_ent_2;
+    valpair fields_rel_1, fields_rel_2, fields_rel_3, fields_rel_4;
     std::unordered_map<std::string, std::string> types_rel_1, types_rel_2;
 
     fields_ent_1.push_back(std::make_pair(IntegerColumn(), "a"));
