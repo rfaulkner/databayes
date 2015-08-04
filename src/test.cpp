@@ -253,15 +253,17 @@ void testJSONEntityEncoding() {
 void testJSONRelationEncoding() {
     IndexHandler ih;
     std::vector<Json::Value> ret;
-    std::vector<std::pair<ColumnBase, std::string>> fields_ent_1;
-    std::vector<std::pair<ColumnBase, std::string>> fields_ent_2;
-    std::vector<std::pair<std::string, std::string>> fields_rel_1;
-    std::vector<std::pair<std::string, std::string>> fields_rel_2;
+    defpair fields_ent_1;
+    defpair fields_ent_2;
+    valpair fields_rel_1;
+    valpair fields_rel_2;
     std::unordered_map<std::string, std::string> types_rel_1, types_rel_2;
 
     // Popualate fields
-    fields_ent_1.push_back(std::make_pair(IntegerColumn(), "a"));
-    fields_ent_2.push_back(std::make_pair(StringColumn(), "b"));
+    ColumnBase* intCol = new IntegerColumn();
+    ColumnBase* strCol = new StringColumn();
+    fields_ent_1.push_back(std::make_pair(intCol, "a"));
+    fields_ent_2.push_back(std::make_pair(strCol, "b"));
     fields_rel_1.push_back(std::make_pair("a", "1"));
     fields_rel_2.push_back(std::make_pair("b", "hello"));
     types_rel_1.insert(std::make_pair("a", COLTYPE_NAME_INT));
@@ -293,6 +295,9 @@ void testJSONRelationEncoding() {
     ih.removeEntity("test_1");                // Remove the entity
     ih.removeEntity("test_2");                // Remove the entity
     ih.removeRelation(r);    // Remove the relation
+
+    delete intCol;
+    delete strCol;
 }
 
 
@@ -303,10 +308,11 @@ void testJSONRelationEncoding() {
 void testFieldAssignTypeMismatchInteger() {
     IndexHandler ih;
     Json::Value json;
-    std::vector<std::pair<ColumnBase, std::string>> fields_ent;
+    defpair fields_ent;
 
     // Create fields
-    fields_ent.push_back(std::make_pair(IntegerColumn(), "a"));
+    ColumnBase* col = new IntegerColumn();
+    fields_ent.push_back(std::make_pair(col, "a"));
     Entity e("test", fields_ent);
 
     ih.writeEntity(e);     // Create the entity
@@ -317,6 +323,7 @@ void testFieldAssignTypeMismatchInteger() {
         !ih.validateEntityFieldType("test", "a", "string")
     );
     ih.removeEntity("test");
+    delete col;
 }
 
 /**
