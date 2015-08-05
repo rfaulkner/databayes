@@ -857,7 +857,8 @@ void testEntityWrite() {
     assert(std::strcmp(value[JSON_ATTR_ENT_ENT].asCString(),
         name.c_str()) == 0);
     assert(value[JSON_ATTR_ENT_FIELDS].isMember(field_name));
-    // TODO (rfaulk) test that type is correct
+    assert(std::strcmp(value[JSON_ATTR_ENT_FIELDS][field_name].asCString(),
+        COLTYPE_NAME_INT) == 0);
 
     // Cleanup
     removeEntities();
