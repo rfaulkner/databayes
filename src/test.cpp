@@ -241,20 +241,25 @@ void testJSONEntityEncoding() {
     IndexHandler ih;
     Json::Value json;
     defpair fields_ent;
+    std::string entityName = "_test";
+    std::string fieldName = "a";
     ColumnBase* col =  new IntegerColumn();
+    RedisHandler rds(REDISDBTEST, REDISPORT);
 
     // Create fields
-    fields_ent.push_back(std::make_pair(col, "a"));
-    Entity e("test", fields_ent);
-    ih.writeEntity(e);     // Create the entity
-    ih.fetchEntity("test", json);           // Fetch the entity representation
+    fields_ent.push_back(std::make_pair(col, fieldName));
+    Entity e(entityName, fields_ent);
+    e.write(rds);
+    ih.fetchEntity(entityName, json);   // Fetch the entity representation
 
     // Assert that entity as read matches definition
-    assert(std::strcmp(json["entity"].asCString(), "test") == 0 &&
-            std::strcmp(json["fields"]["a"].asCString(), "integer") == 0 &&
-            json["fields"]["_itemcount"].asInt() == 1
+    assert(std::strcmp(json[JSON_ATTR_ENT_ENT].asCString(),
+                       entityName.c_str()) == 0 &&
+           std::strcmp(json[JSON_ATTR_ENT_FIELDS][fieldName].asCString(),
+                       COLTYPE_NAME_INT) == 0 &&
+           json[JSON_ATTR_ENT_FIELDS][JSON_ATTR_FIELDS_COUNT].asInt() == 1
     );
-    ih.removeEntity("test");                // Remove the entity
+    e.remove(rds);
     delete col;
 }
 
@@ -985,9 +990,9 @@ void initTests() {
         std::make_pair(true, testRegexForTypes)));
     tests.insert(std::make_pair("testOrderPairAlphaNumeric",
         std::make_pair(true, testOrderPairAlphaNumeric)));
-
     tests.insert(std::make_pair("testJSONEntityEncoding",
-        std::make_pair(false, testJSONEntityEncoding)));
+        std::make_pair(true, testJSONEntityEncoding)));
+
     tests.insert(std::make_pair("testJSONRelationEncoding",
         std::make_pair(false, testJSONRelationEncoding)));
     tests.insert(std::make_pair("testFieldAssignTypeMismatchInteger",
