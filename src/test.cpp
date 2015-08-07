@@ -298,7 +298,6 @@ void testJSONRelationEncoding() {
 
     // Fetch the entity representation
     ret = ih.fetchRelationPrefix("test_1", "test_2");
-    cout << "TEST RELATION:" << endl << endl << ret[0].toStyledString() << endl;
 
     // Assert that entity as read matches definition
     assert(
@@ -996,7 +995,7 @@ void initTests() {
         std::make_pair(true, testJSONEntityEncoding)));
 
     tests.insert(std::make_pair("testJSONRelationEncoding",
-        std::make_pair(false, testJSONRelationEncoding)));
+        std::make_pair(true, testJSONRelationEncoding)));
     tests.insert(std::make_pair("testFieldAssignTypeMismatchInteger",
         std::make_pair(false, testFieldAssignTypeMismatchInteger)));
     tests.insert(std::make_pair("testFieldAssignTypeMismatchFloat",
