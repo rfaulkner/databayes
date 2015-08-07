@@ -299,12 +299,14 @@ void testJSONRelationEncoding() {
     ih.writeRelation(r);
 
     // Fetch the entity representation
-    ret = ih.fetchRelationPrefix("test_1", "test_2");
+    ret = ih.fetchRelationPrefix(entLeft, entRight);
 
     // Assert that entity as read matches definition
     assert(
-        std::strcmp(ret[0][JSON_ATTR_REL_ENTL].asCString(), entLeft) == 0 &&
-        std::strcmp(ret[0][JSON_ATTR_REL_ENTL].asCString(), entRight) == 0 &&
+        std::strcmp(ret[0][JSON_ATTR_REL_ENTL].asCString(),
+            entLeft.c_str()) == 0 &&
+        std::strcmp(ret[0][JSON_ATTR_REL_ENTL].asCString(),
+            entLeft.c_str()) == 0 &&
         std::strcmp(ret[0][JSON_ATTR_REL_FIELDSL]["a"].asCString(), "1") == 0 &&
         std::strcmp(ret[0][JSON_ATTR_REL_FIELDSR]["b"].asCString(),
                     "hello") == 0 &&
