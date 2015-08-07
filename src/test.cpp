@@ -270,6 +270,8 @@ void testJSONEntityEncoding() {
 void testJSONRelationEncoding() {
     IndexHandler ih;
     std::vector<Json::Value> ret;
+    std::string entLeft = "eL";
+    std::string entRight = "eR";
     defpair fields_ent_1;
     defpair fields_ent_2;
     valpair fields_rel_1;
@@ -287,12 +289,12 @@ void testJSONRelationEncoding() {
     types_rel_2.insert(std::make_pair("b", COLTYPE_NAME_FLOAT));
 
     // Create entities
-    Entity e1("test_1", fields_ent_1), e2("test_2", fields_ent_2);
+    Entity e1(entLeft, fields_ent_1), e2(entRight, fields_ent_2);
     ih.writeEntity(e1);
     ih.writeEntity(e2);
 
     // Create relation in redis
-    Relation r("test_1", "test_2", fields_rel_1, fields_rel_2,
+    Relation r(entLeft, entRight, fields_rel_1, fields_rel_2,
         types_rel_1, types_rel_2);
     ih.writeRelation(r);
 
@@ -301,12 +303,15 @@ void testJSONRelationEncoding() {
 
     // Assert that entity as read matches definition
     assert(
-        std::strcmp(ret[0]["entity_left"].asCString(), "test_1") == 0 &&
-        std::strcmp(ret[0]["entity_right"].asCString(), "test_2") == 0 &&
-        std::strcmp(ret[0]["fields_left"]["a"].asCString(), "1") == 0 &&
-        std::strcmp(ret[0]["fields_right"]["b"].asCString(), "hello") == 0 &&
-        ret[0]["fields_left"]["_itemcount"].asInt() == 1 &&
-        ret[0]["fields_right"]["_itemcount"].asInt() == 1
+        std::strcmp(ret[0][JSON_ATTR_REL_ENTL].asCString(), entLeft) == 0 &&
+        std::strcmp(ret[0][JSON_ATTR_REL_ENTL].asCString(), entRight) == 0 &&
+        std::strcmp(ret[0][JSON_ATTR_REL_FIELDSL]["a"].asCString(), "1") == 0 &&
+        std::strcmp(ret[0][JSON_ATTR_REL_FIELDSR]["b"].asCString(),
+                    "hello") == 0 &&
+        ret[0][JSON_ATTR_REL_FIELDSL][JSON_ATTR_FIELDS_COUNT].asInt() == 1 &&
+        ret[0][JSON_ATTR_REL_FIELDSR][JSON_ATTR_FIELDS_COUNT].asInt() == 1
+        // TODO - test instance count
+        // TODO - test types
     );
     ih.removeEntity("test_1");                // Remove the entity
     ih.removeEntity("test_2");                // Remove the entity
