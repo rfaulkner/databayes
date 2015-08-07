@@ -1004,13 +1004,11 @@ void initTests() {
     tests.insert(std::make_pair("testJSONRelationEncoding",
         std::make_pair(true, testJSONRelationEncoding)));
     tests.insert(std::make_pair("testFieldAssignTypeMismatchInteger",
-        std::make_pair(false, testFieldAssignTypeMismatchInteger)));
+        std::make_pair(true, testFieldAssignTypeMismatchInteger)));
     tests.insert(std::make_pair("testFieldAssignTypeMismatchFloat",
-        std::make_pair(false, testFieldAssignTypeMismatchFloat)));
+        std::make_pair(true, testFieldAssignTypeMismatchFloat)));
     tests.insert(std::make_pair("testFieldAssignTypeMismatchString",
-        std::make_pair(false, testFieldAssignTypeMismatchString)));
-    tests.insert(std::make_pair("testCountRelations",
-        std::make_pair(false, testCountRelations)));
+        std::make_pair(true, testFieldAssignTypeMismatchString)));
 
     // Tests for filtering
     tests.insert(std::make_pair("testIndexFilterRelationsEQ",
@@ -1024,11 +1022,13 @@ void initTests() {
     tests.insert(std::make_pair("testIndexFilterRelationsLTE",
         std::make_pair(true, testIndexFilterRelationsLTE)));
     tests.insert(std::make_pair("testRelation_toJson",
-
-
         std::make_pair(true, testRelation_toJson)));
+
+    // Tests for Counting
     tests.insert(std::make_pair("testCountEntityInRelations",
         std::make_pair(false, testCountEntityInRelations)));
+    tests.insert(std::make_pair("testCountRelations",
+        std::make_pair(false, testCountRelations)));
 
     // Tests for test writing and ORM methods
     tests.insert(std::make_pair("testEntityWrite",
