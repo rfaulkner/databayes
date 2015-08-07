@@ -913,9 +913,11 @@ void testRelationWrite() {
     IndexHandler ih;
     Json::Value json;
     std::string key;
+    std::vector<std::string> keys;
     for (std::vector<Relation>::iterator it = openRelations.begin();
             it != openRelations.end(); ++it) {
         ih.fetchRaw(it->generateKey(), json);
+        keys.push_back(it->generateKey());
         assert(std::strcmp(json[JSON_ATTR_REL_ENTL].asCString(),
             it->name_left.c_str()) == 0);
         assert(std::strcmp(json[JSON_ATTR_REL_ENTR].asCString(),
@@ -945,10 +947,10 @@ void testRelationWrite() {
     releaseObjects();
 
     // Test Removal
-    ih.fetchRaw("*", json);
-    // TODO - determine why this relation isn't removed
-    // assert(json.empty());
-
+    for (std::vector<std::string>::iterator it = keys.begin() ; it != keys.end(); ++it) {
+        json = Json::Value();
+        assert(!ih.fetchRaw(*it, json));
+    }
 }
 
 
