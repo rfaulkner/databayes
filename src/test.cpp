@@ -37,14 +37,15 @@ std::vector<Relation> openRelations;
 
 
 /** Create an entity for testing */
-void makeTestEntity(std::string name, defpair cols) {
+Entity makeTestEntity(std::string name, defpair cols) {
     Entity e(name, cols);
     openEntities.push_back(e);
+    return e;
 }
 
 
 /** Create a relations for testing */
-void makeTestRelation(std::string e1,
+Relation makeTestRelation(std::string e1,
                       std::string e2,
                       valpair e1Vals,
                       valpair e2Vals,
@@ -52,6 +53,7 @@ void makeTestRelation(std::string e1,
                       std::unordered_map<std::string, std::string> e2Types) {
     Relation r(e1, e2, e1Vals, e2Vals, e1Types, e2Types);
     openRelations.push_back(r);
+    return r;
 }
 
 /** Free the allocated entities and relations */
@@ -1014,8 +1016,14 @@ void testRelationInstanceCount() {
     e2Val.push_back(std::make_pair(field_right_name, field_right_val));
     left_types.insert(std::make_pair("a", COLTYPE_NAME_INT));
     right_types.insert(std::make_pair("b", COLTYPE_NAME_INT));
+
     makeTestRelation(left_name, right_name, e1Val, e2Val, left_types,
         right_types);
+    makeTestRelation(left_name, right_name, e1Val, e2Val, left_types,
+        right_types);
+    makeTestRelation(left_name, right_name, e3Val, e4Val, left_types,
+        right_types);
+
     writeRelations();
 
 
