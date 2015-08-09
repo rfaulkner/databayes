@@ -994,11 +994,6 @@ void testRelationInstanceCount() {
     std::string field_left_name = "a";
     std::string field_right_name = "b";
 
-    std::string field_left_val = "1";
-    std::string field_right_val = "2";
-    std::string field_left_val = "3";
-    std::string field_right_val = "4";
-
     std::unordered_map<std::string, std::string> left_types, right_types;
     defpair e1Def, e2Def;
     valpair e1Val, e2Val, e3Val, e4Val;
@@ -1010,10 +1005,10 @@ void testRelationInstanceCount() {
     makeTestEntity(right_name, e2Def);
     writeEntities();
 
-    e1Val.push_back(std::make_pair(field_left_name, field_left_val));
-    e2Val.push_back(std::make_pair(field_right_name, field_right_val));
-    e1Val.push_back(std::make_pair(field_left_name, field_left_val));
-    e2Val.push_back(std::make_pair(field_right_name, field_right_val));
+    e1Val.push_back(std::make_pair(field_left_name, "1"));
+    e2Val.push_back(std::make_pair(field_right_name, "2"));
+    e3Val.push_back(std::make_pair(field_left_name, "3"));
+    e4Val.push_back(std::make_pair(field_right_name, "4"));
     left_types.insert(std::make_pair("a", COLTYPE_NAME_INT));
     right_types.insert(std::make_pair("b", COLTYPE_NAME_INT));
 
