@@ -981,6 +981,22 @@ void testDEF() {
     // TODO - implement
 }
 
+
+/**
+ *  Tests that relation count is properly accounted
+ */
+void testRelationInstanceCount() {
+    // Declare entities
+    // Declare relations
+    // add entities
+    // add relations
+    // verify counts
+    // remove relations
+    // verify counts
+    // cleanup
+}
+
+
 /**
  *  Initialize tests that should (and should not) run
  */
