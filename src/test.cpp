@@ -1053,6 +1053,8 @@ void initTests() {
         std::make_pair(true, testRelationWrite)));
     tests.insert(std::make_pair("testEntityCascadeRemoval",
         std::make_pair(false, testEntityCascadeRemoval)));
+    tests.insert(std::make_pair("testRelationInstanceCount",
+        std::make_pair(false, testRelationInstanceCount)));
 
     // Test CLI Commands
     tests.insert(std::make_pair("testADDREL",
