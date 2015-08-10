@@ -34,6 +34,17 @@ public:
 
     /** Constructors/Builders for relations  */
 
+    Relation() {
+        this->types_left = std::unordered_map<std::string, std::string>();
+        this->types_right = std::unordered_map<std::string, std::string>();
+        this->name_left = "";
+        this->name_right = "";
+        this->attrs_left = valpair();
+        this->attrs_right = valpair();
+        this->cause = "";
+        this->instance_count = 1;
+    }
+
     // From Json
     Relation(Json::Value val) { this->fromJSON(val); }
 
