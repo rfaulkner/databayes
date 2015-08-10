@@ -1012,20 +1012,29 @@ void testRelationInstanceCount() {
     left_types.insert(std::make_pair("a", COLTYPE_NAME_INT));
     right_types.insert(std::make_pair("b", COLTYPE_NAME_INT));
 
-    makeTestRelation(left_name, right_name, e1Val, e2Val, left_types,
+    Relation r1, r2;
+    r1 = makeTestRelation(left_name, right_name, e1Val, e2Val, left_types,
         right_types);
     makeTestRelation(left_name, right_name, e1Val, e2Val, left_types,
         right_types);
-    makeTestRelation(left_name, right_name, e3Val, e4Val, left_types,
+    r2 = makeTestRelation(left_name, right_name, e3Val, e4Val, left_types,
         right_types);
 
     writeRelations();
 
+    // verify counts
+    IndexHandler ih;
+    Json::Value json;
+    ih.fetchRaw(r1.generateKey(), json);
+    assert(json[JSON_ATTR_REL_COUNT].asInt() == 2);
+    json = Json::Value();
+    ih.fetchRaw(r2.generateKey(), json);
+    assert(json[JSON_ATTR_REL_COUNT].asInt() == 1);
 
-    // verify counts
-    // remove relations
-    // verify counts
-    // cleanup
+    // Cleanup
+    removeEntities();
+    removeRelations();
+    releaseObjects();
 }
 
 
@@ -1086,7 +1095,7 @@ void initTests() {
     tests.insert(std::make_pair("testEntityCascadeRemoval",
         std::make_pair(false, testEntityCascadeRemoval)));
     tests.insert(std::make_pair("testRelationInstanceCount",
-        std::make_pair(false, testRelationInstanceCount)));
+        std::make_pair(true, testRelationInstanceCount)));
 
     // Test CLI Commands
     tests.insert(std::make_pair("testADDREL",
