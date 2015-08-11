@@ -1025,6 +1025,7 @@ void testRelationInstanceCount() {
     // verify counts
     IndexHandler ih;
     Json::Value json;
+
     ih.fetchRaw(r1.generateKey(), json);
     assert(json[JSON_ATTR_REL_COUNT].asInt() == 2);
     json = Json::Value();
@@ -1066,6 +1067,10 @@ void initTests() {
         std::make_pair(true, testFieldAssignTypeMismatchFloat)));
     tests.insert(std::make_pair("testFieldAssignTypeMismatchString",
         std::make_pair(true, testFieldAssignTypeMismatchString)));
+
+    tests.insert(std::make_pair("testEntityDoesNotContainField",
+        std::make_pair(false, testEntityDoesNotContainField)));
+
 
     // Tests for filtering
     tests.insert(std::make_pair("testIndexFilterRelationsEQ",
