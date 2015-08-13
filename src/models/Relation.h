@@ -301,6 +301,12 @@ public:
             this->name_left, this->name_right) + delim + this->generateHash();
     }
 
+    void read(RedisHandler& rds) {
+        rds.connect();
+        Json::Value value(rds.read(this->generateKey()));
+        this->fromJSON(value);
+    }
+
     void write(RedisHandler& rds) {
         Json::Value jsonVal = this->toJson();
         std::string key;
