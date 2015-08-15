@@ -187,6 +187,19 @@ public:
         return jsonVal;
     }
 
+    /**
+     * Attempts to fetch an entry from index
+     */
+    bool composeJSON(RedisHandler& rds, Json::Value& json) {
+        Json::Reader reader;
+        bool parsedSuccess;
+        parsedSuccess = reader.parse(rds.read(this->generateKey(), json, false);
+        if (parsedSuccess)
+            return true;
+        else
+            return false;
+    }
+
     /** Fetch an attribute value from the relation
             TODO - return something more informative than "" on fail
     */
@@ -302,9 +315,11 @@ public:
     }
 
     int getInstanceCount(RedisHandler& rds) {
-        Json::Value value(rds.read(this->generateKey()));
-        this->fromJSON(value);
-        return value[JSON_ATTR_REL_COUNT].asInt();
+        Json::Value value;
+        if (this->composeJSON(rds, value))
+            return value[JSON_ATTR_REL_COUNT].asInt();
+        else
+            return 0;
     }
 
     void write(RedisHandler& rds) {
