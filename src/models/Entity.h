@@ -72,13 +72,6 @@ public:
         return ent + delim + this->name;
     }
 
-    void read(RedisHandler& rds) {
-        rds.connect();
-        Json::Value value(rds.read(this->generateKey()));
-        // TODO - cast from JSON
-        // this->fromJSON(value);
-    }
-
     /** Handles writing the entity JSON representation to redis */
     void write(RedisHandler& rds) {
         Json::Value jsonVal;
