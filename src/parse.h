@@ -23,6 +23,7 @@
 #include "bayes.h"
 
 #define STR_CMD_ADD "add"
+#define STR_CMD_ADD "dec"
 #define STR_CMD_GEN "gen"
 #define STR_CMD_INF "inf"
 #define STR_CMD_SET "set"
@@ -90,6 +91,8 @@
 #define STATE_RM 60        // Remove elements
 #define STATE_RM_ENT 61        // Remove entities
 #define STATE_RM_REL 62        // Remove relations
+
+#define STATE_DEC 70        // decrement relations elements
 
 #define STATE_FINISH 99     // Successful end state
 
@@ -318,6 +321,9 @@ std::string Parser::analyze(const std::string& s) {
         } else if (sLower.compare(STR_CMD_SET) == 0) {
             this->state = STATE_SET;
             this->macroState = STATE_SET;
+        } else if (sLower.compare(STR_CMD_DEC) == 0) {
+            this->state = STATE_DEC;
+            this->macroState = STATE_DEC;
         }
 
         if (this->debug)
@@ -340,6 +346,15 @@ std::string Parser::analyze(const std::string& s) {
             this->state = STATE_RM_ENT;
         }
 
+    } else if (this->state == STATE_DEC) {  // Branch to parse "DEC" commands
+        if (sLower.compare(STR_CMD_DEC) == 0)
+            this->state = STATE_P1;
+        else {
+            this->error = true;
+            this->errStr = BAD_INPUT;
+            return this->rspStr;
+        }
+
     } else if (this->state == STATE_RM_ENT) {   // Branch to parse "RM ENT" commands
         this->parseEntitySymbol(sLower);
         this->state = STATE_FINISH;
@@ -348,6 +363,9 @@ std::string Parser::analyze(const std::string& s) {
         this->parseRelationPair(sLower);
 
     } else if (this->macroState == STATE_ADD && (this->state == STATE_P1 || this->state == STATE_P2)) {
+        this->parseRelationPair(sLower);
+
+    } else if (this->macroState == STATE_DEC && (this->state == STATE_P1 || this->state == STATE_P2)) { // Branch to parse "RM REL" commands
         this->parseRelationPair(sLower);
 
     } else if (this->macroState == STATE_GEN) {
@@ -403,6 +421,11 @@ std::string Parser::analyze(const std::string& s) {
 
     } else if (this->macroState == STATE_SET) {
         if (this->state == STATE_SET)
+            this->state = STATE_P0;
+        this->parseSet(sLower);
+
+    } else if (this->macroState == STATE_DEC) {
+        if (this->state == STATE_DEC)
             this->state = STATE_P0;
         this->parseSet(sLower);
 
@@ -501,6 +524,9 @@ std::string Parser::analyze(const std::string& s) {
 
         } else if (this->macroState == STATE_SET) {
             this->processSET();
+
+        } else if (this->macroState == STATE_DEC) {
+            this->processDEC();
         }
 
         // Cleanup
@@ -1038,6 +1064,9 @@ void Parser::processSET() {
 
         goodSet = false;
     }
+
 }
+
+void Parser::processDEC() {}
 
 #endif
