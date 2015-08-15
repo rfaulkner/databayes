@@ -302,7 +302,6 @@ public:
     }
 
     int getInstanceCount(RedisHandler& rds) {
-        rds.connect();
         Json::Value value(rds.read(this->generateKey()));
         this->fromJSON(value);
         return value[JSON_ATTR_REL_COUNT].asInt();
@@ -312,16 +311,14 @@ public:
         std::string key = this->generateKey();
         int instance_count = 0;
         if (rds.exists(key))
-            instance_count = this->read(rds);
+            instance_count = this->getInstanceCount(rds);
         Json::Value jsonVal = this->toJson();
-        rds.connect();
         jsonVal[JSON_ATTR_REL_COUNT] = instance_count + 1;
         rds.incrementKey(KEY_TOTAL_RELATIONS, 1);
         rds.write(key, jsonVal.toStyledString());
     }
 
     bool remove(RedisHandler& rds) {
-        rds.connect();
         std::string key = this->generateKey();
         if (rds.exists(key)) {
             rds.decrementKey(KEY_TOTAL_RELATIONS, this->instance_count);

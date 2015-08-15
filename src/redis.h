@@ -36,8 +36,16 @@ class RedisHandler {
     redisContext *context;
 
 public:
-    RedisHandler() { this->host = REDISHOST; this->port = REDISPORT; }
-    RedisHandler(std::string host, int port) { this->host = host; this->port = port; }
+    RedisHandler() {
+        this->host = REDISHOST;
+        this->port = REDISPORT;
+        this->connect();
+    }
+    RedisHandler(std::string host, int port) {
+        this->host = host;
+        this->port = port;
+        this->connect();
+    }
 
     void connect();
 
