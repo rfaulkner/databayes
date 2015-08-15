@@ -301,10 +301,11 @@ public:
             this->name_left, this->name_right) + delim + this->generateHash();
     }
 
-    void read(RedisHandler& rds) {
+    int getInstanceCount(RedisHandler& rds) {
         rds.connect();
         Json::Value value(rds.read(this->generateKey()));
         this->fromJSON(value);
+        return value[JSON_ATTR_REL_COUNT].asInt();
     }
 
     void write(RedisHandler& rds) {
