@@ -310,11 +310,12 @@ public:
 
     void write(RedisHandler& rds) {
         std::string key = this->generateKey();
+        int instance_count = 0;
         if (rds.exists(key))
-            this->read(rds);
+            instance_count = this->read(rds);
         Json::Value jsonVal = this->toJson();
         rds.connect();
-        jsonVal[JSON_ATTR_REL_COUNT] = jsonVal[JSON_ATTR_REL_COUNT].asInt() + 1;
+        jsonVal[JSON_ATTR_REL_COUNT] = instance_count + 1;
         rds.incrementKey(KEY_TOTAL_RELATIONS, 1);
         rds.write(key, jsonVal.toStyledString());
     }
