@@ -177,7 +177,7 @@ class Parser {
     void processGEN();
     void processINF();
     void processSET();
-    void processDEC();
+    void processDEC(RedisHandler&);
 
     void cleanup();
 
@@ -527,7 +527,7 @@ std::string Parser::analyze(const std::string& s) {
             this->processSET();
 
         } else if (this->macroState == STATE_DEC) {
-            this->processDEC();
+            this->processDEC(redis);
         }
 
         // Cleanup
@@ -1035,32 +1035,47 @@ void Parser::processSET() {
             }
 
         // Does it match the right-hand entity?
-        } else if (this->currAttrEntity.compare((*it)[JSON_ATTR_REL_ENTR].asCString()) == 0) {
+        } else if (this->currAttrEntity.compare((*it)[
+            JSON_ATTR_REL_ENTR].asCString()) == 0) {
 
-            // First ensure that the attribute in fact exists for the specified entity
+            // First ensure that the attribute in fact exists for the
+            // specified entity
             if (!(*it)[JSON_ATTR_REL_FIELDSR].isMember(this->currAttribute)) {
-                this->indexHandler->writeRelation(*it);   // Write back the original relation
-                emitCLINote(std::string("Attribute not found in SET: ") + this->bufferAttrEntity + std::string(".") + this->currAttribute);
+                // Write back the original relation
+                this->indexHandler->writeRelation(*it);
+                emitCLINote(std::string("Attribute not found in SET: ") +
+                    this->bufferAttrEntity + std::string(".") +
+                    this->currAttribute);
                 continue;
             }
 
-            // Finally ensure that the field type matches the value before writing
-            if (this->indexHandler->validateEntityFieldType(this->currAttrEntity, this->currAttribute, this->currValue)) {
-                (*it)[JSON_ATTR_REL_FIELDSR][this->currAttribute] = this->currValue;
+            // Finally ensure that the field type matches the value before
+            // writing
+            if (this->indexHandler->validateEntityFieldType(
+                this->currAttrEntity, this->currAttribute, this->currValue)) {
+                (*it)[JSON_ATTR_REL_FIELDSR][this->currAttribute] =
+                    this->currValue;
                 goodSet = true;
             } else {
                 this->error = true;
                 this->errStr = ERR_BAD_SET;
-                emitCLIError(std::string("Invalid type: ") + this->currAttrEntity + std::string(".") + this->currAttribute + std::string(" to ") + this->currValue);
+                emitCLIError(std::string("Invalid type: ") +
+                    this->currAttrEntity + std::string(".") +
+                    this->currAttribute + std::string(" to ") +
+                    this->currValue);
             }
         }
 
         if (this->indexHandler->writeRelation(*it) && goodSet) {
-            emitCLINote(std::string("SET attribute: ") + this->currAttrEntity + std::string(".") + this->currAttribute + std::string(" to ") + this->currValue);
+            emitCLINote(std::string("SET attribute: ") + this->currAttrEntity +
+                std::string(".") + this->currAttribute + std::string(" to ") +
+                this->currValue);
         } else {
             this->error = true;
             this->errStr = ERR_BAD_SET;
-            emitCLIError(std::string("Could not write back relation: ") + this->currAttrEntity + std::string(".") + this->currAttribute + std::string(" to ") + this->currValue);
+            emitCLIError(std::string("Could not write back relation: ") +
+                this->currAttrEntity + std::string(".") + this->currAttribute +
+                std::string(" to ") + this->currValue);
         }
 
         goodSet = false;
@@ -1068,6 +1083,18 @@ void Parser::processSET() {
 
 }
 
-void Parser::processDEC() {}
+/**
+ * Executes the decrement command.
+ *
+ * Emits an error if the key for this relation does not exist.
+ */
+void Parser::processDEC(RedisHandler& redis) {
+    Relation r(this->bufferEntity, this->currEntity, *(this->bufferValues),
+        *(this->currValues), *(this->bufferTypes), *(this->currTypes));
+    if (r.decrementCount(redis, 1))
+        emitCLIGeneric(std::string("Decremented ") + r.generateKey());
+    else
+        emitCLIError(r.generateKey() + " does not exist in the index.");
+}
 
 #endif
