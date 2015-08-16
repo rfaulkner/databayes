@@ -72,7 +72,7 @@ public:
         return ent + delim + this->name;
     }
 
-    void existsInIndex(RedisHandler& rds) {
+    bool existsInIndex(RedisHandler& rds) {
         std::string key = this->generateKey();
         return rds.exists(key);
     }
