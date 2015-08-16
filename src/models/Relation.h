@@ -193,7 +193,7 @@ public:
     bool composeJSON(RedisHandler& rds, Json::Value& json) {
         Json::Reader reader;
         bool parsedSuccess;
-        parsedSuccess = reader.parse(rds.read(this->generateKey(), json, false);
+        parsedSuccess = reader.parse(rds.read(this->generateKey()), json, false);
         if (parsedSuccess)
             return true;
         else
@@ -320,6 +320,11 @@ public:
             return value[JSON_ATTR_REL_COUNT].asInt();
         else
             return 0;
+    }
+
+    void existsInIndex(RedisHandler& rds) {
+        std::string key = this->generateKey();
+        return rds.exists(key);
     }
 
     void write(RedisHandler& rds) {

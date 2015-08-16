@@ -72,6 +72,11 @@ public:
         return ent + delim + this->name;
     }
 
+    void existsInIndex(RedisHandler& rds) {
+        std::string key = this->generateKey();
+        return rds.exists(key);
+    }
+
     /** Handles writing the entity JSON representation to redis */
     void write(RedisHandler& rds) {
         Json::Value jsonVal;
