@@ -338,6 +338,23 @@ public:
         rds.write(key, jsonVal.toStyledString());
     }
 
+    bool decrementCount(RedisHandler& rds, int decVal) {
+        std::string key = this->generateKey();
+        if (rds.exists(key)) {
+            Json::Value jsonVal = this->toJson();
+            // TODO - issue a warning if the decValue exceeds
+            if (decVal > jsonVal[JSON_ATTR_REL_COUNT].asInt()) {
+                jsonVal[JSON_ATTR_REL_COUNT] = 0;
+                rds.decrementKey(KEY_TOTAL_RELATIONS,
+                    jsonVal[JSON_ATTR_REL_COUNT].asInt());
+            } else {
+                jsonVal[JSON_ATTR_REL_COUNT] = instance_count - decVal;
+                rds.decrementKey(KEY_TOTAL_RELATIONS, decVal);
+            }
+        }
+        return false;
+    }
+
     bool remove(RedisHandler& rds) {
         std::string key = this->generateKey();
         if (rds.exists(key)) {
