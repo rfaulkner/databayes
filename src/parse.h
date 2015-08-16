@@ -23,7 +23,7 @@
 #include "bayes.h"
 
 #define STR_CMD_ADD "add"
-#define STR_CMD_ADD "dec"
+#define STR_CMD_DEC "dec"
 #define STR_CMD_GEN "gen"
 #define STR_CMD_INF "inf"
 #define STR_CMD_SET "set"
@@ -177,6 +177,7 @@ class Parser {
     void processGEN();
     void processINF();
     void processSET();
+    void processDEC();
 
     void cleanup();
 
