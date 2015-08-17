@@ -143,8 +143,7 @@ void setRelationsList1() {
     delete strCol;
 }
 
-/* Builds a vector of relations */
-void setRelationsList2() {
+void setRelationsForCounts() {
 
     // Initialize fields and types
     defpair fields_ent_1, fields_ent_2;
@@ -172,11 +171,22 @@ void setRelationsList2() {
     // Add relation set
     makeTestRelation("_x", "_y", fields_rel_1, fields_rel_2,
         types_rel_1, types_rel_2);
+    makeTestRelation("_x", "_y", fields_rel_1, fields_rel_2,
+        types_rel_1, types_rel_2);
+    makeTestRelation("_x", "_y", fields_rel_1, fields_rel_2,
+        types_rel_1, types_rel_2);
+    makeTestRelation("_x", "_y", fields_rel_3, fields_rel_4,
+        types_rel_1, types_rel_2);
     makeTestRelation("_x", "_y", fields_rel_3, fields_rel_4,
         types_rel_1, types_rel_2);
 
     delete intCol;
     delete floatCol;
+}
+
+/* Builds a vector of relations */
+void setRelationsList3() {
+
 }
 
 /* -- TEST FUNCTIONS -- */
@@ -455,7 +465,8 @@ void testCountRelations() {
  *   contain a field
  */
 void testEntityDoesNotContainField() {
-    // TODO - implement
+    IndexHandler ih;
+
 }
 
 /**
@@ -960,7 +971,6 @@ void testRelationWrite() {
         assert(!ih.fetchRaw(*it, json));
     }
 }
-
 
 /**
  *  Tests that removal of relations cascading on entities functions properly
