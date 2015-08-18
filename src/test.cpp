@@ -448,16 +448,26 @@ void testCountRelations() {
     RedisHandler rds(REDISDBTEST, REDISPORT);
 
     // Create entities and relations
-
+    setRelationsForCounts();
+    writeEntities();
+    writeRelations();
 
     // Define attribute bucket to filter
     AttributeBucket ab;
+
+    at = AttributeTuple("_x", "a", "1", COLTYPE_NAME_INT);
+    ab.addAttribute(at);
+    rel_out = openRelations;
+    ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_GTE;
 
     // Perform count
     long count = b.countRelations(std::string("_x"), std::string("_y"), ab);
 
     // Ensure the count is correct
-    assert(count == 1);
+    assert(count == 5);
+
+    removeRelations();
+    removeEntities();
 }
 
 /**
@@ -517,10 +527,7 @@ void testCountEntityInRelations() {
  *  Tests that existsEntityField correctly flags when entity does not
  *   contain a field
  */
-void testEntityDoesNotContainField() {
-    IndexHandler ih;
-
-}
+void testEntityDoesNotContainField() { // TODO - Implement }
 
 /**
  *  Tests Bayes::computeMarginal function - ensure the marginal likelihood
@@ -1113,11 +1120,14 @@ void initTests() {
     tests.insert(std::make_pair("testRelation_toJson",
         std::make_pair(true, testRelation_toJson)));
 
-    // Tests for Counting
+    // Tests for Counting and Distributions
     tests.insert(std::make_pair("testCountEntityInRelations",
         std::make_pair(true, testCountEntityInRelations)));
     tests.insert(std::make_pair("testCountRelations",
         std::make_pair(false, testCountRelations)));
+    tests.insert(std::make_pair("testComputeMarginal",
+        std::make_pair(false, testComputeMarginal)));
+
 
     // Tests for test writing and ORM methods
     tests.insert(std::make_pair("testEntityWrite",
