@@ -439,11 +439,32 @@ void testFieldAssignTypeMismatchString() {
     delete col;
 }
 
+
+/** Test for counting the presence of entities in relations
+        TODO - complete
+*/
+void testCountRelations() {
+    Bayes b;
+    RedisHandler rds(REDISDBTEST, REDISPORT);
+
+    // Create entities and relations
+
+
+    // Define attribute bucket to filter
+    AttributeBucket ab;
+
+    // Perform count
+    long count = b.countRelations(std::string("_x"), std::string("_y"), ab);
+
+    // Ensure the count is correct
+    assert(count == 1);
+}
+
 /**
  *  Tests Bayes::countRelations - ensure relation counting is functioning
  *  correctly
  */
-void testCountRelations() {
+void testCountEntityInRelations() {
     Bayes bayes;
     IndexHandler ih;
     std::vector<Json::Value> ret;
@@ -462,21 +483,10 @@ void testCountRelations() {
     Relation r4("_x", "_z", fields_rel, fields_rel, types, types);
     Relation r5("_w", "_y", fields_rel, fields_rel, types, types);
 
-    ih.removeEntity("_w");
-    ih.removeEntity("_x");
-    ih.removeEntity("_y");
-    ih.removeEntity("_z");
-
     ih.writeEntity(e1);
     ih.writeEntity(e2);
     ih.writeEntity(e3);
     ih.writeEntity(e4);
-
-    ih.removeRelation(r1);
-    ih.removeRelation(r2);
-    ih.removeRelation(r3);
-    ih.removeRelation(r4);
-    ih.removeRelation(r5);
 
     ih.writeRelation(r1);
     ih.writeRelation(r2);
@@ -490,6 +500,17 @@ void testCountRelations() {
     assert(bayes.countEntityInRelations(e2.name, attrs) == 4);
     assert(bayes.countEntityInRelations(e3.name, attrs) == 3);
     assert(bayes.countEntityInRelations(e4.name, attrs) == 2);
+
+    ih.removeEntity("_w");
+    ih.removeEntity("_x");
+    ih.removeEntity("_y");
+    ih.removeEntity("_z");
+
+    ih.removeRelation(r1);
+    ih.removeRelation(r2);
+    ih.removeRelation(r3);
+    ih.removeRelation(r4);
+    ih.removeRelation(r5);
 }
 
 /**
@@ -854,31 +875,6 @@ void testIndexFilterRelationsLTE() {
     releaseObjects();
 }
 
-/** Test for counting the presence of entities in relations
-        TODO - complete
-*/
-void testCountEntityInRelations() {
-    Bayes b;
-    RedisHandler rds(REDISDBTEST, REDISPORT);
-
-    // Create entities and relations
-
-
-    // Define attribute bucket to filter
-    AttributeBucket ab;
-
-    // Perform count
-    long count = b.countRelations(std::string("_x"), std::string("_y"), ab);
-
-    for (defpair::iterator it = e1Def.begin() ; it != e1Def.end(); ++it)
-        delete it->first;
-    for (defpair::iterator it = e2Def.begin() ; it != e2Def.end(); ++it)
-        delete it->first;
-
-    // Ensure the count is correct
-    assert(count == 1);
-}
-
 
 /** Entity / Relation ORM tests **/
 
@@ -1119,7 +1115,7 @@ void initTests() {
 
     // Tests for Counting
     tests.insert(std::make_pair("testCountEntityInRelations",
-        std::make_pair(false, testCountEntityInRelations)));
+        std::make_pair(true, testCountEntityInRelations)));
     tests.insert(std::make_pair("testCountRelations",
         std::make_pair(false, testCountRelations)));
 
