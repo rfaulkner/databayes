@@ -143,6 +143,43 @@ void setRelationsList1() {
     delete strCol;
 }
 
+/* Builds a vector of relations */
+void setRelationsList2() {
+
+    // Initialize fields and types
+    defpair fields_ent_1, fields_ent_2;
+    valpair fields_rel_1, fields_rel_2, fields_rel_3, fields_rel_4;
+    std::unordered_map<std::string, std::string> types_rel_1, types_rel_2;
+
+    ColumnBase* intCol = new IntegerColumn();
+    ColumnBase* floatCol = new StringColumn();
+
+    fields_ent_1.push_back(std::make_pair(intCol, "a"));
+    fields_ent_2.push_back(std::make_pair(floatCol, "b"));
+
+    fields_rel_1.push_back(std::make_pair("a", "1"));
+    fields_rel_2.push_back(std::make_pair("b", "2.0"));
+    fields_rel_3.push_back(std::make_pair("a", "11"));
+    fields_rel_4.push_back(std::make_pair("b", "12.0"));
+
+    types_rel_1.insert(std::make_pair("a", COLTYPE_NAME_INT));
+    types_rel_2.insert(std::make_pair("b", COLTYPE_NAME_FLOAT));
+
+    // Initialize entities
+    makeTestEntity("_x", fields_ent_1);
+    makeTestEntity("_y", fields_ent_2);
+
+    // Add relation set
+    makeTestRelation("_x", "_y", fields_rel_1, fields_rel_2,
+        types_rel_1, types_rel_2);
+    makeTestRelation("_x", "_y", fields_rel_3, fields_rel_4,
+        types_rel_1, types_rel_2);
+
+    delete intCol;
+    delete floatCol;
+}
+
+
 void setRelationsForCounts() {
 
     // Initialize fields and types
@@ -182,11 +219,6 @@ void setRelationsForCounts() {
 
     delete intCol;
     delete floatCol;
-}
-
-/* Builds a vector of relations */
-void setRelationsList3() {
-
 }
 
 /* -- TEST FUNCTIONS -- */
@@ -830,18 +862,7 @@ void testCountEntityInRelations() {
     RedisHandler rds(REDISDBTEST, REDISPORT);
 
     // Create entities and relations
-    defpair e1Def, e2Def;
-    valpair r1Vals, r2Vals;
-    e1Def.push_back(std::make_pair(new IntegerColumn(), "a"));
-    e2Def.push_back(std::make_pair(new FloatColumn(), "b"));
-    makeTestEntity("_x", e1Def);
-    makeTestEntity("_y", e2Def);
-    // makeTestRelation("_x", "_y");
-    // makeTestRelation("_x", "_y");
 
-    // define relations
-
-    // Persist objects to
 
     // Define attribute bucket to filter
     AttributeBucket ab;
