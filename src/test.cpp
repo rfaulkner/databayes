@@ -451,6 +451,7 @@ void testCountRelations() {
 
     // Create entities and relations
     setRelationsForCounts();
+
     writeEntities();
     writeRelations();
 
@@ -461,12 +462,13 @@ void testCountRelations() {
     ab.addAttribute(at);
     rel_out = openRelations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_GTE);
-
-    // Perform count
     long count = b.countRelations(std::string("_x"), std::string("_y"), ab);
-
-    // Ensure the count is correct
     assert(count == 5);
+
+    rel_out = openRelations;
+    ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_GT);
+    long count = b.countRelations(std::string("_x"), std::string("_y"), ab);
+    assert(count == 2);
 
     removeRelations();
     removeEntities();
