@@ -445,6 +445,8 @@ void testFieldAssignTypeMismatchString() {
 */
 void testCountRelations() {
     Bayes b;
+    IndexHandler ih;
+    std::vector<Relation> rel_out;
     RedisHandler rds(REDISDBTEST, REDISPORT);
 
     // Create entities and relations
@@ -455,10 +457,10 @@ void testCountRelations() {
     // Define attribute bucket to filter
     AttributeBucket ab;
 
-    at = AttributeTuple("_x", "a", "1", COLTYPE_NAME_INT);
+    AttributeTuple at = AttributeTuple("_x", "a", "1", COLTYPE_NAME_INT);
     ab.addAttribute(at);
     rel_out = openRelations;
-    ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_GTE;
+    ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_GTE);
 
     // Perform count
     long count = b.countRelations(std::string("_x"), std::string("_y"), ab);
@@ -527,7 +529,7 @@ void testCountEntityInRelations() {
  *  Tests that existsEntityField correctly flags when entity does not
  *   contain a field
  */
-void testEntityDoesNotContainField() { // TODO - Implement }
+void testEntityDoesNotContainField() { /* TODO - Implement */ }
 
 /**
  *  Tests Bayes::computeMarginal function - ensure the marginal likelihood
