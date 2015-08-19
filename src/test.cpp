@@ -1124,7 +1124,7 @@ void initTests() {
     tests.insert(std::make_pair("testCountEntityInRelations",
         std::make_pair(true, testCountEntityInRelations)));
     tests.insert(std::make_pair("testCountRelations",
-        std::make_pair(false, testCountRelations)));
+        std::make_pair(true, testCountRelations)));
     tests.insert(std::make_pair("testComputeMarginal",
         std::make_pair(false, testComputeMarginal)));
 
