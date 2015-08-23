@@ -509,10 +509,14 @@ void testCountEntityInRelations() {
 
     AttributeBucket attrs; // empty set of filters
 
-    assert(bayes.countEntityInRelations(e1.name, attrs) == 1);
-    assert(bayes.countEntityInRelations(e2.name, attrs) == 4);
-    assert(bayes.countEntityInRelations(e3.name, attrs) == 3);
-    assert(bayes.countEntityInRelations(e4.name, attrs) == 2);
+    assert(bayes.countEntityInRelations(e1.name, attrs,
+        ATTR_TUPLE_COMPARE_EQ) == 1);
+    assert(bayes.countEntityInRelations(e2.name, attrs,
+        ATTR_TUPLE_COMPARE_EQ) == 4);
+    assert(bayes.countEntityInRelations(e3.name, attrs,
+        ATTR_TUPLE_COMPARE_EQ) == 3);
+    assert(bayes.countEntityInRelations(e4.name, attrs,
+        ATTR_TUPLE_COMPARE_EQ) == 2);
 
     ih.removeEntity("_w");
     ih.removeEntity("_x");
