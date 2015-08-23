@@ -30,19 +30,22 @@ public:
     Bayes() { this->indexHandler = new IndexHandler(); }
     ~Bayes() { delete this->indexHandler; }
 
-    float computeMarginal(std::string, AttributeBucket&);
-    float computeConditional(std::string, std::string, AttributeBucket&);
-    float computePairwise(std::string, std::string, AttributeBucket&);
+    float computeMarginal(std::string, AttributeBucket&, std::string);
+    float computeConditional(std::string, std::string, AttributeBucket&,
+        std::string);
+    float computePairwise(std::string, std::string, AttributeBucket&,
+        std::string);
 
     // Sample relations
     Relation sampleMarginal(std::string, AttributeBucket&, std::string);
-    Relation sampleMarginal(Entity&, AttributeBucket&);
+    Relation sampleMarginal(Entity&, AttributeBucket&, std::string);
     Relation samplePairwise(std::string, std::string, AttributeBucket&,
         std::string);
-    Relation samplePairwise(Entity&, Entity&, AttributeBucket&);
+    Relation samplePairwise(Entity&, Entity&, AttributeBucket&, std::string);
     Relation samplePairwiseCausal(std::string, std::string, AttributeBucket&,
         std::string);
-    Relation samplePairwiseCausal(Entity&, Entity&, AttributeBucket&);
+    Relation samplePairwiseCausal(Entity&, Entity&, AttributeBucket&,
+        std::string);
 
     // Compute expected values and mode for an attribute conditioned on filter
     // values
@@ -102,10 +105,12 @@ long Bayes::countEntityInRelations(std::string e, AttributeBucket& attrs,
 
 /** Marginal probability of an entities determined by occurrences
     present in relations */
-float Bayes::computeMarginal(std::string e, AttributeBucket& attrs) {
+float Bayes::computeMarginal(std::string e, AttributeBucket& attrs,
+    std::string compare) {
     long total = this->indexHandler->getRelationCountTotal();
     if (total > 0)
-        return (float)this->countEntityInRelations(e, attrs) / (float)total;
+        return (float)this->countEntityInRelations(e, attrs, compare) /
+            (float)total;
     else {
         cout << "DEBUG -- Bad total relation count: " << total << endl;
         return 0;
@@ -114,10 +119,11 @@ float Bayes::computeMarginal(std::string e, AttributeBucket& attrs) {
 
 /** Relation probabilities determined by occurrences present in relations */
 float Bayes::computePairwise(std::string e1, std::string e2,
-    AttributeBucket& attrs) {
+    AttributeBucket& attrs, std::string compare) {
     long total = this->indexHandler->getRelationCountTotal();
     if (total > 0)
-        return (float)this->countRelations(e1, e2, attrs) / (float)total;
+        return (float)this->countRelations(e1, e2, attrs, compare) /
+            (float)total;
     else {
         cout << "DEBUG -- Bad total relation count: " << total << endl;
         return 0;
@@ -126,9 +132,9 @@ float Bayes::computePairwise(std::string e1, std::string e2,
 
 /** Conditional Probabilities among entities */
 float Bayes::computeConditional(std::string e1, std::string e2,
-    AttributeBucket& attrs) {
-    float pairwise = this->computePairwise(e1, e2, attrs);
-    float marginal = this->computeMarginal(e2, attrs);
+    AttributeBucket& attrs, std::string compare) {
+    float pairwise = this->computePairwise(e1, e2, attrs, compare);
+    float marginal = this->computeMarginal(e2, attrs, compare);
 
     if (marginal > 0)
         return pairwise / marginal;
@@ -144,8 +150,9 @@ float Bayes::computeConditional(std::string e1, std::string e2,
  *
  *  args:   the entity models & filter attributes
  **/
-Relation Bayes::sampleMarginal(Entity& e, AttributeBucket& attrs) {
-    return this->sampleMarginal(e.name, attrs);
+Relation Bayes::sampleMarginal(Entity& e, AttributeBucket& attrs,
+    std::string compare) {
+    return this->sampleMarginal(e.name, attrs, compare);
 }
 
 /*
@@ -200,8 +207,9 @@ Relation Bayes::sampleMarginal(std::string e, AttributeBucket& attrs,
  *
  *  args:   the entity models & filter attributes
  **/
-Relation Bayes::samplePairwise(Entity& x, Entity& y, AttributeBucket& attrs) {
-    return this->samplePairwise(x.name, y.name, attrs);
+Relation Bayes::samplePairwise(Entity& x, Entity& y, AttributeBucket& attrs,
+    std::string compare) {
+    return this->samplePairwise(x.name, y.name, attrs, compare);
 }
 
 /*
@@ -243,8 +251,8 @@ Relation Bayes::samplePairwise(std::string x, std::string y,
  *  args:   the entity models & filter attributes
  **/
 Relation Bayes::samplePairwiseCausal(Entity& x, Entity& y,
-    AttributeBucket& attrs) {
-    return this->samplePairwiseCausal(x.name, y.name, attrs);
+    AttributeBucket& attrs, std::string compare) {
+    return this->samplePairwiseCausal(x.name, y.name, attrs, compare);
 }
 
 /*
