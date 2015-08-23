@@ -460,11 +460,13 @@ void testCountRelations() {
     AttributeTuple at = AttributeTuple("_x", "a", "1", COLTYPE_NAME_INT);
     ab.addAttribute(at);
     rel_out = openRelations;
-    long count = b.countRelations(std::string("_x"), std::string("_y"), ab);
+    long count = b.countRelations(std::string("_x"), std::string("_y"), ab,
+        ATTR_TUPLE_COMPARE_GTE);
     assert(count == 5);
 
     rel_out = openRelations;
-    count = b.countRelations(std::string("_x"), std::string("_y"), ab);
+    count = b.countRelations(std::string("_x"), std::string("_y"), ab,
+        ATTR_TUPLE_COMPARE_GT);
     assert(count == 2);
 
     removeRelations();
