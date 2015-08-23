@@ -187,6 +187,7 @@ void setRelationsForCounts() {
     valpair fields_rel_1, fields_rel_2, fields_rel_3, fields_rel_4;
     std::unordered_map<std::string, std::string> types_rel_1, types_rel_2;
 
+    // TODO - MEMORY LEAK
     ColumnBase* intCol = new IntegerColumn();
     ColumnBase* floatCol = new StringColumn();
 
@@ -217,8 +218,6 @@ void setRelationsForCounts() {
     makeTestRelation("_x", "_y", fields_rel_3, fields_rel_4,
         types_rel_1, types_rel_2);
 
-    delete intCol;
-    delete floatCol;
 }
 
 /* -- TEST FUNCTIONS -- */
@@ -461,13 +460,11 @@ void testCountRelations() {
     AttributeTuple at = AttributeTuple("_x", "a", "1", COLTYPE_NAME_INT);
     ab.addAttribute(at);
     rel_out = openRelations;
-    ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_GTE);
     long count = b.countRelations(std::string("_x"), std::string("_y"), ab);
     assert(count == 5);
 
     rel_out = openRelations;
-    ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_GT);
-    long count = b.countRelations(std::string("_x"), std::string("_y"), ab);
+    count = b.countRelations(std::string("_x"), std::string("_y"), ab);
     assert(count == 2);
 
     removeRelations();
