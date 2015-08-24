@@ -590,10 +590,10 @@ void testComputeMarginal() {
     // contain each entity
     AttributeBucket attrs;
 
-    assert(bayes.computeMarginal(e1.name, attrs) == (float)0.2);
-    assert(bayes.computeMarginal(e2.name, attrs) == (float)0.8);
-    assert(bayes.computeMarginal(e3.name, attrs) == (float)0.6);
-    assert(bayes.computeMarginal(e4.name, attrs) == (float)0.4);
+    assert(bayes.computeMarginal(e1.name, attrs, ATTR_TUPLE_COMPARE_EQ) == (float)0.2);
+    assert(bayes.computeMarginal(e2.name, attrs, ATTR_TUPLE_COMPARE_EQ) == (float)0.8);
+    assert(bayes.computeMarginal(e3.name, attrs, ATTR_TUPLE_COMPARE_EQ) == (float)0.6);
+    assert(bayes.computeMarginal(e4.name, attrs, ATTR_TUPLE_COMPARE_EQ) == (float)0.4);
 
 }
 
@@ -666,7 +666,7 @@ void testSamplePairwise() {
     // TODO - assemble a list on which to filter
 
     // Sample from e1, e2
-    Relation r = bayes.samplePairwise(e1, e2, ab);
+    Relation r = bayes.samplePairwise(e1, e2, ab, ATTR_TUPLE_COMPARE_EQ);
 
     // Assert that a sample is generated
     // Assert that the sample matches the attribute set
