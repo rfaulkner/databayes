@@ -73,7 +73,6 @@ void releaseObjects() {
 
 /** Performs a write over the test entity set */
 void writeEntities() {
-    IndexHandler ih;
     RedisHandler rds(REDISDBTEST, REDISPORT);
     for (std::vector<Entity>::iterator it = openEntities.begin();
             it != openEntities.end(); ++it)
@@ -81,7 +80,6 @@ void writeEntities() {
 }
 
 void removeEntities() {
-    IndexHandler ih;
     RedisHandler rds(REDISDBTEST, REDISPORT);
     for (std::vector<Entity>::iterator it = openEntities.begin();
             it != openEntities.end(); ++it)
@@ -89,7 +87,6 @@ void removeEntities() {
 }
 
 void writeRelations() {
-    IndexHandler ih;
     RedisHandler rds(REDISDBTEST, REDISPORT);
     for (std::vector<Relation>::iterator it = openRelations.begin();
             it != openRelations.end(); ++it)
@@ -97,7 +94,6 @@ void writeRelations() {
 }
 
 void removeRelations() {
-    IndexHandler ih;
     RedisHandler rds(REDISDBTEST, REDISPORT);
     for (std::vector<Relation>::iterator it = openRelations.begin();
             it != openRelations.end(); ++it)
