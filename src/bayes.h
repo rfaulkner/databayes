@@ -175,7 +175,7 @@ Relation Bayes::sampleMarginal(std::string e, AttributeBucket& attrs,
     this->indexHandler->filterRelations(relations_right, attrs, compare);
 
     // Randomly select a sample paying attention to frequency of relations
-    long count = this->countEntityInRelations(e, attrs);
+    long count = this->countEntityInRelations(e, attrs, compare);
     long index = 0;
     long pivot = rand() % count + 1;
 
@@ -229,7 +229,7 @@ Relation Bayes::samplePairwise(std::string x, std::string y,
     this->indexHandler->filterRelations(relations, attrs, compare);
 
     // Randomly select a sample paying attention to frequency of relations
-    long count = this->countRelations(x, y, attrs);
+    long count = this->countRelations(x, y, attrs, compare);
     long index = 0;
     long pivot = rand() % count + 1;
 
@@ -272,7 +272,7 @@ Relation Bayes::samplePairwiseCausal(std::string x, std::string y,
     this->indexHandler->filterRelations(relations, attrs, compare);
 
     // Randomly select a sample paying attention to frequency of relations
-    long count = this->countEntityInRelations(x, attrs, true);
+    long count = this->countEntityInRelations(x, attrs, compare, true);
     long index = 0;
     long pivot = rand() % count + 1;
 
