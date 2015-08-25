@@ -103,13 +103,13 @@ void removeRelations() {
 void printOpenRelations() {
     for (std::vector<Relation>::iterator it = openRelations.begin();
             it != openRelations.end(); ++it)
-        it->stringify();
+        cout << it->stringify() << endl;
 }
 
 void printOpenEntities() {
     for (std::vector<Entity>::iterator it = openEntities.begin();
             it != openEntities.end(); ++it)
-        it->stringify();
+        cout << it->stringify() << endl;
 }
 
 /* -- SETUP FUNCTIONS -- */
@@ -811,7 +811,7 @@ void testIndexFilterRelationsLT() {
     rel_out = openRelations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_LT);
     assert(rel_out[0].getValue("_x", "a").compare("1") == 0);
-    cout << rel_out.size() << endl;
+    printOpenRelations();
     assert(rel_out.size() == 1);
 
     // Third filter test - Neither relation greater
