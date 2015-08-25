@@ -478,6 +478,7 @@ void testCountRelations() {
 
     removeRelations();
     removeEntities();
+    releaseObjects();
 }
 
 /**
@@ -535,6 +536,8 @@ void testCountEntityInRelations() {
     ih.removeRelation(r3);
     ih.removeRelation(r4);
     ih.removeRelation(r5);
+
+    releaseObjects();
 }
 
 /**
@@ -811,7 +814,6 @@ void testIndexFilterRelationsLT() {
     rel_out = openRelations;
     ih.filterRelations(rel_out, ab, ATTR_TUPLE_COMPARE_LT);
     assert(rel_out[0].getValue("_x", "a").compare("1") == 0);
-    printOpenRelations();
     assert(rel_out.size() == 1);
 
     // Third filter test - Neither relation greater
