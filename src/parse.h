@@ -969,10 +969,13 @@ void Parser::parseSet(const std::string inputToken) {
 void Parser::processGEN() {
     // Construct attribute bucket
     AttributeBucket ab;
-    ab.addAttributes(this->currAttrEntity, *(this->currValues), *(this->currTypes));
+    ab.addAttributes(this->currAttrEntity,
+        *(this->currValues), *(this->currTypes));
 
     // Call sampling method from Bayes for relations
-    Relation r = this->bayes->samplePairwise(this->bufferAttrEntity, this->currEntity, ab);
+    // TODO - allow type of comparison to be specified
+    Relation r = this->bayes->samplePairwise(this->bufferAttrEntity,
+        this->currEntity, ab, ATTR_TUPLE_COMPARE_EQ);
 
     // Print the sample
     emitCLIGeneric(r.toJson().toStyledString());
@@ -982,11 +985,14 @@ void Parser::processINF() {
 
     // Construct attribute bucket
     AttributeBucket ab;
-    ab.addAttributes(this->currAttrEntity, *(this->currValues), *(this->currTypes));
+    ab.addAttributes(this->currAttrEntity, *(this->currValues),
+        *(this->currTypes));
 
     // Call sampling method from Bayes for relations
-    AttributeTuple* at = new AttributeTuple(this->bufferAttrEntity, this->bufferAttribute, "", "");
-    float exp = this->bayes->expectedAttribute(*at, ab);
+    AttributeTuple* at = new AttributeTuple(this->bufferAttrEntity,
+        this->bufferAttribute, "", "");
+    // TODO - allow type of comparison to be specified
+    float exp = this->bayes->expectedAttribute(*at, ab, ATTR_TUPLE_COMPARE_EQ);
 
     // Print the expected value
     emitCLIGeneric(std::to_string(exp));
