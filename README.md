@@ -65,6 +65,7 @@ The general parser syntax has the following definition:
     (7) RM REL E1(x_1 [, x_2, ..]) E2(y_1 [, y_2, ..])
     (8) RM ENT [E1]*
     (9) SET E.A FOR E1(x1=vx1[, x2=vx2, ..]) E2(y1=vy1[, y2=vy2, ..]) AS V
+    (10) DEC E1(x1=vx1[, x2=vx2, ..]) E2(y1=vy1[, y2=vy2, ..])
 
 1. provides a facility for insertion into the system
 2. generate a sample conditional on a set of constraints
@@ -75,6 +76,7 @@ The general parser syntax has the following definition:
 7. remove a relation
 8. remove an entity
 9. set an attribute value
+10. decrement the count for this relation
 
 More details on how to use these to build entities, relations and how to use generative commands to sample.
 
@@ -83,26 +85,26 @@ Entities
 --------
 
 Entities are the core artifacts of _databayes_ that are defined by _entity names_ and _entity attributes_.  They correspond
-closely to what could be thought of as types in _databayes_.  Attributes are given a type and may take on values of that type 
-when defined in relations (below). 
+closely to what could be thought of as types in _databayes_.  Attributes are given a type and may take on values of that type
+when defined in relations (below).
 
 Below is a sample entity representation:
 
     {"entity" : "e1",   "fields" : {"_itemcount" : 1, "x" : "integer" } }
 
-The key _"entity"_ defines the entity name while _"fields"_ contains a list of keys that correspond to attribute names 
+The key _"entity"_ defines the entity name while _"fields"_ contains a list of keys that correspond to attribute names
 with their respective types.  The _itemcount_ field simply stores the integer count of the number of entity attributes.
 
 
 Relations
 ---------
 
-Relations are defined across entities and allow a relationship among _entity attribute_ values to be established.  The 
+Relations are defined across entities and allow a relationship among _entity attribute_ values to be established.  The
 relation defines two sets of fields with attribute values assigned to _entity attributes_, see the sample below:
 
     {"cause" : "e1", "entity_left" : "e1", "entity_right" : "e2", "fields_left" : { "#x" : "integer", "_itemcount" : 1, "x" : "1"},   "fields_right" : {"#y" : "float", "_itemcount" : 1, "y" : "1.0"},   "instance_count" : 1}
 
-The meta data has the following definitions 
+The meta data has the following definitions
 
  * **entity_left**, specifies the left hand entity that defines the "left" attributes
  * **entity_right**, specifies the right hand entity that defines the "right" attributes

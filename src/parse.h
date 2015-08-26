@@ -113,6 +113,7 @@ using namespace std;
  *      (7) RM REL E1(x_1 [, x_2, ..]) E2(y_1 [, y_2, ..])
  *      (8) RM ENT [E1]*
  *      (9) SET E.A FOR E1(x1=vx1[, x2=vx2, ..]) E2(y1=vy1[, y2=vy2, ..]) AS V
+ *      (10) DEC E1(x1=vx1[, x2=vx2, ..]) E2(y1=vy1[, y2=vy2, ..])
  *
  *  (1) provides a facility for insertion into the system
  *  (2) generate a sample conditional on a set of constraints
