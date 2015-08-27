@@ -92,7 +92,7 @@
 #define STATE_RM_ENT 61        // Remove entities
 #define STATE_RM_REL 62        // Remove relations
 
-#define STATE_DEC 70        // decrement relations elements
+#define STATE_DEC 90        // decrement relations elements
 
 #define STATE_FINISH 99     // Successful end state
 
