@@ -327,7 +327,7 @@ std::string Parser::analyze(const std::string& s) {
             this->state = STATE_SET;
             this->macroState = STATE_SET;
         } else if (sLower.compare(STR_CMD_DEC) == 0) {
-            this->state = STATE_DEC;
+            this->state = STATE_P1;
             this->macroState = STATE_DEC;
         }
 
@@ -349,15 +349,6 @@ std::string Parser::analyze(const std::string& s) {
             this->state = STATE_P1;
         } else {
             this->state = STATE_RM_ENT;
-        }
-
-    } else if (this->state == STATE_DEC) {  // Branch to parse "DEC" commands
-        if (sLower.compare(STR_CMD_DEC) == 0)
-            this->state = STATE_P1;
-        else {
-            this->error = true;
-            this->errStr = BAD_INPUT;
-            return this->rspStr;
         }
 
     } else if (this->state == STATE_RM_ENT) {   // Branch to parse "RM ENT" commands
