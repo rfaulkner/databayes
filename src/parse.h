@@ -61,7 +61,7 @@
 #define ERR_BAD_SET "ERR: Some or all relations could not be updated."
 
 #define WILDCARD_CHAR '*'
-
+#define CONVERT_TO_LOWER false
 
 // STATE REPRESENTATIONS
 
@@ -291,9 +291,12 @@ std::string Parser::parse(const string& s) {
  */
 std::string Parser::analyze(const std::string& s) {
 
-    // Convert to lower case to enforce case insensitivity
     std::string sLower = s;
-    std::transform(sLower.begin(), sLower.end(), sLower.begin(), ::tolower);
+
+    // Convert to lower case to enforce case insensitivity
+    if (CONVERT_TO_LOWER)
+        std::transform(sLower.begin(), sLower.end(), sLower.begin(), ::tolower);
+
 
     if (this->debug)
         emitCLINote(std::string("Current state: ") + std::to_string(this->state));
