@@ -421,9 +421,7 @@ std::string Parser::analyze(const std::string& s) {
         this->parseSet(sLower);
 
     } else if (this->macroState == STATE_DEC) {
-        if (this->state == STATE_DEC)
-            this->state = STATE_P0;
-        this->parseSet(sLower);
+        this->parseRelationPair(sLower);
 
     } else if (this->state == STATE_FINISH) {  // Ensure processing is complete - no symbols should be left at this point
         this->error = true;
@@ -704,7 +702,12 @@ void Parser::parseFieldStatement(const std::string &fieldStr) {
 
         // PROCESS FIELD STATEMENT
         if (this->macroState == STATE_DEF) { this->parseEntityDefinitionField(field); }
-        if (this->macroState == STATE_ADD || this->macroState == STATE_RM_REL || this->macroState == STATE_SET) { this->parseEntityAssignField(field); }
+        if (this->macroState == STATE_ADD ||
+            this->macroState == STATE_RM_REL ||
+            this->macroState == STATE_SET ||
+            this->macroState == STATE_DEC) {
+            this->parseEntityAssignField(field);
+        }
 
         // this->error = this->error || this->indexHandler->fetch(IDX_TYPE_FIELD, field);
     }
