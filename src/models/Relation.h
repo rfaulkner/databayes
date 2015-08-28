@@ -349,7 +349,7 @@ public:
             this->composeJSON(rds, json);
             this->fromJSON(json);
             // TODO - issue a warning if the decValue exceeds
-            if (decVal > json[JSON_ATTR_REL_COUNT].asInt()) {
+            if (decVal >= json[JSON_ATTR_REL_COUNT].asInt()) {
                 this->remove(rds);
                 rds.decrementKey(KEY_TOTAL_RELATIONS,
                     json[JSON_ATTR_REL_COUNT].asInt());
