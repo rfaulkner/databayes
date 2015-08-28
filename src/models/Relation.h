@@ -344,15 +344,18 @@ public:
     bool decrementCount(RedisHandler& rds, int decVal) {
         std::string key = this->generateKey();
         if (rds.exists(key)) {
-            Json::Value jsonVal = this->toJson();
+            // Fetch the relation from the store
+            Json::Value json;
+            this->composeJSON(rds, json);
+            this->fromJSON(json);
             // TODO - issue a warning if the decValue exceeds
-            if (decVal > jsonVal[JSON_ATTR_REL_COUNT].asInt()) {
+            if (decVal > json[JSON_ATTR_REL_COUNT].asInt()) {
                 this->remove(rds);
                 rds.decrementKey(KEY_TOTAL_RELATIONS,
-                    jsonVal[JSON_ATTR_REL_COUNT].asInt());
+                    json[JSON_ATTR_REL_COUNT].asInt());
             } else {
                 this->instance_count =
-                    jsonVal[JSON_ATTR_REL_COUNT].asInt() - decVal;
+                    json[JSON_ATTR_REL_COUNT].asInt() - decVal;
                 this->write(rds, true);
                 rds.decrementKey(KEY_TOTAL_RELATIONS, decVal);
             }
