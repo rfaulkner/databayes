@@ -351,6 +351,7 @@ public:
                 jsonVal[JSON_ATTR_REL_COUNT] = instance_count - decVal;
                 rds.decrementKey(KEY_TOTAL_RELATIONS, decVal);
             }
+            return true;
         }
         return false;
     }
