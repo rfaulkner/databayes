@@ -327,13 +327,16 @@ public:
         return rds.exists(key);
     }
 
-    void write(RedisHandler& rds) {
+    void write(RedisHandler& rds, bool overwriteCount=false) {
         std::string key = this->generateKey();
         int instance_count = 0;
         if (rds.exists(key))
             instance_count = this->getInstanceCount(rds);
         Json::Value jsonVal = this->toJson();
-        jsonVal[JSON_ATTR_REL_COUNT] = instance_count + 1;
+        if (overwriteCount)
+            jsonVal[JSON_ATTR_REL_COUNT] = this->instance_count;
+        else
+            jsonVal[JSON_ATTR_REL_COUNT] = this->instance_count + 1;
         rds.incrementKey(KEY_TOTAL_RELATIONS, 1);
         rds.write(key, jsonVal.toStyledString());
     }
@@ -344,11 +347,13 @@ public:
             Json::Value jsonVal = this->toJson();
             // TODO - issue a warning if the decValue exceeds
             if (decVal > jsonVal[JSON_ATTR_REL_COUNT].asInt()) {
-                jsonVal[JSON_ATTR_REL_COUNT] = 0;
+                this->remove(rds);
                 rds.decrementKey(KEY_TOTAL_RELATIONS,
                     jsonVal[JSON_ATTR_REL_COUNT].asInt());
             } else {
-                jsonVal[JSON_ATTR_REL_COUNT] = instance_count - decVal;
+                this->instance_count =
+                    jsonVal[JSON_ATTR_REL_COUNT].asInt() - decVal;
+                this->write(rds, true);
                 rds.decrementKey(KEY_TOTAL_RELATIONS, decVal);
             }
             return true;
