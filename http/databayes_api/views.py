@@ -183,6 +183,11 @@ def view_switch(view, args):
     return rsp
 
 
+def version(entity):
+    return Response("databayes v1. 2015. Ryan Faulkner",
+        mimetype='application/json')
+
+
 def define_entity(entity):
     """
     Handles remote requests to databayes for entity definition
@@ -319,6 +324,7 @@ def remove_relation(entity_1, entity_2):
 
 # Stores view references in structure
 view_list = {
+    version.__name__: version,
     define_entity.__name__: define_entity,
     add_relation.__name__: add_relation,
     generate.__name__: generate,
@@ -329,6 +335,7 @@ view_list = {
 }
 
 route_deco = {
+    version.__name__: app.route('/v', methods=['GET']),
     define_entity.__name__: app.route('/def/<entity>', methods=['GET', 'POST']),
     add_relation.__name__: app.route('/add/<entity_1>/<entity_2>', methods=['GET', 'POST']),
     generate.__name__: app.route('/gen', methods=['GET', 'POST']),
