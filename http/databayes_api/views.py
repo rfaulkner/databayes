@@ -183,7 +183,20 @@ def view_switch(view, args):
     return rsp
 
 
+def Home(entity):
+    """
+    Defines web interface to the tool and help.
+    """
+    # TODO - add content here, primarily an interface to an instance
+    #       run on rackspace host
+    return Response("Welcome to databayes!",
+        mimetype='application/json')
+
+
 def version(entity):
+    """
+    Basic version info for databayes
+    """
     return Response("databayes v1. 2015. Ryan Faulkner",
         mimetype='application/json')
 
@@ -324,6 +337,7 @@ def remove_relation(entity_1, entity_2):
 
 # Stores view references in structure
 view_list = {
+    home.__name__: home,
     version.__name__: version,
     define_entity.__name__: define_entity,
     add_relation.__name__: add_relation,
@@ -335,6 +349,7 @@ view_list = {
 }
 
 route_deco = {
+    home.__name__: app.route('/', methods=['GET']),
     version.__name__: app.route('/v', methods=['GET']),
     define_entity.__name__: app.route('/def/<entity>', methods=['GET', 'POST']),
     add_relation.__name__: app.route('/add/<entity_1>/<entity_2>', methods=['GET', 'POST']),
