@@ -14,7 +14,7 @@
 
 import argparse
 
-from databayes_api import app, config, log_set_level
+from databayes_api import app, config, log_set_level, log
 from databayes_api.views import init_views
 
 __author__ = 'ryan faulkner'
@@ -122,9 +122,10 @@ if __name__ == '__main__':
     init_views()
 
     if args.vagrant:
-        host = config.__instance_host__
-    else
         host = config.__instance_host_vagrant__
+    else:
+        host = config.__instance_host__
+    log.info('host = ' + host)
 
     app.run(debug=args.debug,
             use_reloader=args.reloader,

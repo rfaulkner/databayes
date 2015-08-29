@@ -183,7 +183,7 @@ def view_switch(view, args):
     return rsp
 
 
-def Home(entity):
+def home(entity):
     """
     Defines web interface to the tool and help.
     """
