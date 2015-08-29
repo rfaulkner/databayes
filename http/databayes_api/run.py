@@ -95,6 +95,9 @@ def parseargs():
     parser.add_argument("-r", "--reloader",
                         action="store_true",
                         help="Use flask reloader.")
+    parser.add_argument("-V", "--vagrant",
+                        action="store_true",
+                        help="Set this flag when running from vagrant.")
 
     args = parser.parse_args()
     return args
@@ -118,9 +121,14 @@ if __name__ == '__main__':
     # Apply routing & auth deco to views
     init_views()
 
+    if args.vagrant:
+        host = config.__instance_host__
+    else
+        host = config.__instance_host_vagrant__
+
     app.run(debug=args.debug,
             use_reloader=args.reloader,
-            host=config.__instance_host__,
+            host=host,
             port=config.__instance_port__,)
 
 else:
