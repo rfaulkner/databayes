@@ -355,13 +355,17 @@ std::string Parser::analyze(const std::string& s) {
         this->parseEntitySymbol(sLower);
         this->state = STATE_FINISH;
 
-    } else if (this->macroState == STATE_RM_REL && (this->state == STATE_P1 || this->state == STATE_P2)) {
+    } else if (this->macroState == STATE_RM_REL &&
+        (this->state == STATE_P1 || this->state == STATE_P2)) {
         this->parseRelationPair(sLower);
 
-    } else if (this->macroState == STATE_ADD && (this->state == STATE_P1 || this->state == STATE_P2)) {
+    } else if (this->macroState == STATE_ADD &&
+        (this->state == STATE_P1 || this->state == STATE_P2)) {
         this->parseRelationPair(sLower);
 
-    } else if (this->macroState == STATE_DEC && (this->state == STATE_P1 || this->state == STATE_P2)) {
+    } else if (this->macroState == STATE_DEC &&
+        (this->state == STATE_P1 || this->state == STATE_P2 ||
+            this->state == STATE_P32)) {
         this->parseRelationPair(sLower);
 
     } else if (this->macroState == STATE_GEN) {
@@ -834,6 +838,11 @@ void Parser::parseEntityAssignField(const std::string field) {
  *  Stateless method for parsing a pair of entity descriptors defining a relation
  */
 void Parser::parseRelationPair(const std::string symbol) {
+
+    if (this->macrostate == STATE_DEC && this->state = STATE_P3)
+        // TODO - parse value logic here
+        return
+
     // Determine if entity or fields need to be processed
     if (this->entityProcessed) {
         this->parseFieldStatement(symbol);
@@ -866,7 +875,10 @@ void Parser::parseRelationPair(const std::string symbol) {
             this->entityProcessed = false;
 
         } else if (this->state == STATE_P2) {
-            this->state = STATE_FINISH;
+            if (this->macrostate == STATE_DEC)
+                this->state = STATE_P3;
+            else
+                this->state = STATE_FINISH;
         }
 }
 
