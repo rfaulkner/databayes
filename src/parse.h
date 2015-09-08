@@ -355,13 +355,13 @@ std::string Parser::analyze(const std::string& s) {
         this->parseEntitySymbol(sLower);
         this->state = STATE_FINISH;
 
-    } else if (this->macroState == STATE_RM_REL && (this->state == STATE_P1 || this->state == STATE_P2)) { // Branch to parse "RM REL" commands
+    } else if (this->macroState == STATE_RM_REL && (this->state == STATE_P1 || this->state == STATE_P2)) {
         this->parseRelationPair(sLower);
 
     } else if (this->macroState == STATE_ADD && (this->state == STATE_P1 || this->state == STATE_P2)) {
         this->parseRelationPair(sLower);
 
-    } else if (this->macroState == STATE_DEC && (this->state == STATE_P1 || this->state == STATE_P2)) { // Branch to parse "RM REL" commands
+    } else if (this->macroState == STATE_DEC && (this->state == STATE_P1 || this->state == STATE_P2)) {
         this->parseRelationPair(sLower);
 
     } else if (this->macroState == STATE_GEN) {
@@ -419,9 +419,6 @@ std::string Parser::analyze(const std::string& s) {
         if (this->state == STATE_SET)
             this->state = STATE_P0;
         this->parseSet(sLower);
-
-    } else if (this->macroState == STATE_DEC) {
-        this->parseRelationPair(sLower);
 
     } else if (this->state == STATE_FINISH) {  // Ensure processing is complete - no symbols should be left at this point
         this->error = true;
