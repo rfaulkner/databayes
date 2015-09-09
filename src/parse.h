@@ -471,7 +471,12 @@ std::string Parser::analyze(const std::string& s) {
                 emitCLINote(std::string("Writing definition of entity."));
 
         } else if (this->macroState == STATE_ADD) {
-            Relation r(this->bufferEntity, this->currEntity, *(this->bufferValues), *(this->currValues), *(this->bufferTypes), *(this->currTypes));
+            Relation r(this->bufferEntity,
+                       this->currEntity,
+                       *(this->bufferValues),
+                       *(this->currValues),
+                       *(this->bufferTypes),
+                       *(this->currTypes));
             this->indexHandler->writeRelation(r);
             this->rspStr = "Relation successfully added";
 
@@ -856,11 +861,12 @@ void Parser::parseEntityAssignField(const std::string field) {
  */
 void Parser::parseRelationPair(const std::string symbol) {
 
-    if (this->macroState == STATE_DEC && this->state == STATE_P3) {
-        this->currValue = s;
-        this->state = STATE_FINISH;
-        return;
-    }
+    if (this->state == STATE_P3)
+        if (this->macroState == STATE_DEC || this->macroState == STATE_ADD) {
+            this->currValue = s;
+            this->state = STATE_FINISH;
+            return;
+        }
 
     // Determine if entity or fields need to be processed
     if (this->entityProcessed) {
@@ -894,8 +900,10 @@ void Parser::parseRelationPair(const std::string symbol) {
             this->entityProcessed = false;
 
         } else if (this->state == STATE_P2) {
-            if (this->macroState == STATE_DEC && this->nSymbols > nSymbolIdx)
-                this->state = STATE_P3;
+            if (this->nSymbols > nSymbolIdx) // Yet to process the symbols
+                if (this->macroState == STATE_DEC ||
+                        this->macroState == STATE_ADD)
+                    this->state = STATE_P3;
             else
                 this->state = STATE_FINISH;
         }
