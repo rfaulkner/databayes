@@ -477,7 +477,7 @@ std::string Parser::analyze(const std::string& s) {
                        *(this->currValues),
                        *(this->bufferTypes),
                        *(this->currTypes));
-            this->indexHandler->writeRelation(r, std::stoi(this->currValue);
+            this->indexHandler->writeRelation(r, std::stoi(this->currValue));
             this->rspStr = "Relation successfully added";
 
             if (this->debug)
@@ -863,7 +863,7 @@ void Parser::parseRelationPair(const std::string symbol) {
 
     if (this->state == STATE_P3)
         if (this->macroState == STATE_DEC || this->macroState == STATE_ADD) {
-            this->currValue = s;
+            this->currValue = symbol;
             this->state = STATE_FINISH;
             return;
         }
@@ -1138,7 +1138,7 @@ void Parser::processSET() {
 void Parser::processDEC(RedisHandler& redis) {
     Relation r(this->bufferEntity, this->currEntity, *(this->bufferValues),
         *(this->currValues), *(this->bufferTypes), *(this->currTypes));
-    if (r.decrementCount(redis, std::stoi(this->currValue))
+    if (r.decrementCount(redis, std::stoi(this->currValue)))
         emitCLIGeneric(std::string("Decremented ") + r.generateKey());
     else
         emitCLIError(r.generateKey() + " does not exist in the index.");
