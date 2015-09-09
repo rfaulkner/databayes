@@ -254,17 +254,26 @@ void Parser::resetState() {
  */
 std::string Parser::parse(const string& s) {
 
-    vector<string> tokens = this->tokenize(s);
-    this->nSymbols = tokens.size();
-    this->nSymbolIdx = 1;
+    vector<string> tokensPre = this->tokenize(s);
+    vector<string> tokens;
     std::string result;
 
     this->state = STATE_START;      // Initialize state
     this->error = false;            // Initialize error condition
     this->errStr = "";              // Initialize error message
 
+    // strip out whitespace tokens
+    for (std::vector<string>::iterator it = tokens.begin();
+            it != tokens.end(); ++it)
+        if (it->compare("") != 0)
+            tokens.push_back(*it);
+
+    this->nSymbols = tokens.size();
+    this->nSymbolIdx = 1;
+
     // Process command tokens
-    for (std::vector<string>::iterator it = tokens.begin() ; it != tokens.end(); ++it) {
+    for (std::vector<string>::iterator it = tokens.begin();
+            it != tokens.end(); ++it) {
         if (this->debug)
             emitCLINote(std::string("Processing input token: ") + *it);
         result = this->analyze(*it);
