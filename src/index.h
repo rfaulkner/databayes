@@ -47,8 +47,8 @@ public:
     ~IndexHandler() { delete redisHandler; }
 
     void writeEntity(Entity&);
-    bool writeRelation(Relation&);
-    bool writeRelation(Json::Value&);
+    bool writeRelation(Relation&, int = 1);
+    bool writeRelation(Json::Value&, int = 1);
     bool writeToDisk(int);
 
     bool removeEntity(std::string);
@@ -191,9 +191,9 @@ bool IndexHandler::removeRelation(Json::Value& jsonVal) {
  *
  *  e.g. {"entity": <string:entname>, "fields": <string_array:[<f1,f2,...>]>}
  */
-bool IndexHandler::writeRelation(Relation& rel) {
-    Json::Value val = rel.toJson();
-    return this->writeRelation(val);
+bool IndexHandler::writeRelation(Relation& rel, int count) {
+    Json::Value json = rel.toJson();
+    return this->writeRelation(json, count);
 }
 
 /**
@@ -201,14 +201,18 @@ bool IndexHandler::writeRelation(Relation& rel) {
  *
  *  e.g. {"entity": <string:entname>, "fields": <string_array:[<f1,f2,...>]>}
  */
-bool IndexHandler::writeRelation(Json::Value& jsonVal) {
+bool IndexHandler::writeRelation(Json::Value& jsonVal, int count) {
     std::string key;
     this->redisHandler->connect();
-    key = this->generateRelationKey(std::string(jsonVal[JSON_ATTR_REL_ENTL].asCString()), std::string(jsonVal[JSON_ATTR_REL_ENTR].asCString()), generateRelationHash(jsonVal));
+    key = this->generateRelationKey(
+        std::string(jsonVal[JSON_ATTR_REL_ENTL].asCString()),
+        std::string(jsonVal[JSON_ATTR_REL_ENTR].asCString()),
+        generateRelationHash(jsonVal));
 
     if (this->redisHandler->exists(key)) {
         if (this->fetchRaw(key, jsonVal)) {
-            jsonVal[JSON_ATTR_REL_COUNT] = jsonVal[JSON_ATTR_REL_COUNT].asInt() + 1;
+            jsonVal[JSON_ATTR_REL_COUNT] =
+                jsonVal[JSON_ATTR_REL_COUNT].asInt() + count;
         } else
             return false;
     } else
