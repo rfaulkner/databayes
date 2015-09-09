@@ -269,11 +269,12 @@ std::string Parser::parse(const string& s) {
             tokens.push_back(*it);
 
     this->nSymbols = tokens.size();
-    this->nSymbolIdx = 1;
+    this->nSymbolIdx = 0;
 
     // Process command tokens
     for (std::vector<string>::iterator it = tokens.begin();
             it != tokens.end(); ++it) {
+        this->nSymbolIdx++;
         if (this->debug)
             emitCLINote(std::string("Processing input token: ") + *it);
         result = this->analyze(*it);
@@ -283,7 +284,6 @@ std::string Parser::parse(const string& s) {
             emitCLIError(this->errStr);
             return this->errStr;
         }
-        this->nSymbolIdx++;
     }
 
     if (this->state == STATE_EXIT)
@@ -892,7 +892,7 @@ void Parser::parseRelationPair(const std::string symbol) {
             this->entityProcessed = false;
 
         } else if (this->state == STATE_P2) {
-            if (this->macroState == STATE_DEC)
+            if (this->macroState == STATE_DEC && this->nSymbols > nSymbolIdx)
                 this->state = STATE_P3;
             else
                 this->state = STATE_FINISH;
