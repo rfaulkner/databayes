@@ -477,7 +477,7 @@ std::string Parser::analyze(const std::string& s) {
                        *(this->currValues),
                        *(this->bufferTypes),
                        *(this->currTypes));
-            this->indexHandler->writeRelation(r);
+            this->indexHandler->writeRelation(r, std::stoi(this->currValue);
             this->rspStr = "Relation successfully added";
 
             if (this->debug)
@@ -879,10 +879,15 @@ void Parser::parseRelationPair(const std::string symbol) {
         this->parseEntitySymbol(symbol);
 
         // Ensure that entities exist if we are adding/removing  a new relation
-        if (this->macroState == STATE_ADD || this->macroState == STATE_RM_REL || this->macroState == STATE_SET)
+        if (this->macroState == STATE_ADD ||
+            this->macroState == STATE_RM_REL ||
+            this->macroState == STATE_SET)
+
             if (!this->indexHandler->existsEntity(this->currEntity)) {
                 this->error = true;
-                this->errStr = std::string(ERR_ENT_NOT_EXISTS) + std::string(" -> \"") + this->currEntity +std::string("\"");
+                this->errStr = std::string(ERR_ENT_NOT_EXISTS) +
+                    std::string(" -> \"") +
+                    this->currEntity + std::string("\"");
                 return;
             }
     }
@@ -904,8 +909,10 @@ void Parser::parseRelationPair(const std::string symbol) {
                 if (this->macroState == STATE_DEC ||
                         this->macroState == STATE_ADD)
                     this->state = STATE_P3;
-            else
+            else {
                 this->state = STATE_FINISH;
+                this->currValue = "1";
+            }
         }
 }
 
@@ -1131,7 +1138,7 @@ void Parser::processSET() {
 void Parser::processDEC(RedisHandler& redis) {
     Relation r(this->bufferEntity, this->currEntity, *(this->bufferValues),
         *(this->currValues), *(this->bufferTypes), *(this->currTypes));
-    if (r.decrementCount(redis, this->currValue))
+    if (r.decrementCount(redis, std::stoi(this->currValue))
         emitCLIGeneric(std::string("Decremented ") + r.generateKey());
     else
         emitCLIError(r.generateKey() + " does not exist in the index.");

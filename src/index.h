@@ -216,9 +216,9 @@ bool IndexHandler::writeRelation(Json::Value& jsonVal, int count) {
         } else
             return false;
     } else
-        jsonVal[JSON_ATTR_REL_COUNT] = 1;
+        jsonVal[JSON_ATTR_REL_COUNT] = count;
 
-    this->redisHandler->incrementKey(KEY_TOTAL_RELATIONS, 1);
+    this->redisHandler->incrementKey(KEY_TOTAL_RELATIONS, count);
     this->redisHandler->write(key, jsonVal.toStyledString());
     return true;
 }
@@ -249,7 +249,8 @@ bool IndexHandler::composeJSON(std::string key, Json::Value& json) {
 bool IndexHandler::fetchEntity(std::string entity, Json::Value& json) {
     this->redisHandler->connect();
     if (this->existsEntity(entity)) {
-        if (this->composeJSON(this->redisHandler->read(this->generateEntityKey(entity)), json))
+        if (this->composeJSON(
+            this->redisHandler->read(this->generateEntityKey(entity)), json))
             return true;
         else
             return false;
