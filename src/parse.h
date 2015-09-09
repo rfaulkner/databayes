@@ -372,15 +372,16 @@ std::string Parser::analyze(const std::string& s) {
         this->state = STATE_FINISH;
 
     } else if (this->macroState == STATE_RM_REL &&
-        (this->state == STATE_P1 || this->state == STATE_P2)) {
+            (this->state == STATE_P1 || this->state == STATE_P2)) {
         this->parseRelationPair(sLower);
 
     } else if (this->macroState == STATE_ADD &&
-        (this->state == STATE_P1 || this->state == STATE_P2)) {
+            (this->state == STATE_P1 || this->state == STATE_P2 ||
+            this->state == STATE_P3)) {
         this->parseRelationPair(sLower);
 
     } else if (this->macroState == STATE_DEC &&
-        (this->state == STATE_P1 || this->state == STATE_P2 ||
+            (this->state == STATE_P1 || this->state == STATE_P2 ||
             this->state == STATE_P3)) {
         this->parseRelationPair(sLower);
 
