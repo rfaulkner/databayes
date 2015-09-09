@@ -127,6 +127,10 @@ using namespace std;
  */
 class Parser {
 
+    // Stores the number of symbols and the symbol index in the statement
+    int nSymbols;
+    int nSymbolIdx;
+
     int state;
     int macroState;
 
@@ -251,6 +255,8 @@ void Parser::resetState() {
 std::string Parser::parse(const string& s) {
 
     vector<string> tokens = this->tokenize(s);
+    this->nSymbols = tokens.size();
+    this->nSymbolIdx = 1;
     std::string result;
 
     this->state = STATE_START;      // Initialize state
@@ -268,6 +274,7 @@ std::string Parser::parse(const string& s) {
             emitCLIError(this->errStr);
             return this->errStr;
         }
+        this->nSymbolIdx++;
     }
 
     if (this->state == STATE_EXIT)
