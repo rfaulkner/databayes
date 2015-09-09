@@ -856,9 +856,11 @@ void Parser::parseEntityAssignField(const std::string field) {
  */
 void Parser::parseRelationPair(const std::string symbol) {
 
-    if (this->macroState == STATE_DEC && this->state == STATE_P3)
+    if (this->macroState == STATE_DEC && this->state == STATE_P3) {
+        this->currValue = s;
+        this->state = STATE_FINISH;
         return;
-        // TODO - parse value logic here
+    }
 
     // Determine if entity or fields need to be processed
     if (this->entityProcessed) {
@@ -1121,7 +1123,7 @@ void Parser::processSET() {
 void Parser::processDEC(RedisHandler& redis) {
     Relation r(this->bufferEntity, this->currEntity, *(this->bufferValues),
         *(this->currValues), *(this->bufferTypes), *(this->currTypes));
-    if (r.decrementCount(redis, 1))
+    if (r.decrementCount(redis, this->currValue))
         emitCLIGeneric(std::string("Decremented ") + r.generateKey());
     else
         emitCLIError(r.generateKey() + " does not exist in the index.");
