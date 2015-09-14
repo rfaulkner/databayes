@@ -293,7 +293,8 @@ std::string Parser::parse(const string& s) {
     if (this->state == STATE_START && tokens.size() > 0) {
         emitCLIError(std::string(ERR_UNKNOWN_CMD));
         return ERR_UNKNOWN_CMD;
-    } else if (this->state != STATE_FINISH && tokens.size() > 0) {
+    } else if (this->state != STATE_FINISH &&
+        tokens.size() > this->nSymbolIdx) {
         emitCLIError(std::string(ERR_MALFORMED_CMD));
         return ERR_MALFORMED_CMD;
     }
