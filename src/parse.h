@@ -263,8 +263,8 @@ std::string Parser::parse(const string& s) {
     this->errStr = "";              // Initialize error message
 
     // strip out whitespace tokens
-    for (std::vector<string>::iterator it = tokens.begin();
-            it != tokens.end(); ++it)
+    for (std::vector<string>::iterator it = tokensPre.begin();
+            it != tokensPre.end(); ++it)
         if (it->compare("") != 0)
             tokens.push_back(*it);
 
@@ -307,12 +307,9 @@ std::string Parser::parse(const string& s) {
  */
 std::string Parser::analyze(const std::string& s) {
 
+    // lowercase copy of token
     std::string sLower = s;
-
-    // Convert to lower case to enforce case insensitivity
-    if (CONVERT_TO_LOWER)
-        std::transform(sLower.begin(), sLower.end(), sLower.begin(), ::tolower);
-
+    std::transform(sLower.begin(), sLower.end(), sLower.begin(), ::tolower);
 
     if (this->debug)
         emitCLINote(std::string("Current state: ") + std::to_string(this->state));
@@ -368,34 +365,34 @@ std::string Parser::analyze(const std::string& s) {
         }
 
     } else if (this->state == STATE_RM_ENT) {   // Branch to parse "RM ENT" commands
-        this->parseEntitySymbol(sLower);
+        this->parseEntitySymbol(s);
         this->state = STATE_FINISH;
 
     } else if (this->macroState == STATE_RM_REL &&
             (this->state == STATE_P1 || this->state == STATE_P2)) {
-        this->parseRelationPair(sLower);
+        this->parseRelationPair(s);
 
     } else if (this->macroState == STATE_ADD &&
             (this->state == STATE_P1 || this->state == STATE_P2 ||
             this->state == STATE_P3)) {
-        this->parseRelationPair(sLower);
+        this->parseRelationPair(s);
 
     } else if (this->macroState == STATE_DEC &&
             (this->state == STATE_P1 || this->state == STATE_P2 ||
             this->state == STATE_P3)) {
-        this->parseRelationPair(sLower);
+        this->parseRelationPair(s);
 
     } else if (this->macroState == STATE_GEN) {
-        this->parseGenForm(sLower, ERR_MAL_GEN);
+        this->parseGenForm(s, ERR_MAL_GEN);
 
     } else if (this->macroState == STATE_INF) {
-        this->parseGenForm(sLower, ERR_MAL_INF);
+        this->parseGenForm(s, ERR_MAL_INF);
 
     } else if (this->state == STATE_DEF) {  // DEFINING new entities
 
         this->currFields = new vector<std::pair<ColumnBase*, std::string>>;
         this->state == STATE_DEF_PROC;
-        this->parseEntitySymbol(sLower);
+        this->parseEntitySymbol(s);
 
         // Validate that entity is alpha-numeric
         boost::regex e("^[a-zA-Z0-9]*$");
@@ -416,7 +413,7 @@ std::string Parser::analyze(const std::string& s) {
             this->state = STATE_FINISH;
 
     } else if (this->state == STATE_DEF_PROC) {
-        this->parseFieldStatement(sLower);
+        this->parseFieldStatement(s);
         if (this->fieldsProcessed)
             this->state = STATE_FINISH;
 
@@ -430,16 +427,16 @@ std::string Parser::analyze(const std::string& s) {
     } else if (this->state == STATE_LST_ENT) {
 
         this->macroState = STATE_LST_ENT;
-        this->parseEntitySymbol(sLower);
+        this->parseEntitySymbol(s);
         this->state = STATE_FINISH;
 
     } else if (this->macroState == STATE_LST_REL && (this->state == STATE_P1 || this->state == STATE_P2)) {
-        this->parseRelationPair(sLower);
+        this->parseRelationPair(s);
 
     } else if (this->macroState == STATE_SET) {
         if (this->state == STATE_SET)
             this->state = STATE_P0;
-        this->parseSet(sLower);
+        this->parseSet(s);
 
     } else if (this->state == STATE_FINISH) {  // Ensure processing is complete - no symbols should be left at this point
         this->error = true;
