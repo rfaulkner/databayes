@@ -903,11 +903,12 @@ void Parser::parseRelationPair(const std::string symbol) {
             this->entityProcessed = false;
 
         } else if (this->state == STATE_P2) {
-            if (this->nSymbols > nSymbolIdx) // Yet to process the symbols
+            if (this->nSymbols > nSymbolIdx) { // Yet to process the symbols
                 if (this->macroState == STATE_DEC ||
-                        this->macroState == STATE_ADD)
+                        this->macroState == STATE_ADD) {
                     this->state = STATE_P3;
-            else {
+                }
+            } else {
                 this->state = STATE_FINISH;
                 this->currValue = "1";
             }
