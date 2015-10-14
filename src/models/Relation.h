@@ -327,6 +327,8 @@ public:
         return rds.exists(key);
     }
 
+    /**
+     */
     void write(RedisHandler& rds, bool overwriteCount=false) {
         std::string key = this->generateKey();
         int instance_count = 0;
@@ -335,8 +337,8 @@ public:
         Json::Value jsonVal = this->toJson();
         if (overwriteCount)
             jsonVal[JSON_ATTR_REL_COUNT] = this->instance_count;
-        else
-            jsonVal[JSON_ATTR_REL_COUNT] = this->instance_count + 1;
+        else    // Otherwise increment
+            jsonVal[JSON_ATTR_REL_COUNT] = instance_count + 1;
         rds.incrementKey(KEY_TOTAL_RELATIONS, 1);
         rds.write(key, jsonVal.toStyledString());
     }
