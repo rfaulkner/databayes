@@ -327,7 +327,14 @@ public:
         return rds.exists(key);
     }
 
-    /**
+    /** Writes a relation object to the Redis store.  Also handles the logic
+        behind incrementing instance counts.
+
+        Params:
+
+            rds                 rdsdeference to the redis wrapper
+            overwriteCount      flag to indicate whether to simply overwrite
+                                with the existing count value
      */
     void write(RedisHandler& rds, bool overwriteCount=false) {
         std::string key = this->generateKey();
