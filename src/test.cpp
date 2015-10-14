@@ -20,6 +20,7 @@
 #include "md5.h"
 #include "index.h"
 #include "bayes.h"
+#include "parse.h"
 #include "models/models.h"
 
 #define REDISHOST "127.0.0.1"
