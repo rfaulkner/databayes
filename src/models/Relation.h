@@ -15,7 +15,8 @@
 #include "Entity.h"
 
 /**
- *  Models relations which consist of two entity and a variable number of attribute assignments
+ *  Models relations which consist of two entity and a variable number of
+ *  attribute assignments
  */
 class Relation {
 public:
@@ -88,13 +89,18 @@ public:
     /** Render the relation state as a string */
     std::string stringify() {
         std::string s;
-        s +=  this->name_left + std::string(" / ") + this->name_right + std::string("; ");
+        s +=  this->name_left + std::string(" / ") +
+            this->name_right + std::string("; ");
         s += std::string(" L ");
-        for (valpair::iterator it = attrs_left.begin() ; it != attrs_left.end(); ++it)
-            s += it->first + std::string(":") + types_left[it->first] + std::string(":") + it->second;
+        for (valpair::iterator it = attrs_left.begin() ; it != attrs_left.end();
+             ++it)
+            s += it->first + std::string(":") + types_left[it->first] +
+                std::string(":") + it->second;
         s += std::string("; R ");
-        for (valpair::iterator it = attrs_right.begin() ; it != attrs_right.end(); ++it)
-            s += it->first + std::string(":") + types_right[it->first] + std::string(":") + it->second;
+        for (valpair::iterator it = attrs_right.begin();
+             it != attrs_right.end(); ++it)
+            s += it->first + std::string(":") + types_right[it->first] +
+                std::string(":") + it->second;
         return s;
     }
 
@@ -118,14 +124,19 @@ public:
         Json::Value right = value[JSON_ATTR_REL_FIELDSR];
 
         // Extract the left-hand & right-hand fields
-        Json::Value::Members members = value[JSON_ATTR_REL_FIELDSL].getMemberNames();
-        for (Json::Value::Members::iterator it = members.begin(); it != members.end(); ++it)
+        Json::Value::Members members =
+            value[JSON_ATTR_REL_FIELDSL].getMemberNames();
+        for (Json::Value::Members::iterator it = members.begin();
+             it != members.end(); ++it)
             // Determine whether a type is being added or an element
             if (std::strcmp(JSON_ATTR_FIELDS_COUNT, it->c_str()) != 0) {
                 if (it->find(JSON_ATTR_REL_TYPE_PREFIX) == 0) {
-                    types_left.insert(std::make_pair(it->substr(1, it->length()), value[JSON_ATTR_REL_FIELDSL][*it].asCString()));
+                    types_left.insert(std::make_pair(
+                        it->substr(1, it->length()),
+                            value[JSON_ATTR_REL_FIELDSL][*it].asCString()));
                 } else {
-                    attrs_left.push_back(std::make_pair(*it, value[JSON_ATTR_REL_FIELDSL][*it].asCString()));
+                    attrs_left.push_back(std::make_pair(
+                        *it, value[JSON_ATTR_REL_FIELDSL][*it].asCString()));
                 }
             }
         members = value[JSON_ATTR_REL_FIELDSR].getMemberNames();
@@ -193,7 +204,8 @@ public:
     bool composeJSON(RedisHandler& rds, Json::Value& json) {
         Json::Reader reader;
         bool parsedSuccess;
-        parsedSuccess = reader.parse(rds.read(this->generateKey()), json, false);
+        parsedSuccess = reader.parse(
+            rds.read(this->generateKey()), json, false);
         if (parsedSuccess)
             return true;
         else
@@ -222,20 +234,25 @@ public:
     /* ORM methods */
 
     /* Adds a left-hand attribute */
-    void addLeftAttribute(std::string name, std::string value, std::string type) {
+    void addLeftAttribute(std::string name,
+                          std::string value,
+                          std::string type) {
         this->attrs_left.push_back(std::make_pair(name, value));
         this->types_left.insert(std::make_pair(name, type));
     }
 
     /* Adds a right-hand attribute */
-    void addRightAttribute(std::string name, std::string value, std::string type) {
+    void addRightAttribute(std::string name,
+                           std::string value,
+                           std::string type) {
         this->attrs_right.push_back(std::make_pair(name, value));
         this->types_right.insert(std::make_pair(name, type));
     }
 
     /** Set the causal entity */
     bool setCause(std::string cause) {
-        if (std::strcmp(cause.c_str(), this->name_left.c_str()) != 0 && std::strcmp(cause.c_str(), this->name_right.c_str()) != 0)
+        if (std::strcmp(cause.c_str(), this->name_left.c_str()) != 0 &&
+                std::strcmp(cause.c_str(), this->name_right.c_str()) != 0)
             return false;
         else if (std::strcmp(cause.c_str(), this->name_left.c_str()) == 0) {
             this->cause = this->name_left;
