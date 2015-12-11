@@ -187,6 +187,42 @@ void setRelationsList2() {
     delete floatCol;
 }
 
+/* Builds a vector of relations */
+Relation setRelationsListRelationCountTwo() {
+
+    // Initialize fields and types
+    Relation r;
+    defpair fields_ent_1, fields_ent_2;
+    valpair fields_rel_1, fields_rel_2;
+    std::unordered_map<std::string, std::string> types_rel_1, types_rel_2;
+
+    ColumnBase* intCol = new IntegerColumn();
+    ColumnBase* floatCol = new StringColumn();
+
+    fields_ent_1.push_back(std::make_pair(intCol, "a"));
+    fields_ent_2.push_back(std::make_pair(floatCol, "b"));
+    fields_rel_1.push_back(std::make_pair("a", "1"));
+    fields_rel_2.push_back(std::make_pair("b", "2.0"));
+    types_rel_1.insert(std::make_pair("a", COLTYPE_NAME_INT));
+    types_rel_2.insert(std::make_pair("b", COLTYPE_NAME_FLOAT));
+
+    // Initialize entities
+    makeTestEntity("_x", fields_ent_1);
+    makeTestEntity("_y", fields_ent_2);
+
+    // Add relation set
+    makeTestRelation("_x", "_y", fields_rel_1, fields_rel_2,
+        types_rel_1, types_rel_2);
+    r = makeTestRelation("_x", "_y", fields_rel_1, fields_rel_2,
+        types_rel_1, types_rel_2);
+
+    // TODO - Use increment here rather than two adds
+
+    delete intCol;
+    delete floatCol;
+
+    return r;
+}
 
 void setRelationsForCounts() {
 
@@ -1035,6 +1071,21 @@ void testDEF() {
     // TODO - implement
 }
 
+/** Tests relation decrement */
+void testDEC() {
+    Relation r = setRelationsListRelationCountTwo();
+    writeEntities();
+    writeRelations();
+    Parser* parser = new Parser();
+    parser->parse("DEC _x(a=1) _y(b=2.0)");
+    IndexHandler ih;
+    Json::Value json;
+    ih.fetchRaw(r.generateKey(), json);
+    assert(json[JSON_ATTR_REL_COUNT].asInt() == 1);
+    removeEntities();
+    removeRelations();
+    releaseObjects();
+}
 
 /**
  *  Tests that relation count is properly accounted
